@@ -1,5 +1,4 @@
-#include "test_price.cpp"
-#include "test_quantity.cpp"
+#include "test_scaled_int.cpp"
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

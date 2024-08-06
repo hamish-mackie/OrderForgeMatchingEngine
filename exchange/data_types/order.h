@@ -8,7 +8,7 @@
 
 class Order {
 public:
-    Order(const Price price, const Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId order_id)
+    Order(Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId order_id)
         : price_(price),
           qty_(qty),
           side_(side),
