@@ -28,7 +28,12 @@ public:
         os << price.descaled_value();
         return os;
     }
-
+    bool operator<(const ScaledInt &other) const {
+        return value_ < other.value_;
+    }
+    bool operator>(const ScaledInt &other) const {
+        return value_ > other.value_;
+    }
     bool operator==(const ScaledInt &other) const {
         return other.value_ == value_;
     }
@@ -56,3 +61,12 @@ public:
 private:
     int_type value_;
 };
+
+namespace std {
+    template<typename T, uint64_t Scale>
+    struct hash<ScaledInt<T, Scale>> {
+        std::size_t operator()(const ScaledInt<T, Scale>& s) const noexcept {
+            return std::hash<T>{}(s.value());
+        }
+    };
+}

@@ -1,3 +1,4 @@
+#include <unordered_set>
 #include <gtest/gtest.h>
 #include "scaled_int.h"
 
@@ -39,4 +40,15 @@ TEST(ScaledIntTest, Division) {
     int_type b(5.0);
     int_type result = a / b;
     EXPECT_EQ(result, int_type(2.0));
+}
+
+TEST(ScaledIntTest, Hashing) {
+    int_type a(55);
+    int_type b(64);
+    std::unordered_set<int_type> s;
+    s.emplace(a);
+    s.emplace(b);
+    ASSERT_TRUE(s.contains(a));
+    s.erase(a);
+    ASSERT_EQ(s.size(), 1);
 }

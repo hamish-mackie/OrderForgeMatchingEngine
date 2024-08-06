@@ -2,13 +2,14 @@
 
 #include <vector>
 #include <deque>
+#include <unordered_map>
 
 #include "book_level.h"
 
 class BookSide {
 public:
     using Levels = std::deque<BookLevel>;
-    using LevelsMap = std::unordered_map<Price, BookLevel&>;
+    using LevelsMap = std::unordered_map<Price, BookLevel*>;
     using AllocateSize = uint64_t;
 
     AllocateSize allocate_size_{10000};
@@ -27,6 +28,6 @@ private:
     Price best_price_;
     Price tick_size_;
     Levels levels_;
-    // LevelsMap levels_map_;
+    LevelsMap levels_map_;
 };
 
