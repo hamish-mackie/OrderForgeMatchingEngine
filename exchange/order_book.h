@@ -3,10 +3,12 @@
 #include <functional>
 
 #include "book_side.h"
-#include "trade_producer.h"
 
 class OrderBook {
 public:
+    using BookSideBid = BookSide<std::less<>>;
+    using BookSideAsk = BookSide<std::greater<>>;
+
     using AccountUpdateHandler = std::function<void()>;
     using TradesUpdateHandler = std::function<void()>;
     using OrderBookUpdateHandler = std::function<void()>;
@@ -18,12 +20,12 @@ public:
     LastTradeUpdateHandler last_trade_update_handler;
 
     OrderBook(Price starting_price, Price tick_size);
-    void add_order(const Order& order);
+    void add_order(Order& order);
     void remove_order(OrderId id);
     void match_order(Order& order);
 
 private:
-    BookSide bids;
-    BookSide asks;
+     BookSideBid bids;
+     BookSideAsk asks;
 };
 

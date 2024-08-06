@@ -12,10 +12,20 @@
 // All trades produced
 
 class TradeProducer {
+public:
+    explicit TradeProducer(Order& order): original_order_(order) {
+
+    }
 
 private:
-    Order& order;
-    std::vector<Trade> trades;
+    Order& original_order_;
+    Price order_price_;
+    Quantity remaining_qty_;
+
+    // We report a vector of trades made.
+    std::vector<Trade> trades_;
+    // We also report vector of orders which have been removed or changed.
+    std::vector<Order> orders_;
 
 public:
     std::optional<Order> match_order(Order);

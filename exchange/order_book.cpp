@@ -1,12 +1,20 @@
 #include "order_book.h"
 
 OrderBook::OrderBook(Price starting_price, Price tick_size)
-    : bids(BookSide(BUY, starting_price, tick_size))
-    , asks(BookSide(SELL, starting_price, tick_size)) {
+    : bids(BookSideBid(BUY, tick_size))
+    , asks(BookSideAsk(SELL, tick_size)) {
 }
 
-void OrderBook::add_order(const Order &order) {
-    LOG_INFO("", order.log_order());
+void OrderBook::add_order(Order &order) {
+    LOG_INFO("OrderBook", order.log_order());
+
+    if(order.type() == MARKET) {
+        match_order(order);
+    }
+
+    // auto best_bid = bids.best_price();
+    // auto best_ask = asks.best_price();
+
     if(order.side() == BUY) {
         bids.add_order(order);
     } else {
@@ -27,5 +35,8 @@ void OrderBook::remove_order(OrderId id) {
 }
 
 void OrderBook::match_order(Order &order) {
-
+    auto trade_producer = TradeProducer(order);
+    if(order.side() == BUY) {
+        asks.match_order(trade_producer);
+    }
 }

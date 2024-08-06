@@ -1,33 +1,50 @@
 #pragma once
 
-#include <vector>
-#include <deque>
-#include <unordered_map>
-
 #include "book_level.h"
+#include "order_book_data.h"
 
+template<typename CompFunc>
 class BookSide {
 public:
-    using Levels = std::deque<BookLevel>;
-    using LevelsMap = std::unordered_map<Price, BookLevel*>;
+    using LevelsCont = OrderBookDataMap<CompFunc>;
     using AllocateSize = uint64_t;
 
-    AllocateSize allocate_size_{10000};
-
-    BookSide(Side side, Price best_price, Price tick_size);
+    BookSide(Side side, Price& tick_size)
+        : side_(side)
+        , tick_size_(tick_size)
+        , levels_(side, tick_size) {}
 
     void add_order(const Order& order);
     void remove_order(OrderId id);
-    void match_order(Order& order);
-
-    Price start_price() { return levels_.begin()->price(); }
-    Price end_price() { return (levels_.end()-1)->price(); }
+    void match_order(TradeProducer& trade_producer);
 
 private:
     Side side_;
-    Price best_price_;
     Price tick_size_;
-    Levels levels_;
-    LevelsMap levels_map_;
+    LevelsCont levels_;
 };
+
+template<typename CompFunc>
+void BookSide<CompFunc>::add_order(const Order &order) {
+    LOG_INFO(magic_enum::enum_name(side_), order.log_order());
+
+    assert(order.side() == side_);
+
+    auto ptr = levels_.get_book_level(order.price());
+    ptr->add_order(order);
+    // receive a limit order
+    // check best price,
+    // if the order is a buy and the price of the order is higher than best price,
+    // we should fill the order
+}
+
+template<typename CompFunc>
+void BookSide<CompFunc>::remove_order(OrderId id) {
+
+}
+
+template<typename CompFunc>
+void BookSide<CompFunc>::match_order(TradeProducer& trade_producer) {
+    assert(order.side != side_);
+}
 
