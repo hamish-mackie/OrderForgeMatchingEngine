@@ -11,14 +11,23 @@ BookSide::BookSide(Side side, Price best_price, Price tick_size)
 
     for (int i = 0; i < allocate_size_; ++i) {
         levels_.emplace_back(start_price_);
-        // levels_map_.emplace(start_price_, std::ref(levels_.back()));
+        levels_map_.emplace(start_price_, &levels_.back());
         start_price_ += tick_size_;
     }
 }
 
 void BookSide::add_order(const Order &order) {
-
+    LOG_INFO(magic_enum::enum_name(side_), order.log_order());
+    // receive a limit order
+    // check best price,
+    // if the order is a buy and the price of the order is higher than best price,
+    // we should fill the order
 }
 
 void BookSide::remove_order(OrderId id) {
+
+}
+
+void BookSide::match_order(Order &order) {
+
 }

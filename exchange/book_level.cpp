@@ -1,6 +1,7 @@
 #include "book_level.h"
 
 void BookLevel::add_order(const Order& order) {
+    LOG_INFO(price_.descaled_value(), order.log_order());
     order_cont.push_back(order);
     total_qty_ += order.qty();
 }
