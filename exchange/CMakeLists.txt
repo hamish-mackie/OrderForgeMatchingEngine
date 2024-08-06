@@ -11,9 +11,11 @@ target_sources(exchange PUBLIC
         trade_producer.cpp
 )
 
+add_subdirectory(logger)
 add_subdirectory(data_types)
 
 target_link_libraries(exchange PUBLIC
+        logger
         data_types
 )
 
