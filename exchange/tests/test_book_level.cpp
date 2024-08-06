@@ -38,17 +38,12 @@ TEST(BookLevel, stress_test_10000_orders_random_removal) {
     std::vector<OrderId> ids;
     ids.reserve(num_orders);
 
-    // Timing the addition of orders
-    auto start_add = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < num_orders; ++i) {
         Quantity qty = Quantity(1);
         const OrderId id = gen_random_order_id();
         ids.push_back(id);
         bl.add_order(Order(price, qty, BUY, OPEN, LIMIT, 12345 + i, id));
     }
-    auto end_add = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed_add = end_add - start_add;
-    std::cout << "Time to add orders: " << elapsed_add.count() << " seconds" << std::endl;
 
     ASSERT_EQ(bl.size(), num_orders);
     ASSERT_EQ(bl.total_quantity(), Quantity(num_orders));
@@ -57,14 +52,9 @@ TEST(BookLevel, stress_test_10000_orders_random_removal) {
     std::mt19937 g(rd());
     std::shuffle(ids.begin(), ids.end(), g);
 
-    // Timing the removal of orders
-    auto start_remove = std::chrono::high_resolution_clock::now();
     for (const auto& id : ids) {
         bl.remove_order(id);
     }
-    auto end_remove = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed_remove = end_remove - start_remove;
-    std::cout << "Time to remove orders: " << elapsed_remove.count() << " seconds" << std::endl;
 
     ASSERT_EQ(bl.size(), 0);
     ASSERT_EQ(bl.total_quantity(), Quantity(0));

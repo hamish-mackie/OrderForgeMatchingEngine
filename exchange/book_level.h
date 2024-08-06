@@ -6,7 +6,7 @@
 
 class BookLevel {
 public:
-    using OrdersCont = std::vector<Order>;
+    using OrdersCont = std::vector<Order>; // This is probably better with a ringbuffer and map look up for removals
 
     explicit BookLevel(const Price price): price_(price), total_qty_(0) {}
     void add_order(const Order& order);
@@ -24,5 +24,4 @@ private:
     Price price_;
     Quantity total_qty_;
     OrdersCont order_cont;
-    std::unordered_map<OrderId, Order*> orders_map;
 };
