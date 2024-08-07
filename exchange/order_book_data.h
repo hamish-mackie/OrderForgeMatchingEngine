@@ -9,7 +9,7 @@ public:
     OrderBookDataInterface(Side side, Price tick_size): side_(side), tick_size_(tick_size) {}
     virtual ~OrderBookDataInterface() = 0;
 
-    virtual Price best_price() = 0;
+    virtual std::optional<Price> best_price() = 0;
     virtual BookLvlPtr get_book_level(const Price& price) = 0;
     virtual BookLvlPtr add_book_level(const Price& price) = 0;
 
@@ -33,7 +33,10 @@ public:
     OrderBookDataMap(const Side side, const Price &tick_size)
         : OrderBookDataInterface(side, tick_size), book_cont_() {}
 
-    Price best_price() override { return book_cont_.begin()->first; };
+    std::optional<Price> best_price() override {
+        if(book_cont_.empty()) return {};
+        return {book_cont_.begin()->first};
+    };
 
     BookLvlPtr get_book_level(const Price& price) override {
         auto it = book_cont_.find(price);

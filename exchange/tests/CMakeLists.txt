@@ -3,6 +3,7 @@ add_executable(exchange_tests
         test_book_side.cpp
         test_book_level.cpp
         test_trade_producer.cpp
+        test_order_book.cpp
 )
 
 target_link_libraries(exchange_tests gtest_main exchange)

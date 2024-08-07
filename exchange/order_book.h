@@ -6,8 +6,8 @@
 
 class OrderBook {
 public:
-    using BookSideBid = BookSide<std::less<>>;
-    using BookSideAsk = BookSide<std::greater<>>;
+    using BookSideBid = BookSide<std::greater<>>;
+    using BookSideAsk = BookSide<std::less<>>;
 
     using AccountUpdateHandler = std::function<void()>;
     using TradesUpdateHandler = std::function<void(const Trade& trade)>;

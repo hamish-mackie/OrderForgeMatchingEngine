@@ -30,15 +30,12 @@ public:
         os << price.descaled_value();
         return os;
     }
-    bool operator<(const ScaledInt &other) const {
-        return value_ < other.value_;
-    }
-    bool operator>(const ScaledInt &other) const {
-        return value_ > other.value_;
-    }
-    bool operator==(const ScaledInt &other) const {
-        return other.value_ == value_;
-    }
+    bool operator<(const ScaledInt &other) const { return value_ < other.value_; }
+    bool operator>(const ScaledInt &other) const { return value_ > other.value_; }
+    bool operator<=(const ScaledInt &other) const { return value_ <= other.value_; }
+    bool operator>=(const ScaledInt &other) const { return value_ >= other.value_; }
+    bool operator==(const ScaledInt &other) const { return other.value_ == value_; }
+
     ScaledInt& operator+=(const ScaledInt& other) {
         value_ += other.value_;
         return *this;
@@ -46,6 +43,7 @@ public:
     ScaledInt& operator-=(const ScaledInt& other) {
         value_ -= other.value_;
         return *this;
+
     }
     ScaledInt operator+(const ScaledInt& other) {
         return ScaledInt(value_ + other.value_, true);

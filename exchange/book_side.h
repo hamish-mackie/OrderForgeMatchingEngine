@@ -18,6 +18,8 @@ public:
     void remove_order(OrderId id);
     void match_order(TradeProducer& trade_producer);
 
+    std::optional<Price> best_price() { return levels_.best_price(); }
+
 private:
     Side side_;
     Price tick_size_;
