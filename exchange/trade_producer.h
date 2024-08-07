@@ -39,9 +39,6 @@ public:
         LOG_INFO("matching", original_order_.log_order());
         LOG_INFO("matching", order.log_order());
 
-        LOG_INFO("order remaining qty before: {}", order.remaining_qty().descaled_value());
-        LOG_INFO("trade producer remaining qty before: {}", remaining_qty_.descaled_value());
-
         if(original_order_.side() == order.side()) {
             LOG_WARN("orders have the same side");
         }
@@ -67,8 +64,6 @@ public:
             orders_.push_back(&order);
         }
 
-        LOG_INFO("order remaining qty after: {}", order.remaining_qty().descaled_value());
-        LOG_INFO("trade producer remaining qty after: {}", remaining_qty_.descaled_value());
         LOG_INFO(log_producer());
     }
 
