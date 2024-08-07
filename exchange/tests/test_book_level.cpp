@@ -11,19 +11,18 @@ TEST(BookLevel, match_order) {
         Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 3),
     };
     for (auto& order : limit_orders) {
-        bl.add_order(order);
+        auto update = bl.add_order(order);
     }
 
     auto market_order = Order(Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id());
     auto trade_producer = TradeProducer(market_order);
     bl.match_order(trade_producer);
 
-
     ASSERT_EQ(trade_producer.get_modified_orders_().size(), 2);
 }
 
 TEST(BookLevel, add_order) {
-    const Price price;
+    const Price price(45);
     Quantity qty = Quantity(5);
     const OrderId id = gen_random_order_id();
     auto bl = BookLevel(price);
@@ -31,22 +30,33 @@ TEST(BookLevel, add_order) {
 
     ASSERT_EQ(bl.total_quantity(), Quantity(0));
     ASSERT_EQ(bl.size(), 0);
-    bl.add_order(order);
+    auto update = bl.add_order(order);
+    LOG_INFO(update.log_level_update());
+
+    ASSERT_EQ(update.price, price);
+    ASSERT_EQ(update.total_quantity, Quantity(5));
     ASSERT_EQ(bl.size(), 1);
     ASSERT_EQ(bl.total_quantity(), qty);
 }
 
 TEST(BookLevel, remove_order) {
-    const Price price;
+    const Price price(100);
     Quantity qty = Quantity(5);
     const OrderId id = gen_random_order_id();
     auto bl = BookLevel(price);
     auto order = Order(price, qty, BUY, OPEN, LIMIT, 12345, id);
 
-    bl.add_order(order);
+    auto update = bl.add_order(order);
+    ASSERT_EQ(update.price, price);
+    ASSERT_EQ(update.total_quantity, Quantity(5));
+
     ASSERT_EQ(bl.size(), 1);
     ASSERT_EQ(bl.total_quantity(), qty);
-    bl.remove_order(id);
+
+    auto update2 = bl.remove_order(id);
+    ASSERT_EQ(update2.price, price);
+    ASSERT_EQ(update2.total_quantity, Quantity(0));
+
     ASSERT_EQ(bl.size(), 0);
     ASSERT_EQ(bl.total_quantity(), Quantity(0));
 }

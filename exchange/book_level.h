@@ -3,13 +3,23 @@
 #include "order.h"
 #include "trade_producer.h"
 
+struct LevelUpdate {
+    Price price;
+    Quantity total_quantity;
+
+    std::string log_level_update() {
+        return fmt::format("Price: {}, TotalQty: {}", price.descaled_value(), total_quantity.descaled_value());
+    }
+};
+
 class BookLevel {
 public:
     using OrdersCont = std::vector<Order>; // This is probably better with a ringbuffer and map look up for removals
 
     explicit BookLevel(const Price& price): price_(price), total_qty_(0) {}
-    void add_order(Order& order);
-    void remove_order(OrderId id);
+    LevelUpdate add_order(Order& order);
+    LevelUpdate remove_order(FindOrderHelper& helper);
+    LevelUpdate remove_order(OrderId id);
     void match_order(TradeProducer& trade_producer);
 
     Quantity total_quantity() { return total_qty_; }

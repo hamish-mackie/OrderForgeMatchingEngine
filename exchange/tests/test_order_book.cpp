@@ -7,7 +7,7 @@ TEST(OrderBook, test_simple_trade) {
     auto tick_size = Price(0.1);
     OrderBook ob(starting_price, tick_size);
     ob.account_update_handler = []() {};
-    ob.order_book_update_handler = []() {};
+    ob.order_book_update_handler = [](const LevelUpdate& update) {};
     ob.last_trade_update_handler = []() {};
 
 
@@ -39,7 +39,7 @@ TEST(OrderBook, test_simple_trade_other_side) {
     auto tick_size = Price(0.1);
     OrderBook ob(starting_price, tick_size);
     ob.account_update_handler = []() {};
-    ob.order_book_update_handler = []() {};
+    ob.order_book_update_handler = [](const LevelUpdate& update) {};
     ob.last_trade_update_handler = []() {};
 
     ob.trades_update_handler = [&](const Trade& trade) {
@@ -64,4 +64,28 @@ TEST(OrderBook, test_simple_trade_other_side) {
     for (auto& order : market_orders) {
         ob.add_order(order);
     }
+}
+
+TEST(OrderBook, test_simple_remove_order) {
+    auto starting_price = Price(100);
+    auto tick_size = Price(0.1);
+    OrderBook ob(starting_price, tick_size);
+    ob.account_update_handler = []() {};
+    ob.order_book_update_handler = [](const LevelUpdate& update) {};
+    ob.last_trade_update_handler = []() {};
+
+    ob.trades_update_handler = [&](const Trade& trade) {
+        ASSERT_EQ(trade.crossing_side(), BUY);
+        ASSERT_EQ(trade.price(), Price(25.2));
+    };
+
+    std::vector<Order> limit_orders = {
+        Order(Price(25.5), Quantity(1), SELL, OPEN, LIMIT, 555, 1),
+        Order(Price(25.5), Quantity(1), SELL, OPEN, LIMIT, 555, 2),
+    };
+    for (auto& order : limit_orders) {
+        ob.add_order(order);
+    }
+
+    ob.remove_order(1);
 }

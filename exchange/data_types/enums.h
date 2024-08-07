@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <random>
+#include <vector>
 
 #include "scaled_int.h"
 

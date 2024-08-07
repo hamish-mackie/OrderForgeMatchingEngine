@@ -57,3 +57,14 @@ private:
     clock_t timestamp_;
     AccountId acc_id_;
 };
+
+
+struct FindOrderHelper {
+    FindOrderHelper(OrderId order_id, Side side, const Price &price)
+        : order_id(order_id), price(price), side(side) {
+    }
+    OrderId order_id;
+    Price price;
+    Side side;
+};
+

@@ -14,8 +14,8 @@ public:
         , tick_size_(tick_size)
         , levels_(side, tick_size) {}
 
-    void add_order(Order& order);
-    void remove_order(OrderId id);
+    LevelUpdate add_order(Order& order);
+    LevelUpdate remove_order(FindOrderHelper& helper);
     void match_order(TradeProducer& trade_producer);
 
     std::optional<Price> best_price() { return levels_.best_price(); }
@@ -27,22 +27,20 @@ private:
 };
 
 template<typename CompFunc>
-void BookSide<CompFunc>::add_order(Order &order) {
+LevelUpdate BookSide<CompFunc>::add_order(Order &order) {
     LOG_INFO(magic_enum::enum_name(side_), order.log_order());
 
     assert(order.side() == side_);
 
     auto ptr = levels_.get_book_level(order.price());
-    ptr->add_order(order);
-    // receive a limit order
-    // check best price,
-    // if the order is a buy and the price of the order is higher than best price,
-    // we should fill the order
+    return ptr->add_order(order);
 }
 
 template<typename CompFunc>
-void BookSide<CompFunc>::remove_order(OrderId id) {
-
+LevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper& helper) {
+    LOG_INFO(helper.order_id);
+    auto ptr = levels_.get_book_level(helper.price);
+    return ptr->remove_order(helper);
 }
 
 template<typename CompFunc>

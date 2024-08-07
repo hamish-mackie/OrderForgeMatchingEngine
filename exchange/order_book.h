@@ -8,10 +8,11 @@ class OrderBook {
 public:
     using BookSideBid = BookSide<std::greater<>>;
     using BookSideAsk = BookSide<std::less<>>;
+    using OrdersIdMap = std::unordered_map<OrderId, FindOrderHelper>;
 
     using AccountUpdateHandler = std::function<void()>;
     using TradesUpdateHandler = std::function<void(const Trade& trade)>;
-    using OrderBookUpdateHandler = std::function<void()>;
+    using OrderBookUpdateHandler = std::function<void(const LevelUpdate& update)>;
     using LastTradeUpdateHandler = std::function<void()>;
 
     AccountUpdateHandler account_update_handler;
@@ -24,8 +25,11 @@ public:
     void remove_order(OrderId id);
     void match_order(Order& order);
 
+    void add_order_helper(Price price, OrderId order_id, Side side);
+
 private:
-     BookSideBid bids;
-     BookSideAsk asks;
+    BookSideBid bids;
+    BookSideAsk asks;
+    OrdersIdMap orders_id_map_;
 };
 
