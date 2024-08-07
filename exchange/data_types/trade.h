@@ -3,6 +3,19 @@
 #include "enums.h"
 #include "logger/logger.h"
 
+class LastTradeUpdate {
+public:
+    LastTradeUpdate(const Price &price, const Quantity &quantity, Side side)
+        : price_(price),
+          quantity_(quantity),
+          side_(side) {
+    }
+
+    Price price_;
+    Quantity quantity_;
+    Side side_;
+};
+
 class Trade {
 public:
     Trade(const Price &price, const Quantity &qty, Side crossing_side, AccountId passive_account_id,

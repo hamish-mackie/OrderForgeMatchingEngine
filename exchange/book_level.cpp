@@ -8,7 +8,7 @@ LevelUpdate BookLevel::add_order(Order& order) {
 
     order_cont.push_back(order);
     total_qty_ += order.remaining_qty();
-    return {price_, total_qty_};
+    return {price_, total_qty_, side_};
 }
 
 LevelUpdate BookLevel::remove_order(FindOrderHelper& helper) {
@@ -21,12 +21,12 @@ LevelUpdate BookLevel::remove_order(OrderId id) {
     const auto itr = std::ranges::find_if(order_cont, lambda);
     if( itr == order_cont.end()) {
         LOG_WARN(fmt::format("could not find order {}", id));
-        return {price_, total_qty_};
+        return {price_, total_qty_, side_};
     }
 
     total_qty_ -= itr->remaining_qty();
     order_cont.erase(itr);
-    return {price_, total_qty_};
+    return {price_, total_qty_, side_};
 }
 
 LevelUpdate BookLevel::match_order(TradeProducer &trade_producer) {
@@ -43,7 +43,7 @@ LevelUpdate BookLevel::match_order(TradeProducer &trade_producer) {
             remove_order(order->order_id());
         }
     }
-    return {price_, total_qty_};
+    return {price_, total_qty_, side_};
 }
 
 

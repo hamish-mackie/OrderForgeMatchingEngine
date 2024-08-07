@@ -10,15 +10,19 @@ public:
     using BookSideAsk = BookSide<std::less<>>;
     using OrdersIdMap = std::unordered_map<OrderId, FindOrderHelper>;
 
+    // Private feed handlers
+    using OrderUpdateHandler = std::function<void(const Order& order)>;
     using AccountUpdateHandler = std::function<void()>;
     using TradesUpdateHandler = std::function<void(const Trade& trade)>;
-    using OrderBookUpdateHandler = std::function<void(const LevelUpdate& update)>;
-    using LastTradeUpdateHandler = std::function<void()>;
+    OrderUpdateHandler private_order_update_handler;
+    AccountUpdateHandler private_account_update_handler;
+    TradesUpdateHandler private_trades_update_handler;
 
-    AccountUpdateHandler account_update_handler;
-    TradesUpdateHandler trades_update_handler;
-    OrderBookUpdateHandler order_book_update_handler;
-    LastTradeUpdateHandler last_trade_update_handler;
+    // Public feed handlers
+    using OrderBookUpdateHandler = std::function<void(const LevelUpdate& update)>;
+    using LastTradeUpdateHandler = std::function<void(const LastTradeUpdate&& update)>;
+    OrderBookUpdateHandler public_order_book_update_handler;
+    LastTradeUpdateHandler public_last_trade_update_handler;
 
     OrderBook(Price starting_price, Price tick_size);
     void add_order(Order& order);

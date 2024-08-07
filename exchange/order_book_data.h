@@ -14,10 +14,11 @@ public:
     virtual BookLvlPtr add_book_level(const Price& price) = 0;
     virtual void remove_book_level(const Price& price) = 0;
 
+protected:
+    const Side side_;
+
 private:
     virtual void generate_data_structure() = 0;
-    // Needed to determine diretion of sort
-    const Side side_;
     // price range to keep in memory, eg price is 100, range is 20, store ticks from 80-120
     uint32_t range_percent_;
     const Price tick_size_;
@@ -49,7 +50,7 @@ public:
     };
 
     BookLvlPtr add_book_level(const Price& price) override {
-        auto res = book_cont_.emplace(price, new BookLevel(price));
+        auto res = book_cont_.emplace(price, new BookLevel(price, side_));
         return res.first->second;
     };
 

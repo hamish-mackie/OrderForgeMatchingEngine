@@ -3,7 +3,7 @@
 #include "book_level.h"
 
 TEST(BookLevel, match_order) {
-    auto bl = BookLevel(Price(100));
+    auto bl = BookLevel(Price(100), BUY);
 
     std::vector<Order> limit_orders = {
         Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 1),
@@ -25,7 +25,7 @@ TEST(BookLevel, add_order) {
     const Price price(45);
     Quantity qty = Quantity(5);
     const OrderId id = gen_random_order_id();
-    auto bl = BookLevel(price);
+    auto bl = BookLevel(price, BUY);
     auto order = Order(price, qty, BUY, OPEN, LIMIT, 12345, id);
 
     ASSERT_EQ(bl.total_quantity(), Quantity(0));
@@ -43,7 +43,7 @@ TEST(BookLevel, remove_order) {
     const Price price(100);
     Quantity qty = Quantity(5);
     const OrderId id = gen_random_order_id();
-    auto bl = BookLevel(price);
+    auto bl = BookLevel(price, BUY);
     auto order = Order(price, qty, BUY, OPEN, LIMIT, 12345, id);
 
     auto update = bl.add_order(order);
