@@ -54,6 +54,9 @@ void OrderBook::remove_order(OrderId id) {
         } else {
             updates.push_back(asks.remove_order(helper));
         }
+        orders_id_map_.erase(id);
+    } else {
+        LOG_WARN(fmt::format("Could not find order id {}", id));
     }
 
     for(auto update: updates) {
@@ -64,6 +67,8 @@ void OrderBook::remove_order(OrderId id) {
 
 void OrderBook::match_order(Order &order) {
     auto trade_producer = TradeProducer(order);
+
+    // TODO implement last trade report functionality, and book change functionality
     LOG_INFO("OrderBook", trade_producer.log_producer());
     if(order.side() == BUY) {
         asks.match_order(trade_producer);
