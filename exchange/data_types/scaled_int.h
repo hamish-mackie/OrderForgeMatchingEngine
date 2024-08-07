@@ -20,6 +20,8 @@ public:
         return *this;
     }
 
+    void set_value(const double value) { value_ = static_cast<int_type>(value); }
+
     [[nodiscard]] int_type value() const { return value_; }
 
     [[nodiscard]] double descaled_value() const { return static_cast<double>(value_) / Scale; }

@@ -29,9 +29,9 @@ constexpr std::string_view extract_class_name(std::string_view pretty_function) 
 
 #define CLASS_NAME extract_class_name(__PRETTY_FUNCTION__)
 
-#define LOG_INFO(title, message) Logger::Info(CLASS_NAME, title, message)
-#define LOG_WARN(title, message) Logger::Warn(CLASS_NAME, title, message)
-#define LOG_ERROR(title, message) Logger::Error(CLASS_NAME, title, message)
+#define LOG_INFO(...) Logger::Info(CLASS_NAME, __VA_ARGS__)
+#define LOG_WARN(...) Logger::Warn(CLASS_NAME, __VA_ARGS__)
+#define LOG_ERROR(...) Logger::Error(CLASS_NAME, __VA_ARGS__)
 
 class Logger {
 public:
@@ -40,13 +40,28 @@ public:
         fmt::print("[INFO] [{}] [{}]: {}\n", class_name, title, message);
     }
 
-    template<typename T, typename X>
-    static void Warn(T&& title, X&& message) {
-        fmt::print("[WARN] [{}]: {}\n", title, message);
+    template<typename T>
+    static void Info(std::string_view class_name, T&& message) {
+        fmt::print("[INFO] [{}]: {}\n", class_name, message);
     }
 
     template<typename T, typename X>
-    static void Error(T&& title, X&& message) {
-        fmt::print("[ERRO] [{}]: {}\n", title, message);
+    static void Warn(std::string_view class_name, T&& title, X&& message) {
+        fmt::print("[WARN] [{}]: {}\n", class_name, title, message);
+    }
+
+    template<typename T>
+    static void Warn(std::string_view class_name, T&& message) {
+        fmt::print("[Warn] [{}]: {}\n", class_name, message);
+    }
+
+    template<typename T, typename X>
+    static void Error(std::string_view class_name, T&& title, X&& message) {
+        fmt::print("[ERRO] [{}]: {}\n", class_name, title, message);
+    }
+
+    template<typename T>
+    static void Error(std::string_view class_name, T&& message) {
+        fmt::print("[Error] [{}]: {}\n", class_name, message);
     }
 };

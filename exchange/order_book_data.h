@@ -20,7 +20,6 @@ private:
     // price range to keep in memory, eg price is 100, range is 20, store ticks from 80-120
     uint32_t range_percent_;
     const Price tick_size_;
-
 };
 
 // define pure virtual destructor
@@ -53,6 +52,9 @@ public:
     ~OrderBookDataMap() override {
         for(auto r: book_cont_) { delete r.second; }
     };
+
+    typename OrderBookContainer::iterator begin() { return book_cont_.begin(); }
+    typename OrderBookContainer::iterator end() { return book_cont_.end(); }
 
 private:
     void generate_data_structure() override {};

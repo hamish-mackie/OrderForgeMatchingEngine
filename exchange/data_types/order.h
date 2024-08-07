@@ -9,6 +9,7 @@ public:
     Order(Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId order_id)
         : price_(price),
           qty_(qty),
+          remaining_qty_(qty),
           side_(side),
           status_(status),
           type_(type),
@@ -16,14 +17,28 @@ public:
           timestamp_(get_nano_ts()),
           acc_id_(acc_id) { }
 
-    [[nodiscard]] const Price price() const { return price_; }
-    [[nodiscard]] const Quantity qty() const { return qty_; }
+    [[nodiscard]] Price price() { return price_; }
+    [[nodiscard]] Quantity qty() { return qty_; }
+    [[nodiscard]] Quantity remaining_qty() { return remaining_qty_; }
     [[nodiscard]] Side side() const { return side_; }
     [[nodiscard]] OrderStatus status() const { return status_; }
     [[nodiscard]] OrderType type() const { return type_; }
     [[nodiscard]] OrderId order_id() const { return order_id_; }
     [[nodiscard]] clock_t timestamp() const { return timestamp_; }
     [[nodiscard]] uint64_t acc_id() const { return acc_id_; }
+
+    void set_status(OrderStatus status) {
+        status_ = status;
+    }
+
+    Quantity reduce_qty(Quantity& qty) {
+        if(qty > remaining_qty_) {
+            LOG_ERROR("trying to reduce quantity to below 0");
+        } else {
+            remaining_qty_ -= qty;
+        }
+        return remaining_qty_;
+    }
 
     std::string log_order() const {
         return fmt::format("Price: {}, Quantity: {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
@@ -34,6 +49,7 @@ public:
 private:
     Price price_;
     Quantity qty_;
+    Quantity remaining_qty_;
     Side side_;
     OrderStatus status_;
     OrderType type_;

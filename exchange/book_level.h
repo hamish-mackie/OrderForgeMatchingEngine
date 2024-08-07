@@ -8,7 +8,7 @@ public:
     using OrdersCont = std::vector<Order>; // This is probably better with a ringbuffer and map look up for removals
 
     BookLevel(const Price& price): price_(price), total_qty_(0) {}
-    void add_order(const Order& order);
+    void add_order(Order& order);
     void remove_order(OrderId id);
     void match_order(TradeProducer& trade_producer);
 

@@ -1,1 +1,1 @@
-class Trade;
+class Trade {};

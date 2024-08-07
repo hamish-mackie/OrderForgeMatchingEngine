@@ -12,9 +12,26 @@ int main() {
     ob.order_book_update_handler = []() { std::cout << "account update" << std::endl; };
     ob.last_trade_update_handler = []() { std::cout << "account update" << std::endl; };
 
-    auto order = Order(Price(99.3), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id());
-    ob.add_order(order);
-    auto order2 = Order(Price(100.2), Quantity(1), SELL, OPEN, LIMIT, 9999, gen_random_order_id());
-    ob.add_order(order2);
+    std::vector<Order> limit_orders = {
+        Order(Price(99.3), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id()),
+        Order(Price(99.5), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id()),
+        Order(Price(99.7), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id()),
+        Order(Price(100.2), Quantity(1), SELL, OPEN, LIMIT, 9999, gen_random_order_id()),
+        Order(Price(100.4), Quantity(1), SELL, OPEN, LIMIT, 9999, gen_random_order_id()),
+        Order(Price(100.6), Quantity(1), SELL, OPEN, LIMIT, 9999, gen_random_order_id())
+    };
+    for (auto& order : limit_orders) {
+        ob.add_order(order);
+    }
+
+    std::vector<Order> market_orders = {
+        Order(Price(99.5), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id()),
+        Order(Price(100.4), Quantity(2), BUY, OPEN, MARKET, 9999, gen_random_order_id())
+    };
+
+    for (auto& order : market_orders) {
+        ob.add_order(order);
+    }
+
     return 0;
 }

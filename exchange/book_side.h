@@ -14,7 +14,7 @@ public:
         , tick_size_(tick_size)
         , levels_(side, tick_size) {}
 
-    void add_order(const Order& order);
+    void add_order(Order& order);
     void remove_order(OrderId id);
     void match_order(TradeProducer& trade_producer);
 
@@ -25,7 +25,7 @@ private:
 };
 
 template<typename CompFunc>
-void BookSide<CompFunc>::add_order(const Order &order) {
+void BookSide<CompFunc>::add_order(Order &order) {
     LOG_INFO(magic_enum::enum_name(side_), order.log_order());
 
     assert(order.side() == side_);
@@ -45,6 +45,12 @@ void BookSide<CompFunc>::remove_order(OrderId id) {
 
 template<typename CompFunc>
 void BookSide<CompFunc>::match_order(TradeProducer& trade_producer) {
-    assert(order.side != side_);
+    LOG_INFO(magic_enum::enum_name(side_), trade_producer.log_producer());
+
+    for(auto& level: levels_) {
+        if(trade_producer.has_remaining_qty()) {
+            level.second->match_order(trade_producer);
+        }
+    }
 }
 
