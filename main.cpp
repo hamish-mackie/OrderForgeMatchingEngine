@@ -8,7 +8,9 @@ int main() {
     auto tick_size = Price(0.1);
     OrderBook ob(starting_price, tick_size);
     ob.account_update_handler = []() { std::cout << "account update" << std::endl; };
-    ob.trades_update_handler = []() { std::cout << "account update" << std::endl; };
+    ob.trades_update_handler = [](const Trade& trade) {
+        std::cout << trade.log_trade() << std::endl;
+    };
     ob.order_book_update_handler = []() { std::cout << "account update" << std::endl; };
     ob.last_trade_update_handler = []() { std::cout << "account update" << std::endl; };
 

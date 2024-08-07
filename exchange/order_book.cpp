@@ -44,4 +44,10 @@ void OrderBook::match_order(Order &order) {
     } else {
         bids.match_order(trade_producer);
     }
+
+    for(auto& trade: trade_producer.get_trades()) {
+        LOG_INFO(trade.log_trade());
+        trades_update_handler(trade);
+    }
+
 }

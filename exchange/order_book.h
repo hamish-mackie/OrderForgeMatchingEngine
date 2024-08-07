@@ -10,7 +10,7 @@ public:
     using BookSideAsk = BookSide<std::greater<>>;
 
     using AccountUpdateHandler = std::function<void()>;
-    using TradesUpdateHandler = std::function<void()>;
+    using TradesUpdateHandler = std::function<void(const Trade& trade)>;
     using OrderBookUpdateHandler = std::function<void()>;
     using LastTradeUpdateHandler = std::function<void()>;
 

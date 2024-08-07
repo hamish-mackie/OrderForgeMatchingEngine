@@ -25,7 +25,7 @@ public:
     [[nodiscard]] OrderType type() const { return type_; }
     [[nodiscard]] OrderId order_id() const { return order_id_; }
     [[nodiscard]] clock_t timestamp() const { return timestamp_; }
-    [[nodiscard]] uint64_t acc_id() const { return acc_id_; }
+    [[nodiscard]] AccountId acc_id() const { return acc_id_; }
 
     void set_status(OrderStatus status) {
         status_ = status;
@@ -55,5 +55,5 @@ private:
     OrderType type_;
     OrderId order_id_;
     clock_t timestamp_;
-    uint64_t acc_id_;
+    AccountId acc_id_;
 };

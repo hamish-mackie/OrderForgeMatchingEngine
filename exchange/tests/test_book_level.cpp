@@ -6,22 +6,20 @@ TEST(BookLevel, match_order) {
     auto bl = BookLevel(Price(100));
 
     std::vector<Order> limit_orders = {
-        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id()),
-        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id()),
-        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id()),
+        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 1),
+        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 2),
+        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 3),
     };
     for (auto& order : limit_orders) {
         bl.add_order(order);
     }
 
-    std::vector<Order> market_orders = {
-        Order(Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id()),
-    };
+    auto market_order = Order(Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id());
+    auto trade_producer = TradeProducer(market_order);
+    bl.match_order(trade_producer);
 
-    for (auto& order : market_orders) {
-        TradeProducer trade_producer = TradeProducer(order);
-        bl.match_order(trade_producer);
-    }
+
+    ASSERT_EQ(trade_producer.get_modified_orders_().size(), 2);
 }
 
 TEST(BookLevel, add_order) {

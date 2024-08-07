@@ -1,11 +1,10 @@
 #include "book_level.h"
 
 void BookLevel::add_order(Order& order) {
-    if(order.price() != price_) {
-        LOG_WARN("price is not correct", ' ');
-    }
-
     LOG_INFO(price_.descaled_value(), order.log_order());
+
+    if(order.price() != price_) { LOG_WARN("price is not correct"); }
+
     order_cont.push_back(order);
     total_qty_ += order.qty();
 }
@@ -29,9 +28,7 @@ void BookLevel::match_order(TradeProducer &trade_producer) {
             trade_producer.match_order(order);
     }
 
-    auto orders = trade_producer.get_orders();
-
-    for(auto order: orders) {
+    for(const auto* order: trade_producer.get_modified_orders_()) {
         if(order->status() == FILLED) {
             remove_order(order->order_id());
         }

@@ -12,7 +12,8 @@ TEST(TradeProducer, test_matching_same_size) {
     ASSERT_EQ(trade_producer.remaining_qty().descaled_value(), 0);
     ASSERT_EQ(limit.status(), FILLED);
     ASSERT_EQ(limit.remaining_qty().descaled_value(), 0);
-    ASSERT_EQ(trade_producer.get_orders().size(), 1);
+    ASSERT_EQ(trade_producer.get_modified_orders_().size(), 1);
+    ASSERT_EQ(market.status(), FILLED);
 }
 
 TEST(TradeProducer, test_matching_limit_greater) {
@@ -25,7 +26,8 @@ TEST(TradeProducer, test_matching_limit_greater) {
     ASSERT_EQ(trade_producer.remaining_qty().descaled_value(), 0);
     ASSERT_EQ(limit.status(), PARTIAL);
     ASSERT_EQ(limit.remaining_qty().descaled_value(), 1);
-    ASSERT_EQ(trade_producer.get_orders().size(), 1);
+    ASSERT_EQ(trade_producer.get_modified_orders_().size(), 1);
+    ASSERT_EQ(market.status(), FILLED);
 }
 
 TEST(TradeProducer, test_matching_limit_less) {
@@ -38,5 +40,6 @@ TEST(TradeProducer, test_matching_limit_less) {
     ASSERT_EQ(trade_producer.remaining_qty().descaled_value(), 1);
     ASSERT_EQ(limit.status(), FILLED);
     ASSERT_EQ(limit.remaining_qty().descaled_value(), 0);
-    ASSERT_EQ(trade_producer.get_orders().size(), 1);
+    ASSERT_EQ(trade_producer.get_modified_orders_().size(), 1);
+    ASSERT_EQ(market.status(), PARTIAL);
 }

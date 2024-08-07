@@ -1,4 +1,4 @@
-#include "test_scaled_int.cpp"
+#include <gtest/gtest.h>
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
