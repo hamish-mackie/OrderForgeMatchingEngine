@@ -11,6 +11,10 @@ public:
           side_(side) {
     }
 
+    [[nodiscard]] const Price & price() const { return price_; }
+    [[nodiscard]] const Quantity & quantity() const { return quantity_; }
+    [[nodiscard]] Side side() const { return side_; }
+
     Price price_;
     Quantity quantity_;
     Side side_;
