@@ -12,6 +12,7 @@ public:
     virtual std::optional<Price> best_price() = 0;
     virtual BookLvlPtr get_book_level(const Price& price) = 0;
     virtual BookLvlPtr add_book_level(const Price& price) = 0;
+    virtual void remove_book_level(const Price& price) = 0;
 
 private:
     virtual void generate_data_structure() = 0;
@@ -51,6 +52,10 @@ public:
         auto res = book_cont_.emplace(price, new BookLevel(price));
         return res.first->second;
     };
+
+    void remove_book_level(const Price& price) override {
+        auto res = book_cont_.erase(price);
+    }
 
     ~OrderBookDataMap() override {
         for(auto r: book_cont_) { delete r.second; }

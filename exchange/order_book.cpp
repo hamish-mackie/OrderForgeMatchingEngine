@@ -6,7 +6,7 @@ OrderBook::OrderBook(Price starting_price, Price tick_size)
 }
 
 void OrderBook::add_order(Order &order) {
-    LOG_INFO("OrderBook", order.log_order());
+    LOG_INFO("{}", order.log_order());
 
     std::vector<LevelUpdate> updates;
 
@@ -39,12 +39,12 @@ void OrderBook::add_order(Order &order) {
     }
 
     for(auto update: updates) {
-        LOG_INFO(update.log_level_update());
+        LOG_INFO("{}", update.log_level_update());
     }
 }
 
 void OrderBook::remove_order(OrderId id) {
-    LOG_INFO(id);
+    LOG_INFO("{}", id);
     std::vector<LevelUpdate> updates;
     auto it = orders_id_map_.find(id);
     if(it != orders_id_map_.end()) {
@@ -60,25 +60,30 @@ void OrderBook::remove_order(OrderId id) {
     }
 
     for(auto update: updates) {
-        LOG_INFO(update.log_level_update());
+        LOG_INFO("{}", update.log_level_update());
         order_book_update_handler(update);
     }
 }
 
 void OrderBook::match_order(Order &order) {
     auto trade_producer = TradeProducer(order);
-
+    std::vector<LevelUpdate> updates;
     // TODO implement last trade report functionality, and book change functionality
-    LOG_INFO("OrderBook", trade_producer.log_producer());
+    LOG_INFO("{}", trade_producer.log_producer());
     if(order.side() == BUY) {
-        asks.match_order(trade_producer);
+        updates = asks.match_order(trade_producer);
     } else {
-        bids.match_order(trade_producer);
+        updates = bids.match_order(trade_producer);
     }
 
     for(auto& trade: trade_producer.get_trades()) {
-        LOG_INFO(trade.log_trade());
+        LOG_INFO("{}", trade.log_trade());
         trades_update_handler(trade);
+    }
+
+    for(auto& update: updates) {
+        LOG_INFO("{}", update.log_level_update());
+        order_book_update_handler(update);
     }
 }
 

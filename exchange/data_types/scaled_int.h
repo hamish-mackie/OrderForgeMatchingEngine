@@ -1,7 +1,7 @@
 #pragma once
 
-#include <iostream>
 #include <cstdint>
+
 
 template<typename T, uint64_t Scale>
 class ScaledInt {
@@ -17,6 +17,9 @@ public:
     ScaledInt(const ScaledInt& other): value_(other.value_) {}
 
     ScaledInt& operator=(const ScaledInt& other) {
+        if(this->value_ != other.value_) {
+            this->value_ = other.value_;
+        }
         return *this;
     }
 

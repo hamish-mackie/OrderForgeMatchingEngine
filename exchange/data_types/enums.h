@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <random>
 #include <vector>
+#include <magic_enum.hpp>
 
 #include "scaled_int.h"
 

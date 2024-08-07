@@ -31,7 +31,7 @@ TEST(BookLevel, add_order) {
     ASSERT_EQ(bl.total_quantity(), Quantity(0));
     ASSERT_EQ(bl.size(), 0);
     auto update = bl.add_order(order);
-    LOG_INFO(update.log_level_update());
+    LOG_INFO("{}", update.log_level_update());
 
     ASSERT_EQ(update.price, price);
     ASSERT_EQ(update.total_quantity, Quantity(5));

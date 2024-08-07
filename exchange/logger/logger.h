@@ -1,67 +1,72 @@
 #pragma once
-#include <magic_enum.hpp>
 #include <fmt/core.h>
-#include <string>
 
 #include <string_view>
 
-constexpr std::string_view extract_class_name(std::string_view pretty_function) {
-
-    int prefix = 0;
-    for(int i = 0; i < pretty_function.size(); ++i) {
-        if(pretty_function[i] == ' ') {
-            prefix = i + 1;
-            break;
-        }
-    }
-
-    int suffix = 0;
-    for(int i = pretty_function.size(); i > -1; --i) {
-        if(pretty_function[i] == '(') {
-            suffix =  pretty_function.size() - i;
-            break;
-        }
-    }
-    pretty_function.remove_prefix(prefix);
-    pretty_function.remove_suffix(suffix);
-    return pretty_function;
+template <std::size_t...Idxs>
+constexpr auto substring_as_array(std::string_view str, std::index_sequence<Idxs...>)
+{
+    return std::array{str[Idxs]...};
 }
 
-#define CLASS_NAME extract_class_name(__PRETTY_FUNCTION__)
+template <typename T>
+constexpr auto type_name_array()
+{
+#if defined(__clang__)
+    constexpr auto prefix   = std::string_view{"[T = "};
+    constexpr auto suffix   = std::string_view{"]"};
+    constexpr auto function = std::string_view{__PRETTY_FUNCTION__};
+#elif defined(__GNUC__)
+    constexpr auto prefix   = std::string_view{"with T = "};
+    constexpr auto suffix   = std::string_view{"&]"};
+    constexpr auto function = std::string_view{__PRETTY_FUNCTION__};
+#elif defined(_MSC_VER)
+    constexpr auto prefix   = std::string_view{"type_name_array<"};
+    constexpr auto suffix   = std::string_view{">(void)"};
+    constexpr auto function = std::string_view{__FUNCSIG__};
+#else
+# error Unsupported compiler
+#endif
 
-#define LOG_INFO(...) Logger::Info(CLASS_NAME, __VA_ARGS__)
-#define LOG_WARN(...) Logger::Warn(CLASS_NAME, __VA_ARGS__)
-#define LOG_ERROR(...) Logger::Error(CLASS_NAME, __VA_ARGS__)
+    constexpr auto start = function.find(prefix) + prefix.size();
+    constexpr auto end = function.find_first_of("(<&[", start);
+
+    static_assert(start < end);
+
+    constexpr auto name = function.substr(start, (end - start));
+    return substring_as_array(name, std::make_index_sequence<name.size()>{});
+}
+
+template <typename T>
+struct type_name_holder {
+    static inline constexpr auto value = type_name_array<T>();
+};
+
+template <typename T>
+constexpr auto type_name() -> std::string_view
+{
+    constexpr auto& value = type_name_holder<T>::value;
+    return std::string_view{value.data(), value.size()};
+}
+
+#define LOG_INFO(format_str, ...) Logger::Info(type_name<decltype(*this)>(), __FUNCTION__, format_str, ##__VA_ARGS__)
+#define LOG_WARN(format_str, ...) Logger::Warn(type_name<decltype(*this)>(), __FUNCTION__, format_str, ##__VA_ARGS__)
+#define LOG_ERROR(format_str, ...) Logger::Error(type_name<decltype(*this)>(), __FUNCTION__, format_str, ##__VA_ARGS__)
 
 class Logger {
 public:
-    template<typename T, typename X>
-    static void Info(std::string_view class_name, T&& title, X&& message) {
-        fmt::print("[INFO] [{}] [{}]: {}\n", class_name, title, message);
+    template<typename ... Args>
+    static void Info(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
+        fmt::print("[INFO] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
     }
 
-    template<typename T>
-    static void Info(std::string_view class_name, T&& message) {
-        fmt::print("[INFO] [{}]: {}\n", class_name, message);
+    template<typename ... Args>
+    static void Warn(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
+        fmt::print("[WARN] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
     }
 
-    template<typename T, typename X>
-    static void Warn(std::string_view class_name, T&& title, X&& message) {
-        fmt::print("[WARN] [{}]: {}\n", class_name, title, message);
-    }
-
-    template<typename T>
-    static void Warn(std::string_view class_name, T&& message) {
-        fmt::print("[Warn] [{}]: {}\n", class_name, message);
-    }
-
-    template<typename T, typename X>
-    static void Error(std::string_view class_name, T&& title, X&& message) {
-        fmt::print("[ERRO] [{}]: {}\n", class_name, title, message);
-    }
-
-    template<typename T>
-    static void Error(std::string_view class_name, T&& message) {
-        fmt::print("[Error] [{}]: {}\n", class_name, message);
+    template<typename ... Args>
+    static void Error(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
+        fmt::print("[ERROR] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
     }
 };

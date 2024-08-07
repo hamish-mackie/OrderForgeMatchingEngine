@@ -15,14 +15,14 @@ FetchContent_MakeAvailable(googletest)
 FetchContent_Declare(
         fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG 8.1.1 # Replace with the latest tag or version you want to use
+        GIT_TAG 11.0.2
 )
 FetchContent_MakeAvailable(fmt)
 
 FetchContent_Declare(
         magic_enum
         GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
-        GIT_TAG v0.8.0  # Replace with the latest tag or version you want to use
+        GIT_TAG v0.9.6
 )
 FetchContent_MakeAvailable(magic_enum)
 

@@ -20,7 +20,7 @@ public:
     LevelUpdate add_order(Order& order);
     LevelUpdate remove_order(FindOrderHelper& helper);
     LevelUpdate remove_order(OrderId id);
-    void match_order(TradeProducer& trade_producer);
+    LevelUpdate match_order(TradeProducer& trade_producer);
 
     Quantity total_quantity() { return total_qty_; }
     size_t size() const { return order_cont.size(); }

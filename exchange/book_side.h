@@ -16,7 +16,7 @@ public:
 
     LevelUpdate add_order(Order& order);
     LevelUpdate remove_order(FindOrderHelper& helper);
-    void match_order(TradeProducer& trade_producer);
+    std::vector<LevelUpdate> match_order(TradeProducer& trade_producer);
 
     std::optional<Price> best_price() { return levels_.best_price(); }
 
@@ -28,7 +28,7 @@ private:
 
 template<typename CompFunc>
 LevelUpdate BookSide<CompFunc>::add_order(Order &order) {
-    LOG_INFO(magic_enum::enum_name(side_), order.log_order());
+    LOG_INFO("{}", order.log_order());
 
     assert(order.side() == side_);
 
@@ -38,19 +38,33 @@ LevelUpdate BookSide<CompFunc>::add_order(Order &order) {
 
 template<typename CompFunc>
 LevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper& helper) {
-    LOG_INFO(helper.order_id);
+    LOG_INFO("{}", helper.order_id);
     auto ptr = levels_.get_book_level(helper.price);
-    return ptr->remove_order(helper);
+    auto update = ptr->remove_order(helper);
+    if(update.total_quantity.value() == 0) {
+        levels_.remove_book_level(update.price);
+    }
+    return update;
 }
 
 template<typename CompFunc>
-void BookSide<CompFunc>::match_order(TradeProducer& trade_producer) {
-    LOG_INFO(magic_enum::enum_name(side_), trade_producer.log_producer());
-
+std::vector<LevelUpdate> BookSide<CompFunc>::match_order(TradeProducer& trade_producer) {
+    LOG_INFO("{}", trade_producer.log_producer());
+    // TODO need to adjust best price to be correct
+    // its best price is not being deleted
+    std::vector<LevelUpdate> updates;
     for(auto& level: levels_) {
         if(trade_producer.has_remaining_qty()) {
-            level.second->match_order(trade_producer);
+            updates.push_back(level.second->match_order(trade_producer));
         }
     }
+
+    for(auto& update: updates) {
+        if(update.total_quantity.value() == 0) {
+            levels_.remove_book_level(update.price);
+        }
+    }
+
+    return updates;
 }
 

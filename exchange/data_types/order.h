@@ -19,6 +19,7 @@ public:
 
     [[nodiscard]] Price price() { return price_; }
     [[nodiscard]] Quantity qty() { return qty_; }
+    [[nodiscard]] Quantity& remaining_qty_ref() { return remaining_qty_; }
     [[nodiscard]] Quantity remaining_qty() { return remaining_qty_; }
     [[nodiscard]] Side side() const { return side_; }
     [[nodiscard]] OrderStatus status() const { return status_; }
@@ -33,16 +34,18 @@ public:
 
     Quantity reduce_qty(Quantity& qty) {
         if(qty > remaining_qty_) {
-            LOG_ERROR("trying to reduce quantity to below 0");
+            LOG_ERROR("trying to reduce quantity to below 0", nullptr);
         } else {
             remaining_qty_ -= qty;
         }
         return remaining_qty_;
     }
 
+   void set_qty(Quantity qty) { remaining_qty_ = qty; }
+
     std::string log_order() const {
-        return fmt::format("Price: {}, Quantity: {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
-                  price_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(side_),
+        return fmt::format("Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
+                  price_.descaled_value(), remaining_qty_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(side_),
                   magic_enum::enum_name(status_), magic_enum::enum_name(type_), acc_id_, order_id_, timestamp_);
     }
 
