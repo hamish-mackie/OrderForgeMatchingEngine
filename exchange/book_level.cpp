@@ -30,7 +30,7 @@ LevelUpdate BookLevel::remove_order(OrderId id) {
         total_qty_ -= res->remaining_qty();
         order_cont.remove(id);
     } else {
-        LOG_WARN("Order not present in map: {}", order.log_order());
+        LOG_WARN("Order not present in map: {}", id);
     }
 
     return {price_, total_qty_, side_};

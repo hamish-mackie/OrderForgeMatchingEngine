@@ -66,7 +66,7 @@ constexpr auto type_name() -> std::string_view
     constexpr auto& value = type_name_holder<T>::value;
     return std::string_view{value.data(), value.size()};
 }
-#define DISABLE_LOGGING
+// #define DISABLE_LOGGING
 
 #ifdef DISABLE_LOGGING
 #define LOG_INFO(format_str, ...)
