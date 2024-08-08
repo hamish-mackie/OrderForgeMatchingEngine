@@ -75,6 +75,17 @@ public:
         }
     }
 
+    HashLinkedList(HashLinkedList&) = delete;
+    HashLinkedList& operator=(HashLinkedList&) = delete;
+    HashLinkedList(HashLinkedList&&) = delete;
+    HashLinkedList& operator=(HashLinkedList&&) = delete;
+
+    ~HashLinkedList() {
+        while(front_) {
+            pop_front();
+        }
+    }
+
 private:
     NodeTypePtr front_{nullptr};
     NodeTypePtr back_{nullptr};

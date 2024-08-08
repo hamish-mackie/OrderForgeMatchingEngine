@@ -131,3 +131,13 @@ TEST_F(TestHashedLinkedList, contains) {
     ASSERT_FALSE(ds.contains(Brian));
 }
 
+TEST_F(TestHashedLinkedList, destructor) {
+    auto ds_ptr = new HashLinkedList<Name, Person>();
+    ds_ptr->push(Geoff, GeoffData);
+    ds_ptr->push(Rodney, RodneyData);
+    ds_ptr->~HashLinkedList<Name, Person>();
+    ASSERT_TRUE(ds_ptr->empty());
+    ASSERT_FALSE(ds_ptr->contains(Geoff));
+}
+
+
