@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "order_book.h"
 
-// Function to generate a price closer to 100
+
 double generate_price(std::default_random_engine &generator, std::normal_distribution<double> &distribution) {
     double price;
     do {
@@ -14,75 +14,75 @@ double generate_price(std::default_random_engine &generator, std::normal_distrib
     return price;
 }
 
-void benchmark_order_book() {
+OrderBook generate_order_book() {
     Price start_price = Price(100);
     Price tick_size = Price(0.01);
-    OrderBook ob(start_price, tick_size);
+    return OrderBook(start_price, tick_size);
+}
 
-
-    int num_orders = 100000;
+std::vector<Order> generate_orders(int num_orders) {
     std::vector<Order> orders;
-
     std::default_random_engine generator;
-    std::normal_distribution<double> distribution(100.0, 3.0); // Normal distribution centered at 100
+    std::normal_distribution<double> distribution(100.0, 3.0);
 
-    // Generate buy orders with prices between 90-99.99
-    for (int i = 0; i < num_orders / 2; ++i) {
+    int market_order_count = num_orders * 0.1;
+    int limit_order_count = num_orders - market_order_count;
+
+    for (int i = 0; i < limit_order_count / 2; ++i) {
         double price = generate_price(generator, distribution);
-        if (price > 99.99) price = 99.99; // Cap buy prices at 99.99
+        if (price > 99.99) price = 99.99;
         orders.emplace_back(Price(price), Quantity(1), BUY, OPEN, LIMIT, i, i);
     }
 
-    // Generate sell orders with prices between 100-110
-    for (int i = 0; i < num_orders / 2; ++i) {
+    for (int i = 0; i < limit_order_count / 2; ++i) {
         double price = generate_price(generator, distribution);
-        if (price < 100) price = 100; // Floor sell prices at 100
-        orders.emplace_back(Price(price), Quantity(1), SELL, OPEN, LIMIT, num_orders / 2 + i, num_orders / 2 + i);
+        if (price < 100) price = 100;
+        orders.emplace_back(Price(price), Quantity(1), SELL, OPEN, LIMIT, limit_order_count / 2 + i, limit_order_count / 2 + i);
     }
 
-    // Shuffle the orders to mix buys and sells
+    for (int i = 0; i < market_order_count / 2; ++i) {
+        orders.emplace_back(Price(110), Quantity(1), BUY, OPEN, MARKET, limit_order_count + i, limit_order_count + i);
+    }
+    for (int i = 0; i < market_order_count / 2; ++i) {
+        orders.emplace_back(Price(90), Quantity(1), SELL, OPEN, MARKET, limit_order_count + market_order_count / 2 + i, limit_order_count + market_order_count / 2 + i);
+    }
+
+    // Shuffle the orders to mix buys, sells, and market orders
     std::shuffle(orders.begin(), orders.end(), generator);
 
-    // Benchmark inserting and removing 100,000 orders
+    return orders;
+}
+
+std::chrono::duration<double> benchmark_market_orders(OrderBook&& ob, std::vector<Order>& orders) {
     auto start = std::chrono::high_resolution_clock::now();
 
     for (auto &order : orders) {
         ob.add_order(order);
     }
 
-    for (auto &order : orders) {
+    for (const auto &order : orders) {
         ob.remove_order(order.order_id());
     }
 
     auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
-    std::cout << "Time to insert and remove 100,000 orders: " << duration.count() << " seconds" << std::endl;
+    return end - start;
+}
 
-    // Benchmark inserting and removing orders with market orders crossing the book
-    start = std::chrono::high_resolution_clock::now();
+void benchmark_order_book(uint64_t num_orders) {
+    auto orders = generate_orders(num_orders);
 
-    for (auto &order : orders) {
-        ob.add_order(order);
-    }
+    auto duration_market_orders = benchmark_market_orders(generate_order_book(), orders);
 
-    // Add some market orders that cross the book
-    for (int i = 0; i < 10; ++i) {
-        Order market_buy(Price(110), Quantity(10), BUY, OPEN, MARKET, num_orders + i, num_orders + i);
-        Order market_sell(Price(90), Quantity(10), SELL, OPEN, MARKET, num_orders + i + 10, num_orders + i + 10);
-        ob.add_order(market_buy);
-        ob.add_order(market_sell);
-    }
+    double market_ops_per_sec = num_orders / duration_market_orders.count();
 
-    for (auto &order : orders) {
-        ob.remove_order(order.order_id());
-    }
-
-    end = std::chrono::high_resolution_clock::now();
-    duration = end - start;
-    std::cout << "Time to insert and remove orders with market orders crossing the book: " << duration.count() << " seconds" << std::endl;
+    fmt::print("Time to insert and remove {} orders with market orders crossing the book: {:.6f} seconds ({:.2f} orders/second)\n",
+               fmt::group_digits(orders.size()), duration_market_orders.count(), market_ops_per_sec);
 }
 
 int main() {
-    benchmark_order_book();
+    std::vector<u_int64_t> num_orders = { 50000, 100000, 500000 };
+    for(auto& n: num_orders) {
+        benchmark_order_book(n);
+    }
     return 0;
 }

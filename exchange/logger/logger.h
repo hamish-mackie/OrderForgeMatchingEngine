@@ -3,6 +3,24 @@
 
 #include <string_view>
 
+class Logger {
+public:
+    template<typename ... Args>
+    static void Info(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
+        fmt::print("[INFO] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
+    }
+
+    template<typename ... Args>
+    static void Warn(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
+        fmt::print("[WARN] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
+    }
+
+    template<typename ... Args>
+    static void Error(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
+        fmt::print("[ERROR] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
+    }
+};
+
 template <std::size_t...Idxs>
 constexpr auto substring_as_array(std::string_view str, std::index_sequence<Idxs...>)
 {
@@ -48,25 +66,14 @@ constexpr auto type_name() -> std::string_view
     constexpr auto& value = type_name_holder<T>::value;
     return std::string_view{value.data(), value.size()};
 }
+// #define DISABLE_LOGGING
 
+#ifdef DISABLE_LOGGING
+#define LOG_INFO(format_str, ...)
+#define LOG_WARN(format_str, ...)
+#define LOG_ERROR(format_str, ...)
+#else
 #define LOG_INFO(format_str, ...) Logger::Info(type_name<decltype(*this)>(), __FUNCTION__, format_str, ##__VA_ARGS__)
 #define LOG_WARN(format_str, ...) Logger::Warn(type_name<decltype(*this)>(), __FUNCTION__, format_str, ##__VA_ARGS__)
 #define LOG_ERROR(format_str, ...) Logger::Error(type_name<decltype(*this)>(), __FUNCTION__, format_str, ##__VA_ARGS__)
-
-class Logger {
-public:
-    template<typename ... Args>
-    static void Info(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
-        fmt::print("[INFO] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
-    }
-
-    template<typename ... Args>
-    static void Warn(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
-        fmt::print("[WARN] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
-    }
-
-    template<typename ... Args>
-    static void Error(std::string_view type_name, const char * func, std::string_view format_str, Args&&... args) {
-        fmt::print("[ERROR] [{}::{}] {}\n", type_name, func, fmt::vformat(format_str, fmt::make_format_args(args...)));
-    }
-};
+#endif
