@@ -2,8 +2,25 @@
 
 // This result is the first run, I've used a release build and turned logging off, nothing has really been optimised.
 // The results were very bad with logging turned on.
-// We can also see that as we hold more data in our orderbook, the process time gets considerably worse.
+// We can also see that as we hold more data in our order book, the process time gets considerably worse.
 
 Time to insert and remove 50,000 orders with market orders crossing the book: 0.219833 seconds (227445.67 orders/second)
 Time to insert and remove 100,000 orders with market orders crossing the book: 0.876737 seconds (114059.30 orders/second)
 Time to insert and remove 500,000 orders with market orders crossing the book: 21.846674 seconds (22886.78 orders/second)
+
+// I noticed that the thing that was taking the time was removing orders, and iterating the vector.
+// I've changed the data structure of the order book level to a vector<orderid, Order*> and got significant speed ups.
+// Despite having to copy and allocate a new pointer on the heap, its much faster to iterate the vector of smaller objects,
+// When the vector needs to reallocate, it also won't have to copy as much.
+// This gives me an idea, Since we need to allocate each time anyway, We may as well use a map.
+
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.094536 seconds (528900.27 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.331053 seconds (302066.67 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 7.511813 seconds (66561.83 orders/second)
+
+// Getting faster...
+// Changed the book level data structure into a hashed linked list...
+
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.034224 seconds (1460975.06 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.101978 seconds (980601.95 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 0.920041 seconds (543454.25 orders/second)

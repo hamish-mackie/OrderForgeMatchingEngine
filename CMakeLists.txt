@@ -26,6 +26,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(magic_enum)
 
+FetchContent_Declare(
+        tracy
+        GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+        GIT_TAG v0.11.0
+)
+FetchContent_MakeAvailable(tracy)
+
 enable_testing()
 
 add_subdirectory(exchange)

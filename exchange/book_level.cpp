@@ -3,10 +3,16 @@
 #include <order_book.h>
 
 LevelUpdate BookLevel::add_order(Order& order) {
+    ZoneScopedN("level_add_order");
     LOG_INFO("{}", order.log_order());
     if(order.price() != price_) { LOG_WARN("price is not correct"); }
 
-    order_cont.push_back(order);
+    if(order_cont.contains(order.order_id())) {
+        LOG_WARN("Order already present in map: {}", order.log_order());
+        return {price_, total_qty_, side_};
+    }
+
+    order_cont.push(order.order_id(), order);
     total_qty_ += order.remaining_qty();
     return {price_, total_qty_, side_};
 }
@@ -16,25 +22,27 @@ LevelUpdate BookLevel::remove_order(FindOrderHelper& helper) {
 }
 
 LevelUpdate BookLevel::remove_order(OrderId id) {
+    ZoneScopedN("level_remove_order");
     LOG_INFO("{}", id);
-    auto lambda = [&](const Order& itr) { return itr.order_id() == id; };
-    const auto itr = std::ranges::find_if(order_cont, lambda);
-    if( itr == order_cont.end()) {
-        LOG_WARN(fmt::format("could not find order {}", id));
-        return {price_, total_qty_, side_};
+
+    auto res = order_cont.find(id);
+    if(res) {
+        total_qty_ -= res->remaining_qty();
+        order_cont.remove(id);
+    } else {
+        LOG_WARN("Order not present in map: {}", order.log_order());
     }
 
-    total_qty_ -= itr->remaining_qty();
-    order_cont.erase(itr);
     return {price_, total_qty_, side_};
 }
 
 LevelUpdate BookLevel::match_order(TradeProducer &trade_producer) {
+    ZoneScopedN("level_match_order");
     LOG_INFO("{}", trade_producer.log_producer());
 
     for(auto& order: order_cont) {
         if(trade_producer.has_remaining_qty()) {
-            total_qty_ -= trade_producer.match_order(order);
+            total_qty_ -= trade_producer.match_order(order.item);
         }
     }
 

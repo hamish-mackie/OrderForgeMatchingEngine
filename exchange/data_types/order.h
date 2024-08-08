@@ -25,6 +25,7 @@ public:
     [[nodiscard]] OrderStatus status() const { return status_; }
     [[nodiscard]] OrderType type() const { return type_; }
     [[nodiscard]] OrderId order_id() const { return order_id_; }
+    [[nodiscard]] OrderId& order_id() { return order_id_; }
     [[nodiscard]] clock_t timestamp() const { return timestamp_; }
     [[nodiscard]] AccountId acc_id() const { return acc_id_; }
 

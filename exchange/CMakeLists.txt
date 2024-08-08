@@ -17,6 +17,7 @@ add_subdirectory(data_types)
 target_link_libraries(exchange PUBLIC
         fmt::fmt
         magic_enum
+        TracyClient
         logger
         data_types
 )

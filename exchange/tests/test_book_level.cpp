@@ -2,6 +2,24 @@
 
 #include "book_level.h"
 
+class BookLevelTest : public ::testing::Test {
+public:
+    void SetUp() override {
+
+    }
+
+private:
+    Price bid_price_{50};
+    Price ask_price_{100};
+    BookLevel book_level_bid_{bid_price_, BUY};
+    BookLevel book_level_ask_{ask_price_, SELL};
+    std::vector<LevelUpdate> level_updates_;
+};
+
+TEST_F(BookLevelTest, test_trades_match_in_correct_order) {
+
+}
+
 TEST(BookLevel, match_order) {
     auto bl = BookLevel(Price(100), BUY);
 

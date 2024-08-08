@@ -1,7 +1,11 @@
 #pragma once
 
+#include <map>
+#include <tracy/Tracy.hpp>
+
 #include "order.h"
 #include "trade_producer.h"
+#include "hashed-linked-list.h"
 
 struct LevelUpdate {
     LevelUpdate(const Price &price, const Quantity &total_quantity, Side side)
@@ -22,7 +26,7 @@ struct LevelUpdate {
 
 class BookLevel {
 public:
-    using OrdersCont = std::vector<Order>; // This is probably better with a ringbuffer and map look up for removals
+    using OrdersCont = HashLinkedList<OrderId, Order>;
 
     explicit BookLevel(const Price& price, Side side): price_(price), total_qty_(0), side_(side) {}
     LevelUpdate add_order(Order& order);

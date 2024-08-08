@@ -28,6 +28,7 @@ private:
 
 template<typename CompFunc>
 LevelUpdate BookSide<CompFunc>::add_order(Order &order) {
+    ZoneScopedN("add");
     LOG_INFO("{}", order.log_order());
 
     assert(order.side() == side_);
