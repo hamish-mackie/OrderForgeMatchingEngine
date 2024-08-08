@@ -53,7 +53,6 @@ void OrderBook::add_order(Order &order) {
 }
 
 void OrderBook::remove_order(OrderId id) {
-    ZoneScopedN("remove");
     LOG_INFO("{}", id);
     std::vector<LevelUpdate> updates;
     auto it = orders_id_map_.find(id);
@@ -78,7 +77,6 @@ void OrderBook::remove_order(OrderId id) {
 }
 
 void OrderBook::match_order(Order &order) {
-    ZoneScopedN("match");
     auto trade_producer = TradeProducer(order);
     std::vector<LevelUpdate> updates;
     // TODO implement last trade report functionality, and book change functionality
