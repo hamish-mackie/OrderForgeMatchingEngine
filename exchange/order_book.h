@@ -24,7 +24,7 @@ public:
     OrderBookUpdateHandler public_order_book_update_handler;
     LastTradeUpdateHandler public_last_trade_update_handler;
 
-    OrderBook(Price starting_price, Price tick_size);
+    OrderBook(Price starting_price, TickSize tick_size);
     void add_order(Order& order);
     void remove_order(OrderId id);
     void match_order(Order& order);

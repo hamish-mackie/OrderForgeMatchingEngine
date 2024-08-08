@@ -1,6 +1,6 @@
 #include "order_book.h"
 
-OrderBook::OrderBook(Price starting_price, Price tick_size)
+OrderBook::OrderBook(Price starting_price, TickSize tick_size)
     : bids(BookSideBid(BUY, tick_size))
     , asks(BookSideAsk(SELL, tick_size)) {
 }

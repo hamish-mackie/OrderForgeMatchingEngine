@@ -22,7 +22,7 @@ public:
 
 private:
     Side side_;
-    Price tick_size_;
+    TickSize tick_size_;
     LevelsCont levels_;
 };
 

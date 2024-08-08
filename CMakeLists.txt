@@ -3,7 +3,7 @@ project(Exchange)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(Exchange main.cpp)
+add_executable(demo_run main.cpp)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -36,5 +36,5 @@ FetchContent_MakeAvailable(tracy)
 enable_testing()
 
 add_subdirectory(exchange)
-target_link_libraries(Exchange PUBLIC exchange)
+target_link_libraries(demo_run PUBLIC exchange)
 add_subdirectory(benchmarking)

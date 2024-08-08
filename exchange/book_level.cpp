@@ -23,7 +23,7 @@ LevelUpdate BookLevel::remove_order(FindOrderHelper& helper) {
 
 LevelUpdate BookLevel::remove_order(OrderId id) {
     ZoneScopedN("level_remove_order");
-    LOG_INFO("{}", id);
+    LOG_INFO("Remove Id: {}", id);
 
     auto res = order_cont.find(id);
     if(res) {

@@ -6,7 +6,7 @@ class OrderBookDataInterface {
 public:
     using BookLvlPtr = BookLevel*;
 
-    OrderBookDataInterface(Side side, Price tick_size): side_(side), tick_size_(tick_size) {}
+    OrderBookDataInterface(Side side, TickSize tick_size): side_(side), tick_size_(tick_size) {}
     virtual ~OrderBookDataInterface() = 0;
 
     virtual std::optional<Price> best_price() = 0;
@@ -21,7 +21,7 @@ private:
     virtual void generate_data_structure() = 0;
     // price range to keep in memory, eg price is 100, range is 20, store ticks from 80-120
     uint32_t range_percent_;
-    const Price tick_size_;
+    const TickSize tick_size_;
 };
 
 // define pure virtual destructor
@@ -32,7 +32,7 @@ class OrderBookDataMap: public OrderBookDataInterface  {
 public:
     using OrderBookContainer = std::map<Price, BookLvlPtr, CompFunc>;
 
-    OrderBookDataMap(const Side side, const Price &tick_size)
+    OrderBookDataMap(const Side side, const TickSize &tick_size)
         : OrderBookDataInterface(side, tick_size), book_cont_() {}
 
     std::optional<Price> best_price() override {

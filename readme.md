@@ -1,5 +1,17 @@
 Highlights
 
+
+
 Logger
 Hashed Linked List
-Orderbook Tests
+
+
+Run
+mkdir build-release && cd build-release
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+./exchange
+
+
+
+

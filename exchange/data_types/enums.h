@@ -8,6 +8,7 @@
 #include "scaled_int.h"
 
 using Price = ScaledInt<int64_t, static_cast<uint64_t>(1e2)>;
+using TickSize = Price;
 using Quantity = ScaledInt<uint64_t, static_cast<uint64_t>(1e8)>;
 
 using AccountId = uint64_t;
