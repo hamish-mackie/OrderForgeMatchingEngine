@@ -25,7 +25,9 @@ void OrderBook::add_order(Order &order) {
             if(order.remaining_qty().value() > 0) {
                 updates.push_back(bids.add_order(order));
                 add_order_helper(order.price(), order.order_id(), order.side());
-                private_order_update_handler(order);
+                if(private_order_update_handler) {
+                    private_order_update_handler(order);
+                }
             }
         } else {
             auto best_price = bids.best_price();
@@ -35,14 +37,18 @@ void OrderBook::add_order(Order &order) {
             if(order.remaining_qty().value() > 0) {
                 updates.push_back(asks.add_order(order));
                 add_order_helper(order.price(), order.order_id(), order.side());
-                private_order_update_handler(order);
+                if(private_order_update_handler) {
+                    private_order_update_handler(order);
+                }
             }
         }
     }
 
     for(auto update: updates) {
         LOG_INFO("{}", update.log_level_update());
-        public_order_book_update_handler(update);
+        if(public_order_book_update_handler) {
+            public_order_book_update_handler(update);
+        }
     }
 }
 
@@ -64,7 +70,9 @@ void OrderBook::remove_order(OrderId id) {
 
     for(auto update: updates) {
         LOG_INFO("{}", update.log_level_update());
-        public_order_book_update_handler(update);
+        if(public_order_book_update_handler) {
+            public_order_book_update_handler(update);
+        }
     }
 }
 
@@ -81,15 +89,21 @@ void OrderBook::match_order(Order &order) {
 
     for(auto& trade: trade_producer.get_trades()) {
         LOG_INFO("{}", trade.log_trade());
-        private_trades_update_handler(trade);
-        public_last_trade_update_handler({trade.price(), trade.qty(), trade.crossing_side()});
+        if(private_trades_update_handler) {
+            private_trades_update_handler(trade);
+        }
+        if(public_last_trade_update_handler) {
+            public_last_trade_update_handler({trade.price(), trade.qty(), trade.crossing_side()});
+        }
+
     }
 
     for(auto& update: updates) {
         LOG_INFO("{}", update.log_level_update());
-        public_order_book_update_handler(update);
+        if(public_order_book_update_handler) {
+            public_order_book_update_handler(update);
+        }
     }
-
 }
 
 void OrderBook::add_order_helper(Price price, OrderId order_id, Side side) {

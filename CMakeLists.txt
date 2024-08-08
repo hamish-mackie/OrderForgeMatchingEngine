@@ -29,4 +29,5 @@ FetchContent_MakeAvailable(magic_enum)
 enable_testing()
 
 add_subdirectory(exchange)
-target_link_libraries(Exchange PUBLIC exchange fmt::fmt magic_enum)
+target_link_libraries(Exchange PUBLIC exchange)
+add_subdirectory(benchmarking)
