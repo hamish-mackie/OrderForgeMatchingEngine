@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <memory_resource>
 
 #include "book_side.h"
 
@@ -9,6 +10,7 @@ public:
     using BookSideBid = BookSide<std::greater<>>;
     using BookSideAsk = BookSide<std::less<>>;
     using OrdersIdMap = std::unordered_map<OrderId, FindOrderHelper>;
+    using LevelUpdates = std::pmr::vector<LevelUpdate>;
 
     // Private feed handlers
     using OrderUpdateHandler = std::function<void(const Order& order)>;
@@ -35,5 +37,6 @@ private:
     BookSideBid bids;
     BookSideAsk asks;
     OrdersIdMap orders_id_map_;
+    std::pmr::unsynchronized_pool_resource pmr_resource_;
 };
 

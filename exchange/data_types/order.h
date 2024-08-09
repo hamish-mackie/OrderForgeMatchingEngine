@@ -1,23 +1,12 @@
 #pragma once
 
-#include <pool_allocator.h>
-
 #include "time_utils.h"
 #include "enums.h"
 #include "logger/logger.h"
 
 class Order {
 public:
-    Order(Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId order_id)
-        : price_(price),
-          qty_(qty),
-          remaining_qty_(qty),
-          side_(side),
-          status_(status),
-          type_(type),
-          order_id_(order_id),
-          timestamp_(get_nano_ts()),
-          acc_id_(acc_id) { }
+    Order(Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId order_id);
 
     [[nodiscard]] Price price() { return price_; }
     [[nodiscard]] Quantity qty() { return qty_; }
@@ -35,22 +24,11 @@ public:
         status_ = status;
     }
 
-    Quantity reduce_qty(Quantity& qty) {
-        if(qty > remaining_qty_) {
-            LOG_ERROR("trying to reduce quantity to below 0", nullptr);
-        } else {
-            remaining_qty_ -= qty;
-        }
-        return remaining_qty_;
-    }
+    Quantity reduce_qty(Quantity& qty);
 
-   void set_qty(Quantity qty) { remaining_qty_ = qty; }
+    void set_qty(Quantity qty) { remaining_qty_ = qty; }
 
-    std::string log_order() const {
-        return fmt::format("Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
-                  price_.descaled_value(), remaining_qty_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(side_),
-                  magic_enum::enum_name(status_), magic_enum::enum_name(type_), acc_id_, order_id_, timestamp_);
-    }
+    std::string log_order() const;
 
 private:
     Price price_;
@@ -63,6 +41,32 @@ private:
     clock_t timestamp_;
     AccountId acc_id_;
 };
+
+inline Order::Order(Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id,
+    OrderId order_id): price_(price),
+                       qty_(qty),
+                       remaining_qty_(qty),
+                       side_(side),
+                       status_(status),
+                       type_(type),
+                       order_id_(order_id),
+                       timestamp_(get_nano_ts()),
+                       acc_id_(acc_id) { }
+
+inline Quantity Order::reduce_qty(Quantity &qty) {
+    if(qty > remaining_qty_) {
+        LOG_ERROR("trying to reduce quantity to below 0", nullptr);
+    } else {
+        remaining_qty_ -= qty;
+    }
+    return remaining_qty_;
+}
+
+inline std::string Order::log_order() const {
+    return fmt::format("Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
+                       price_.descaled_value(), remaining_qty_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(side_),
+                       magic_enum::enum_name(status_), magic_enum::enum_name(type_), acc_id_, order_id_, timestamp_);
+}
 
 
 struct FindOrderHelper {

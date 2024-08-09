@@ -2,14 +2,12 @@
 
 #include "pool_allocator.h"
 
-
-
 template<typename Id, typename T>
 class Node {
     using NodeIdentifier = Id;
     using NodeType = T;
 public:
-    Node(NodeIdentifier id, NodeType item): id(id), item(item) {}
+    Node(NodeIdentifier& id, NodeType& item): id(id), item(item) {}
     NodeIdentifier id;
     NodeType item;
     Node* left{nullptr};
@@ -33,9 +31,6 @@ class HashLinkedList {
     using NodeType = Node<Id, T>;
     using NodeTypePtr = NodeType*;
     using NodeTypeRef = NodeType&;
-    // using Allocator = PoolAllocator<std::pair<const Id, NodeTypePtr>>;
-    // using Hash = std::hash<Id>;
-    // using EqualTo = std::equal_to<Id>;
     using NodeMap = std::unordered_map<NodeIdentifier, NodeTypePtr>;
 public:
     void pop() { pop_front(); }

@@ -24,3 +24,18 @@ Time to insert and remove 500,000 orders with market orders crossing the book: 7
 Time to insert and remove 50,000 orders with market orders crossing the book: 0.034224 seconds (1460975.06 orders/second)
 Time to insert and remove 100,000 orders with market orders crossing the book: 0.101978 seconds (980601.95 orders/second)
 Time to insert and remove 500,000 orders with market orders crossing the book: 0.920041 seconds (543454.25 orders/second)
+
+// Bit of an interesting benchmark here, I've swapped computers with a 3950x and 32gb of ram and it seems to have doubled.
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.020098 seconds (2487781.63 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.049794 seconds (2008256.30 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 0.564575 seconds (885621.60 orders/second)
+
+// Implemented a custom allocator, and it seems the performance is not as good...?
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.090644 seconds (551608.05 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.210105 seconds (475952.17 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 1.221789 seconds (409236.09 orders/second)
+
+// Fixed a small issue and the allocator is similar, maybe slightly better than the std::allocator, use pmr vectors in orderbook
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.018510 seconds (2701238.49 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.043155 seconds (2317247.39 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 0.484181 seconds (1032671.51 orders/second)

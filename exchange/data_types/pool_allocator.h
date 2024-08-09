@@ -5,8 +5,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "../logger/logger.h"
-
 template<typename T>
 class PoolAllocator {
 public:
@@ -30,7 +28,7 @@ public:
             expand_pool(n);
         }
         pointer result = free_list_.back();
-        free_list_.resize(free_list_.size() - n);
+        free_list_.pop_back();
         return result;
     }
 
@@ -55,7 +53,6 @@ public:
 
     ~PoolAllocator() {
         for (auto* block : pool_blocks_) {
-
             free(block);
         }
     }
@@ -81,8 +78,9 @@ template<typename T>
 class SingleTonWrapper {
     using Type = T;
 public:
-    static Type& get_instance() {
-        static Type instance;
+    template<typename ... Args>
+    static Type& get_instance(Args&&... args) {
+        static Type instance(std::forward<Args>(args)...);
         return instance;
     }
     SingleTonWrapper(const SingleTonWrapper&) = delete;

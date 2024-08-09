@@ -3,8 +3,6 @@
 #include <order_book.h>
 
 LevelUpdate BookLevel::add_order(Order& order) {
-    ZoneScopedN("level_add_order");
-    LOG_INFO("{}", order.log_order());
     if(order.price() != price_) { LOG_WARN("price is not correct"); }
 
     if(order_cont.contains(order.order_id())) {
@@ -22,9 +20,6 @@ LevelUpdate BookLevel::remove_order(FindOrderHelper& helper) {
 }
 
 LevelUpdate BookLevel::remove_order(OrderId id) {
-    ZoneScopedN("level_remove_order");
-    LOG_INFO("Remove Id: {}", id);
-
     auto res = order_cont.find(id);
     if(res) {
         total_qty_ -= res->remaining_qty();
@@ -37,7 +32,6 @@ LevelUpdate BookLevel::remove_order(OrderId id) {
 }
 
 LevelUpdate BookLevel::match_order(TradeProducer &trade_producer) {
-    ZoneScopedN("level_match_order");
     LOG_INFO("{}", trade_producer.log_producer());
 
     for(auto& order: order_cont) {
