@@ -1,5 +1,8 @@
 #pragma once
-#include "fmt/chrono.h"
+
+#include "pool_allocator.h"
+
+
 
 template<typename Id, typename T>
 class Node {
@@ -11,6 +14,14 @@ public:
     NodeType item;
     Node* left{nullptr};
     Node* right{nullptr};
+
+    void* operator new(const size_t size) {
+        return SingleTonWrapper<PoolAllocator<Node>>::get_instance().allocate(size);
+    }
+
+    void operator delete(void* ptr, size_t size) {
+        return SingleTonWrapper<PoolAllocator<Node>>::get_instance().deallocate(static_cast<Node*>(ptr), size);
+    }
 };
 
 template<typename Id, typename T>
@@ -22,6 +33,9 @@ class HashLinkedList {
     using NodeType = Node<Id, T>;
     using NodeTypePtr = NodeType*;
     using NodeTypeRef = NodeType&;
+    // using Allocator = PoolAllocator<std::pair<const Id, NodeTypePtr>>;
+    // using Hash = std::hash<Id>;
+    // using EqualTo = std::equal_to<Id>;
     using NodeMap = std::unordered_map<NodeIdentifier, NodeTypePtr>;
 public:
     void pop() { pop_front(); }
@@ -51,7 +65,7 @@ public:
 
     void push(NodeIdentifier& id, Item& node_item) {
         // copy
-        auto node_ptr = new NodeType(id, node_item);
+        auto* node_ptr = new NodeType(id, node_item);
         if(node_map_.empty()) {
             front_ = node_ptr;
         } else {
@@ -74,6 +88,8 @@ public:
             }
         }
     }
+
+    HashLinkedList() = default;
 
     HashLinkedList(HashLinkedList&) = delete;
     HashLinkedList& operator=(HashLinkedList&) = delete;

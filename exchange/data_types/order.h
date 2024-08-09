@@ -1,5 +1,7 @@
 #pragma once
 
+#include <pool_allocator.h>
+
 #include "time_utils.h"
 #include "enums.h"
 #include "logger/logger.h"

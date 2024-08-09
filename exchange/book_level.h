@@ -5,7 +5,7 @@
 
 #include "order.h"
 #include "trade_producer.h"
-#include "hashed-linked-list.h"
+#include "hashed_linked_list.h"
 
 struct LevelUpdate {
     LevelUpdate(const Price &price, const Quantity &total_quantity, Side side)

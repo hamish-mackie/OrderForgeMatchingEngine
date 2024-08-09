@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <random>
+#include <iostream>
 #include <vector>
 #include <magic_enum.hpp>
 
