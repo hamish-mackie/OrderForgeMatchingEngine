@@ -77,8 +77,8 @@ void benchmark_order_book(uint64_t num_orders) {
 
     double market_ops_per_sec = num_orders / duration_market_orders.count();
 
-    fmt::print("Time to insert and remove {} orders with market orders crossing the book: {:.6f} seconds ({:.2f} orders/second)\n",
-               fmt::group_digits(orders.size()), duration_market_orders.count(), market_ops_per_sec);
+    fmt::print("Time to insert and remove {} orders with market orders crossing the book: {:.6f} seconds {} orders/second)\n",
+               fmt::group_digits(orders.size()), duration_market_orders.count(), fmt::group_digits(market_ops_per_sec));
 }
 
 int main() {

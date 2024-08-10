@@ -1,5 +1,7 @@
 add_library(exchange)
 
+set_property(TARGET exchange PROPERTY COMPILE_WARNING_AS_ERROR ON)
+
 target_include_directories(exchange PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )

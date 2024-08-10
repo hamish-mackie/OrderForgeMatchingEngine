@@ -1,5 +1,7 @@
 #pragma once
 
+#include <enums.h>
+
 #include "pool_allocator.h"
 
 template<typename Id, typename T>
@@ -24,22 +26,22 @@ public:
 
 template<typename Id, typename T>
 class HashLinkedList {
-    using NodeIdentifier = Id;
     using Item = T;
     using ItemRef = T&;
     using ItemPtr = T*;
     using NodeType = Node<Id, T>;
     using NodeTypePtr = NodeType*;
     using NodeTypeRef = NodeType&;
-    using NodeMap = std::unordered_map<NodeIdentifier, NodeTypePtr>;
+    using NodeMap = std::unordered_map<Id, NodeTypePtr>;
+
 public:
     void pop() { pop_front(); }
-    size_t size() { return node_map_.size(); }
     size_t size() const { return node_map_.size(); }
-    bool empty() { return node_map_.empty(); }
+    bool empty() const { return node_map_.empty(); }
     ItemRef front() { return front_->item; }
 
     struct Iterator {
+
         Iterator(NodeTypePtr ptr): ptr(ptr) {};
         NodeTypeRef operator++() { return *(ptr = ptr->right); }
         bool operator==(const Iterator &itr) const { return itr.ptr == ptr; }
@@ -49,16 +51,16 @@ public:
     Iterator begin() { return {front_}; }
 
     Iterator end() { return {nullptr}; }
-    bool contains(NodeIdentifier& id) { return node_map_.contains(id); }
+    bool contains(Id& id) { return node_map_.contains(id); }
 
-    ItemPtr find(NodeIdentifier& id) {
+    ItemPtr find(Id& id) {
         if(auto it = node_map_.find(id); it != node_map_.end()) {
             return &it->second->item;
         }
         return nullptr;
     }
 
-    void push(NodeIdentifier& id, Item& node_item) {
+    void push(Id& id, Item& node_item) {
         // copy
         auto* node_ptr = new NodeType(id, node_item);
         if(node_map_.empty()) {
@@ -71,7 +73,7 @@ public:
         back_ = node_ptr;
     };
 
-    void remove(NodeIdentifier& id) {
+    void remove(Id& id) {
         if(auto it = node_map_.find(id); it != node_map_.end()) {
             auto node_ptr = it->second;
             if(node_ptr == front_) {
