@@ -39,6 +39,7 @@ public:
     size_t size() const { return node_map_.size(); }
     bool empty() const { return node_map_.empty(); }
     ItemRef front() { return front_->item; }
+    ItemRef back() { return back_->item; }
 
     struct Iterator {
 

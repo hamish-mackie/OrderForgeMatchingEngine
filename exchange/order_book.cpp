@@ -4,11 +4,12 @@ OrderBook::OrderBook(Price starting_price, TickSize tick_size)
     : bids(BookSideBid(BUY, tick_size))
     , asks(BookSideAsk(SELL, tick_size)) {
     // Call our order allocator, so it allocates up front.
+    Logger::get_instance();
     SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance(131072);
 }
 
 void OrderBook::add_order(Order &order) {
-    LOG_INFO("{}", order.log_order());
+    LOG_DEBUG("{}", order.log_order());
 
     LevelUpdates updates;
 
@@ -45,7 +46,7 @@ void OrderBook::add_order(Order &order) {
     }
 
     for(auto& update: updates) {
-        LOG_INFO("{}", update.log_level_update());
+        LOG_DEBUG("{}", update.log_level_update());
         if(public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }
@@ -53,7 +54,7 @@ void OrderBook::add_order(Order &order) {
 }
 
 void OrderBook::remove_order(OrderId id) {
-    LOG_INFO("{}", id);
+    LOG_DEBUG("{}", id);
     LevelUpdates updates;
     auto it = orders_id_map_.find(id);
     if(it != orders_id_map_.end()) {
@@ -69,7 +70,7 @@ void OrderBook::remove_order(OrderId id) {
     }
 
     for(auto& update: updates) {
-        LOG_INFO("{}", update.log_level_update());
+        LOG_DEBUG("{}", update.log_level_update());
         if(public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }
@@ -79,7 +80,7 @@ void OrderBook::remove_order(OrderId id) {
 void OrderBook::match_order(Order &order) {
     auto trade_producer = TradeProducer(order);
     std::vector<LevelUpdate> updates;
-    LOG_INFO("{}", trade_producer.log_producer());
+    LOG_DEBUG("{}", trade_producer.log_producer());
     if(order.side() == BUY) {
         updates = asks.match_order(trade_producer);
     } else {
@@ -87,7 +88,7 @@ void OrderBook::match_order(Order &order) {
     }
 
     for(auto& trade: trade_producer.get_trades()) {
-        LOG_INFO("{}", trade.log_trade());
+        LOG_DEBUG("{}", trade.log_trade());
         if(private_trades_update_handler) {
             private_trades_update_handler(trade);
         }
@@ -97,7 +98,7 @@ void OrderBook::match_order(Order &order) {
     }
 
     for(auto& update: updates) {
-        LOG_INFO("{}", update.log_level_update());
+        LOG_DEBUG("{}", update.log_level_update());
         if(public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }

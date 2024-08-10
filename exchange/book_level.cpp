@@ -1,7 +1,5 @@
 #include "book_level.h"
 
-#include <order_book.h>
-
 LevelUpdate BookLevel::add_order(Order& order) {
     if(order.price() != price_) { LOG_WARN("price is not correct"); }
 
@@ -22,17 +20,17 @@ LevelUpdate BookLevel::remove_order(FindOrderHelper& helper) {
 LevelUpdate BookLevel::remove_order(OrderId id) {
     auto res = order_cont.find(id);
     if(res) {
+        LOG_DEBUG("{}", res->log_order());
         total_qty_ -= res->remaining_qty();
         order_cont.remove(id);
     } else {
         LOG_WARN("Order not present in map: {}", id);
     }
-
     return {price_, total_qty_, side_};
 }
 
 LevelUpdate BookLevel::match_order(TradeProducer &trade_producer) {
-    LOG_INFO("{}", trade_producer.log_producer());
+    LOG_DEBUG("{}", trade_producer.log_producer());
 
     for(auto& order: order_cont) {
         if(trade_producer.has_remaining_qty()) {
