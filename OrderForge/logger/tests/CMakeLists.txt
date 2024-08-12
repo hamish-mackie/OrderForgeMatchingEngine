@@ -1,4 +1,5 @@
 add_executable(test_logger
+        test_logger_main.cpp
         test_logger.cpp
         test_ring_buffer.cpp
 )

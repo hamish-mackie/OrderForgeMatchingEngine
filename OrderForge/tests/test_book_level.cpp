@@ -2,7 +2,7 @@
 
 #include "book_level.h"
 
-class BookLevelTest : public ::testing::Test {
+class TestBookLevel : public ::testing::Test {
 public:
     void SetUp() override {
         Logger::get_instance(true, MB * 1, 5);
@@ -18,11 +18,11 @@ private:
     std::vector<LevelUpdate> level_updates_;
 };
 
-TEST_F(BookLevelTest, test_trades_match_in_correct_order) {
+TEST_F(TestBookLevel, test_trades_match_in_correct_order) {
 
 }
 
-TEST(BookLevel, match_order) {
+TEST(TestBookLevel, match_order) {
     auto pool = std::pmr::unsynchronized_pool_resource();
     Logger::get_instance(true);
     REGISTER_TYPE(ORDER, Order);
@@ -45,7 +45,7 @@ TEST(BookLevel, match_order) {
     ASSERT_EQ(trade_producer.get_modified_orders_().size(), 2);
 }
 
-TEST(BookLevel, add_order) {
+TEST(TestBookLevel, add_order) {
     const Price price(45);
     Quantity qty = Quantity(5);
     const OrderId id = gen_random_order_id();
@@ -63,7 +63,7 @@ TEST(BookLevel, add_order) {
     ASSERT_EQ(bl.total_quantity(), qty);
 }
 
-TEST(BookLevel, remove_order) {
+TEST(TestBookLevel, remove_order) {
     const Price price(100);
     Quantity qty = Quantity(5);
     const OrderId id = gen_random_order_id();

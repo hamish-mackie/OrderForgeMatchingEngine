@@ -2,7 +2,7 @@
 
 #include "ring_buffer.h"
 
-TEST(RingBufferTest, BasicWriteRead) {
+TEST(TestRingBuffer, BasicWriteRead) {
     RingBuffer buffer(1024, 2); // 2 blocks of 1KB each
 
     char* write_ptr = buffer.get_write_pointer(100);
@@ -22,7 +22,7 @@ TEST(RingBufferTest, BasicWriteRead) {
     ASSERT_FALSE(buffer.can_read());
 }
 
-TEST(RingBufferTest, WrapAroundWriteRead) {
+TEST(TestRingBuffer, WrapAroundWriteRead) {
     RingBuffer buffer(1024, 2); // 2 blocks of 1KB each
 
     char* write_ptr = buffer.get_write_pointer(1024);

@@ -2,9 +2,9 @@
 
 #include "order_book.h"
 
-class OrderBookTest : public ::testing::Test {
+class TestOrderBook : public ::testing::Test {
 public:
-    OrderBookTest()
+    TestOrderBook()
         : start_price_(100)
           , tick_size_(0.01)
           , ob(start_price_, tick_size_) {
@@ -68,7 +68,7 @@ void verify_last_trade_update(LastTradeUpdate &result, LastTradeUpdate &received
 }
 
 
-TEST_F(OrderBookTest, test_send_and_remove_limit_orders) {
+TEST_F(TestOrderBook, test_send_and_remove_limit_orders) {
     std::vector<Order> orders = {
         Order(Price(99.3),  Quantity(0.1), BUY, OPEN, LIMIT, 555, 1),
         Order(Price(99.5),  Quantity(0.2), BUY, OPEN, LIMIT, 555, 2),
@@ -111,7 +111,7 @@ TEST_F(OrderBookTest, test_send_and_remove_limit_orders) {
     }
 }
 
-TEST_F(OrderBookTest, test_send_market_orders) {
+TEST_F(TestOrderBook, test_send_market_orders) {
     auto crossing_acc_id = 100;
     auto passive_acc_id = 555;
     auto buy_order_id = 50;
