@@ -21,6 +21,9 @@ TEST_F(BookLevelTest, test_trades_match_in_correct_order) {
 }
 
 TEST(BookLevel, match_order) {
+    Logger::get_instance(true);
+    REGISTER_TYPE(ORDER, Order);
+
     auto bl = BookLevel(Price(100), BUY);
 
     std::vector<Order> limit_orders = {

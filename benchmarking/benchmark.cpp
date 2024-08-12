@@ -83,7 +83,7 @@ void benchmark_order_book(uint64_t num_orders) {
 
 int main() {
     TracyAppInfo("Benchmark", 0);
-    std::vector<u_int64_t> num_orders = { 50000, 100000, 500000 };
+    std::vector<u_int64_t> num_orders = { 500, 100000, 500000 };
     for(auto& n: num_orders) {
         benchmark_order_book(n);
     }

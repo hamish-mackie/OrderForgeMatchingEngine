@@ -62,12 +62,35 @@ inline Quantity Order::reduce_qty(Quantity &qty) {
     return remaining_qty_;
 }
 
-inline std::string Order::log_order() const {
-    return fmt::format("Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
-                       price_.descaled_value(), remaining_qty_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(side_),
-                       magic_enum::enum_name(status_), magic_enum::enum_name(type_), acc_id_, order_id_, timestamp_);
-}
+struct OrderLog {
+    Price price_;
+    Quantity qty_;
+    Quantity remaining_qty_;
+    Side side_;
+    OrderStatus status_;
+    OrderType type_;
+    OrderId order_id_;
+    clock_t timestamp_;
+    AccountId acc_id_;
 
+    void write(Order& order) {
+        price_ = order.price();
+        qty_ = order.qty();
+        remaining_qty_ = order.remaining_qty();
+        side_ = order.side();
+        status_ = order.status();
+        type_ = order.type();
+        order_id_ = order.order_id();
+        timestamp_ = order.timestamp();
+        acc_id_ = order.acc_id();
+    }
+
+    std::string get_str() const {
+        return fmt::format("Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
+                           price_.descaled_value(), remaining_qty_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(side_),
+                           magic_enum::enum_name(status_), magic_enum::enum_name(type_), acc_id_, order_id_, timestamp_);
+    }
+};
 
 struct FindOrderHelper {
     FindOrderHelper(OrderId order_id, Side side, const Price &price)

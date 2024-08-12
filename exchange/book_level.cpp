@@ -1,6 +1,9 @@
 #include "book_level.h"
 
 LevelUpdate BookLevel::add_order(Order& order) {
+
+    LOG_ORDER(order);
+
     if(order.price() != price_) { LOG_WARN("price is not correct"); }
 
     if(order_cont.contains(order.order_id())) {

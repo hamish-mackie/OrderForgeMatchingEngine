@@ -2,6 +2,12 @@
 
 #include <fmt/core.h>
 
+enum LogType : uint8_t {
+    TEST_STRUCT = 1,
+    ORDER = 10,
+    TRADE = 11,
+};
+
 template <std::size_t...Idxs>
 constexpr auto substring_as_array(std::string_view str, std::index_sequence<Idxs...>)
 {
@@ -52,16 +58,26 @@ constexpr auto type_name() -> std::string_view
     return std::string_view{value.data(), value.size()};
 }
 
+#define REGISTER_TYPE(enum, type) \
+    Logger::get_instance().register_type(LogType::enum, [](std::string_view prepend, char* pointer) -> auto { \
+        Logger::get_instance().write<type##Log>(prepend, reinterpret_cast<type##Log*>(pointer)); \
+        return sizeof(type##Log); \
+    })
+
 #define TYPE_FUNC_NAME(str) compile_time_string_merge(str, type_name<decltype(*this)>(), std::string_view(__FUNCTION__))
 
+#define DISABLE_LOGGING
+
 #ifdef DISABLE_LOGGING
+
+#define LOG_ORDER(order, ...) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, TYPE_FUNC_NAME("ORDER"), order)
 #define LOG_DEBUG(format_str, ...)
 #define LOG_INFO(format_str, ...)
 #define LOG_WARN(format_str, ...)
 #define LOG_ERROR(format_str, ...)
 #elif RELEASE_LOGGING
 #define LOG_DEBUG(format_str, ...)
-#define LOG_ORDER(function, ...) Logger::get_instance().log_order(TYPE_FUNC_NAME("ORDER"), function ##)
+
 #define LOG_INFO(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("INFO"), format_str, ##__VA_ARGS__)
 #define LOG_WARN(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("WARN"), format_str, ##__VA_ARGS__)
 #define LOG_ERROR(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("ERROR"), format_str, ##__VA_ARGS__)
