@@ -46,3 +46,8 @@ Logging to file, 500,000 orders took ~2 seconds (240,000 orders/second)
 
 // These numbers are ok, But we can do better.
 // If the formatting and logging could be offloaded to a back up thread we could get close to the speed without logging I think.
+
+// Moved the logging to a separate thread! 2.3 million orders per second with logging turned on!
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.021658 seconds 2,308,576 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.074372 seconds 1,344,595 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 0.568038 seconds 880,223 orders/second)
