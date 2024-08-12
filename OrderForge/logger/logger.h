@@ -75,8 +75,9 @@ public:
     }
 
     template<typename... Args>
-    void log(std::string_view log_prepend, std::string_view format_str, Args &&... args) {
-        fmt::print("{} {}\n", log_prepend, fmt::vformat(format_str, fmt::make_format_args(args...)));
+    void log(LogType log_type, std::string_view log_prepend, std::string_view format_str, Args &&... args) {
+        auto debug = Debug( fmt::format("{}", fmt::vformat(format_str, fmt::make_format_args(args...))) );
+        write_buffer<Debug, DebugLog>(log_type, log_prepend, debug);
     }
 
     void stop() {
@@ -117,6 +118,8 @@ private:
         log_thread_ = std::make_unique<std::thread>([&]() { read_buffer(); });
     }
 
-
+    ~Logger() {
+        stop();
+    }
 };
 

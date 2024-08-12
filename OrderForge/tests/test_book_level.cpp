@@ -5,7 +5,9 @@
 class BookLevelTest : public ::testing::Test {
 public:
     void SetUp() override {
-
+        Logger::get_instance(true, MB * 1, 5);
+        REGISTER_TYPE(ORDER, Order);
+        REGISTER_TYPE(TRADE, Trade);
     }
 
 private:
@@ -21,6 +23,7 @@ TEST_F(BookLevelTest, test_trades_match_in_correct_order) {
 }
 
 TEST(BookLevel, match_order) {
+    auto pool = std::pmr::unsynchronized_pool_resource();
     Logger::get_instance(true);
     REGISTER_TYPE(ORDER, Order);
 
@@ -36,7 +39,7 @@ TEST(BookLevel, match_order) {
     }
 
     auto market_order = Order(Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id());
-    auto trade_producer = TradeProducer(market_order);
+    auto trade_producer = TradeProducer(market_order, pool);
     bl.match_order(trade_producer);
 
     ASSERT_EQ(trade_producer.get_modified_orders_().size(), 2);
@@ -81,32 +84,3 @@ TEST(BookLevel, remove_order) {
     ASSERT_EQ(bl.size(), 0);
     ASSERT_EQ(bl.total_quantity(), Quantity(0));
 }
-
-// TEST(BookLevel, stress_test_10000_orders_random_removal) {
-//     const Price price;
-//     const int num_orders = 10000;
-//     auto bl = BookLevel(price);
-//     std::vector<OrderId> ids;
-//     ids.reserve(num_orders);
-//
-//     for (int i = 0; i < num_orders; ++i) {
-//         Quantity qty = Quantity(1);
-//         const OrderId id = gen_random_order_id();
-//         ids.push_back(id);
-//         bl.add_order(Order(price, qty, BUY, OPEN, LIMIT, 12345 + i, id));
-//     }
-//
-//     ASSERT_EQ(bl.size(), num_orders);
-//     ASSERT_EQ(bl.total_quantity(), Quantity(num_orders));
-//
-//     std::random_device rd;
-//     std::mt19937 g(rd());
-//     std::shuffle(ids.begin(), ids.end(), g);
-//
-//     for (const auto& id : ids) {
-//         bl.remove_order(id);
-//     }
-//
-//     ASSERT_EQ(bl.size(), 0);
-//     ASSERT_EQ(bl.total_quantity(), Quantity(0));
-// }

@@ -2,6 +2,26 @@
 
 #include <fmt/core.h>
 
+struct Debug {
+    std::string str;
+};
+
+struct DebugLog {
+    DebugLog() : str(256, ' ') {}
+
+    void write(Debug& debug) {
+        str = debug.str;
+    }
+    std::string str;
+
+    std::string get_str() {
+        str.erase(std::find_if(str.rbegin(), str.rend(), [](unsigned char ch) {
+            return !std::isspace(ch);
+        }).base(), str.end());
+        return str;
+    };
+};
+
 struct TestStructOriginal {
     uint64_t item1;
     uint32_t item2;

@@ -4,6 +4,7 @@
 
 enum LogType : uint8_t {
     TEST_STRUCT = 1,
+    DEBUG = 2,
     ORDER = 10,
     TRADE = 11,
 };
@@ -54,11 +55,6 @@ constexpr auto type_name() -> std::string_view
     return std::string_view{value.data(), value.size()};
 }
 
-#define REGISTER_TYPE(enum, type) \
-    Logger::get_instance().register_type(LogType::enum, [](std::string_view prepend, char* pointer) -> auto { \
-        Logger::get_instance().write<type##Log>(prepend, reinterpret_cast<type##Log*>(pointer)); \
-        return sizeof(type##Log); \
-    })
 
 
 template<std::size_t N1, std::size_t N2, std::size_t N3>
@@ -90,7 +86,6 @@ constexpr auto get_str(std::string_view str, std::string_view str2, std::string_
     }
 
     result[index++] = ']';
-
     return result.data();
 }
 
@@ -100,22 +95,33 @@ constexpr auto get_str(std::string_view str, std::string_view str2, std::string_
 
 #define LOG_PREPEND(str) get_str<STR_VIEW(str).size(), TYPENAME.size(), FUNCTION.size()>(STR_VIEW(str), TYPENAME, FUNCTION)
 
-#define LOG_ORDER(order) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER"), order)
+#define REGISTER_TYPE(enum, type) \
+    Logger::get_instance().register_type(LogType::enum, [](std::string_view prepend, char* pointer) -> auto { \
+        Logger::get_instance().write<type##Log>(prepend, reinterpret_cast<type##Log*>(pointer)); \
+        return sizeof(type##Log); \
+    })
+
 
 #ifdef DISABLE_LOGGING
+#define LOG_TRADE(trade)
+#define LOG_ORDER(order)
 #define LOG_DEBUG(format_str, ...)
 #define LOG_INFO(format_str, ...)
 #define LOG_WARN(format_str, ...)
 #define LOG_ERROR(format_str, ...)
 #elif RELEASE_LOGGING
+#define LOG_ORDER(order) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER"), order)
+#define LOG_TRADE(order) Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE"), order)
 #define LOG_DEBUG(format_str, ...)
 #define LOG_INFO(format_str, ...)
 #define LOG_WARN(format_str, ...)
 #define LOG_ERROR(format_str, ...)
 #else
-#define LOG_DEBUG(format_str, ...) Logger::get_instance().log(LOG_PREPEND("DEBUG"), format_str, ##__VA_ARGS__)
-#define LOG_INFO(format_str, ...) Logger::get_instance().log(LOG_PREPEND("INFO"), format_str, ##__VA_ARGS__)
-#define LOG_WARN(format_str, ...) Logger::get_instance().log(LOG_PREPEND("WARN"), format_str, ##__VA_ARGS__)
-#define LOG_ERROR(format_str, ...) Logger::get_instance().log(LOG_PREPEND("ERROR"), format_str, ##__VA_ARGS__)
+#define LOG_ORDER(order) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER"), order)
+#define LOG_TRADE(order) Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE"), order)
+#define LOG_DEBUG(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("DEBUG"), format_str, ##__VA_ARGS__)
+#define LOG_INFO(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("INFO"), format_str, ##__VA_ARGS__)
+#define LOG_WARN(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("WARN"), format_str, ##__VA_ARGS__)
+#define LOG_ERROR(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("ERROR"), format_str, ##__VA_ARGS__)
 #endif
 

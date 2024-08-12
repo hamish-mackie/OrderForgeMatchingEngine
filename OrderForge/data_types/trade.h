@@ -40,20 +40,40 @@ public:
     [[nodiscard]] OrderId passive_order_id() const { return passive_order_id_; }
     [[nodiscard]] OrderId crossing_order_id() const { return crossing_order_id_; }
 
-    std::string log_trade() const {
+private:
+    Price price_;
+    Quantity qty_;
+    Side crossing_side_;
+    AccountId passive_account_id_;
+    AccountId crossing_account_id_;
+    OrderId passive_order_id_;
+    OrderId crossing_order_id_;
+};
+
+struct TradeLog {
+    void write(Trade& trade) {
+        price_ = trade.price();
+        qty_ = trade.qty();
+        crossing_side_ = trade.crossing_side();
+        passive_account_id_ = trade.passive_account_id();
+        crossing_account_id_ = trade.crossing_account_id();
+        passive_order_id_ = trade.passive_order_id();
+        crossing_order_id_ = trade.crossing_order_id();
+    }
+
+    Price price_;
+    Quantity qty_;
+    Side crossing_side_;
+    AccountId passive_account_id_;
+    AccountId crossing_account_id_;
+    OrderId passive_order_id_;
+    OrderId crossing_order_id_;
+
+    std::string get_str() const {
         return fmt::format("Trade: Price: {}, Quantity: {}, Crossing Side: {}, Passive Account ID: {}, Crossing Account ID: {}, "
                            "Passive Order ID: {}, Crossing Order ID: {}",
                            price_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(crossing_side_),
                            passive_account_id_, crossing_account_id_, passive_order_id_, crossing_order_id_);
     }
 
-private:
-    Price price_;
-    Quantity qty_;
-    // The crossing side of the trade
-    Side crossing_side_;
-    AccountId passive_account_id_;
-    AccountId crossing_account_id_;
-    OrderId passive_order_id_;
-    OrderId crossing_order_id_;
 };

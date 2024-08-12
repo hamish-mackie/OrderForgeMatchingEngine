@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(Exchange)
+project(OrderForge)
 
 set(CMAKE_CXX_STANDARD 23)
 
@@ -35,6 +35,6 @@ FetchContent_MakeAvailable(tracy)
 
 enable_testing()
 
-add_subdirectory(exchange)
-target_link_libraries(demo_run PUBLIC exchange)
+add_subdirectory(OrderForge)
+target_link_libraries(demo_run PUBLIC order_forge)
 add_subdirectory(benchmarking)

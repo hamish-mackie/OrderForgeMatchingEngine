@@ -1,15 +1,20 @@
 #include "trade_producer.h"
 
-TradeProducer::TradeProducer(Order &order): original_order_(order)
-                                            , order_price_(order.price())
-                                            , remaining_qty_(order.remaining_qty_ref()) {
-    LOG_INFO("{}", order.log_order());
-}
+TradeProducer::TradeProducer(Order &order, std::pmr::unsynchronized_pool_resource& vec_resource)
+    : original_order_(order)
+    , order_price_(order.price())
+    , remaining_qty_(order.remaining_qty_ref())
+    , vec_resource_(vec_resource)
+
+    {}
 
 Quantity TradeProducer::match_order(Order &order) {
     if(original_order_.side() == order.side()) {
         LOG_WARN("orders have the same side");
     }
+
+    LOG_ORDER(original_order_);
+    LOG_ORDER(order);
 
     Quantity removed_qty = std::min(order.remaining_qty(), remaining_qty_);
     order.reduce_qty(removed_qty);
@@ -32,9 +37,8 @@ Quantity TradeProducer::match_order(Order &order) {
     trades_.emplace_back(order.price(), removed_qty, original_order_.side(), order.acc_id(), original_order_.acc_id(),
         order.order_id(), original_order_.order_id());
 
-    LOG_DEBUG("{}", order.log_order());
-    LOG_DEBUG("{}", original_order_.log_order());
-    LOG_DEBUG("{}", log_producer());
+    LOG_TRADE(trades_.back());
+
     return removed_qty;
 }
 
@@ -50,3 +54,4 @@ std::string TradeProducer::log_producer() const {
                        original_order_.order_id(),
                        original_order_.timestamp());
 }
+

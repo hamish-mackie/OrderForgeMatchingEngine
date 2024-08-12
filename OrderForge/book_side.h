@@ -28,8 +28,6 @@ private:
 
 template<typename CompFunc>
 LevelUpdate BookSide<CompFunc>::add_order(Order &order) {
-    LOG_DEBUG("{}", order.log_order());
-
     assert(order.side() == side_);
 
     auto ptr = levels_.get_book_level(order.price());
@@ -38,7 +36,6 @@ LevelUpdate BookSide<CompFunc>::add_order(Order &order) {
 
 template<typename CompFunc>
 LevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper& helper) {
-    LOG_DEBUG("{}", helper.order_id);
     auto ptr = levels_.get_book_level(helper.price);
     auto update = ptr->remove_order(helper);
     if(update.total_quantity.value() == 0) {
@@ -49,9 +46,6 @@ LevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper& helper) {
 
 template<typename CompFunc>
 std::vector<LevelUpdate> BookSide<CompFunc>::match_order(TradeProducer& trade_producer) {
-    LOG_DEBUG("{}", trade_producer.log_producer());
-    // TODO need to adjust best price to be correct
-    // its best price is not being deleted
     std::vector<LevelUpdate> updates;
     for(auto& level: levels_) {
         if(trade_producer.has_remaining_qty()) {

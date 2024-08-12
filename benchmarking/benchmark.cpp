@@ -7,7 +7,6 @@
 #include <tracy/Tracy.hpp>
 #include "order_book.h"
 
-
 double generate_price(std::default_random_engine &generator, std::normal_distribution<double> &distribution) {
     double price;
     do {

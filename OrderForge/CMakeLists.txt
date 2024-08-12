@@ -1,12 +1,12 @@
-add_library(exchange)
+add_library(order_forge)
 
-set_property(TARGET exchange PROPERTY COMPILE_WARNING_AS_ERROR ON)
+set_property(TARGET order_forge PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
-target_include_directories(exchange PUBLIC
+target_include_directories(order_forge PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_sources(exchange PUBLIC
+target_sources(order_forge PUBLIC
         order_book.cpp
         book_side.cpp
         book_level.cpp
@@ -16,7 +16,7 @@ target_sources(exchange PUBLIC
 add_subdirectory(logger)
 add_subdirectory(data_types)
 
-target_link_libraries(exchange PUBLIC
+target_link_libraries(order_forge PUBLIC
         fmt::fmt
         magic_enum
         TracyClient
