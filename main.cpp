@@ -1,6 +1,7 @@
 #include "order_book.h"
 
 int main() {
+    Logger::get_instance(true);
     auto ob = OrderBook(Price(100), TickSize(0.01));
     ob.private_order_update_handler = [](const Order &order) { };
     ob.private_trades_update_handler = [](const Trade &trade) { };
