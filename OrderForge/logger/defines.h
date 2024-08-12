@@ -55,12 +55,10 @@ constexpr auto type_name() -> std::string_view
     return std::string_view{value.data(), value.size()};
 }
 
-
-
 template<std::size_t N1, std::size_t N2, std::size_t N3>
-constexpr auto get_str(std::string_view str, std::string_view str2, std::string_view str3) {
+constexpr auto generate_str(std::string_view str, std::string_view str2, std::string_view str3) {
     constexpr std::size_t total_size = N1 + N2 + N3 + 8; // +8 accounts for the brackets, spaces, and "::"
-    static std::array<char, total_size> result{};
+    std::array<char, total_size> result{};
 
     std::size_t index = 0;
 
@@ -86,6 +84,13 @@ constexpr auto get_str(std::string_view str, std::string_view str2, std::string_
     }
 
     result[index++] = ']';
+    return result;
+}
+
+// this is just a wrapper because we cannot declare a static variable in generate_str until c++23
+template<std::size_t N1, std::size_t N2, std::size_t N3>
+const char* get_str(std::string_view str, std::string_view str2, std::string_view str3) {
+    static const auto result = generate_str<N1, N2, N3>(str, str2, str3);
     return result.data();
 }
 
