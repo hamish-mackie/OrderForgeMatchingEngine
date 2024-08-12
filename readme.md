@@ -1,24 +1,46 @@
-Highlights
+## Benchmark Results
+The engine can **insert/remove/match** up to:
+- Logging Enabled:  **2.4 million orders/second**.
+- Logging Disabled:  **2.7 million orders/second**.
 
-Hashed Linked List
-Trade Producer
-Scaled Int
+---
 
-Where to start?
-main.cpp contains a demo app which outlines the interface
-exchange/order_book.h should be the next stop
-exchange/trade_producer.h handles order matching
-exchange/book_level.h holds the hashed linked list data structure
+## Highlights
 
-Getting a demo app running is straight forward 
-```
+### Hashed Linked List
+- **Hashed linked list** is an efficient data structure for an exchange matching engine.
+- **Operations**:
+    - `push_back(new order)`: O(1)
+    - `remove(cancel or match)`: O(1)
+- The underlying linked list simplifies iteration, while mapping the values by `OrderId` provides O(1) lookup.
+- Hashed Linked List nodes use a custom pool allocator
+
+### Logging
+- The specialized logging system offloads all formatting and logging to another thread.
+- The main engine thread only needs to copy around **100 bytes** for each order log.
+- This setup significantly speeds up the process compared to formatting and logging in the main thread.
+
+### Trade Producer
+
+### Scaled Int
+
+---
+
+## Where to Start?
+
+1. `main.cpp` contains a demo app which outlines the interface.
+2. `exchange/order_book.h` should be the next stop.
+3. `exchange/trade_producer.h` handles order matching.
+4. `exchange/book_level.h` holds the hashed linked list data structure.
+
+---
+
+## Running the Demo App
+
+Getting the demo app running is straightforward:
+
+```bash
 mkdir build-release && cd build-release
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
 ./demo_run
-```
-
-
-
-
-
