@@ -6,6 +6,6 @@ add_executable(exchange_tests
         test_order_book.cpp
 )
 
-target_link_libraries(exchange_tests gtest_main exchange)
+target_link_libraries(exchange_tests gtest_main order_forge)
 
 target_include_directories(exchange_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
