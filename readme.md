@@ -1,6 +1,6 @@
 # OrderForge
 - OrderForge is a high-performance C++ order matching engine, designed with speed and simplicity in mind.
-- [OrderForge is free to use for educational, non-commercial, and certain small business purposes.](https://polyformproject.org/licenses/small-business/1.0.0)
+- [OrderForge is free to use for educational, non-commercial, and certain small business purposes, as defined by the Polyform Small Business License.](https://polyformproject.org/licenses/small-business/1.0.0)
 
 ## Benchmark Results
 The engine can **insert/remove/match** up to:
