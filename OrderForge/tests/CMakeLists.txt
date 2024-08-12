@@ -9,3 +9,5 @@ add_executable(exchange_tests
 target_link_libraries(exchange_tests gtest_main order_forge)
 
 target_include_directories(exchange_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_test(NAME exchange_tests COMMAND exchange_tests)

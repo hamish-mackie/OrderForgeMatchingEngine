@@ -5,3 +5,4 @@ add_executable(test_logger
 
 target_link_libraries(test_logger gtest_main logger)
 
+add_test(NAME test_logger COMMAND test_logger)
