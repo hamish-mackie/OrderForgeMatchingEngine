@@ -5,7 +5,7 @@
 
 constexpr std::string_view test_prepend = "test_prepend";
 
-#define LOG_TEST(test_struct) Logger::get_instance().write_buffer<TestStructOriginal, TestStructLog>(LogType::TEST_STRUCT, TYPE_FUNC_NAME("TEST_STRUCT"), test_struct);
+#define LOG_TEST(test_struct) Logger::get_instance().write_buffer<TestStructOriginal, TestStructLog>(LogType::TEST_STRUCT, LOG_PREPEND("TEST_STRUCT"), test_struct);
 
 TEST(TestLogger, test) {
     auto& l = Logger::get_instance(true, 1024);
@@ -13,6 +13,8 @@ TEST(TestLogger, test) {
     REGISTER_TYPE(TEST_STRUCT, TestStruct);
     LOG_TEST(test_struct);
     LOG_TEST(test_struct);
+    sleep(1);
+    Logger::get_instance().stop();
 }
 
 TEST(TestLogger, test_alot) {
@@ -22,4 +24,6 @@ TEST(TestLogger, test_alot) {
     for(int i = 0; i < 10; ++i) {
         LOG_TEST(test_struct);
     }
+    sleep(1);
+    Logger::get_instance().stop();
 }

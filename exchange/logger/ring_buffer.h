@@ -23,6 +23,7 @@ public:
             current_write_offset = 0;
             current_write_block = (current_write_block + 1) % mem_blocks_.size();
             write_block_index_.store(current_write_block, std::memory_order_relaxed);
+            write_ptr_offset_.store(current_write_offset, std::memory_order_relaxed);
         }
 
         return &mem_blocks_[current_write_block][current_write_offset];
@@ -35,10 +36,17 @@ public:
 
     bool can_read() {
         check_wrap_read_pointer();
-        return  read_ptr_offset_ < write_ptr_offset_.load(std::memory_order_relaxed) ||
-                read_block_index_ != write_block_index_.load(std::memory_order_relaxed);
-    }
+        auto current_write_offset = write_ptr_offset_.load(std::memory_order_relaxed);
+        auto current_write_block = write_block_index_.load(std::memory_order_relaxed);
+        auto current_read_offset = read_ptr_offset_;
+        auto current_read_block = read_block_index_;
 
+        if (current_read_block == current_write_block) {
+            return current_read_offset < current_write_offset;
+        } else {
+            return true;
+        }
+    }
     char* get_read_pointer() {
         check_wrap_read_pointer();
         return &mem_blocks_[read_block_index_][read_ptr_offset_];

@@ -4,7 +4,7 @@ OrderBook::OrderBook(Price starting_price, TickSize tick_size)
     : bids(BookSideBid(BUY, tick_size))
     , asks(BookSideAsk(SELL, tick_size)) {
 
-    Logger::get_instance(false, MB * 200, 5);
+    Logger::get_instance(false, MB * 50, 5);
     REGISTER_TYPE(ORDER, Order);
     // Call our order allocator, so it allocates up front.
     SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance(131072);

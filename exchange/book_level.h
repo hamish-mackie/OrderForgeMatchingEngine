@@ -1,5 +1,6 @@
 #pragma once
 
+#include "logger/logger.h"
 #include "order.h"
 #include "trade_producer.h"
 #include "hashed_linked_list.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fmt/core.h>
+#include <string>
 
 enum LogType : uint8_t {
     TEST_STRUCT = 1,
@@ -12,10 +12,6 @@ template <std::size_t...Idxs>
 constexpr auto substring_as_array(std::string_view str, std::index_sequence<Idxs...>)
 {
     return std::array{str[Idxs]...};
-}
-
-constexpr std::string compile_time_string_merge(std::string_view s1, std::string_view s2, std::string_view s3) {
-    return fmt::format(FMT_STRING("[{}] [{}::{}]"), s1 ,s2, s3);
 }
 
 template <typename T>
@@ -64,27 +60,62 @@ constexpr auto type_name() -> std::string_view
         return sizeof(type##Log); \
     })
 
-#define TYPE_FUNC_NAME(str) compile_time_string_merge(str, type_name<decltype(*this)>(), std::string_view(__FUNCTION__))
 
-#define DISABLE_LOGGING
+template<std::size_t N1, std::size_t N2, std::size_t N3>
+constexpr auto get_str(std::string_view str, std::string_view str2, std::string_view str3) {
+    constexpr std::size_t total_size = N1 + N2 + N3 + 8; // +8 accounts for the brackets, spaces, and "::"
+    static std::array<char, total_size> result{};
+
+    std::size_t index = 0;
+
+    result[index++] = '[';
+
+    for (char ch : str) {
+        result[index++] = ch;
+    }
+
+    result[index++] = ']';
+    result[index++] = ' ';
+    result[index++] = '[';
+
+    for (char ch : str2) {
+        result[index++] = ch;
+    }
+
+    result[index++] = ':';
+    result[index++] = ':';
+
+    for (char ch : str3) {
+        result[index++] = ch;
+    }
+
+    result[index++] = ']';
+
+    return result.data();
+}
+
+#define TYPENAME type_name<decltype(*this)>()
+#define STR_VIEW(str) std::string_view(str)
+#define FUNCTION STR_VIEW(__FUNCTION__)
+
+#define LOG_PREPEND(str) get_str<STR_VIEW(str).size(), TYPENAME.size(), FUNCTION.size()>(STR_VIEW(str), TYPENAME, FUNCTION)
+
+#define LOG_ORDER(order) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER"), order)
 
 #ifdef DISABLE_LOGGING
-
-#define LOG_ORDER(order, ...) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, TYPE_FUNC_NAME("ORDER"), order)
 #define LOG_DEBUG(format_str, ...)
 #define LOG_INFO(format_str, ...)
 #define LOG_WARN(format_str, ...)
 #define LOG_ERROR(format_str, ...)
 #elif RELEASE_LOGGING
 #define LOG_DEBUG(format_str, ...)
-
-#define LOG_INFO(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("INFO"), format_str, ##__VA_ARGS__)
-#define LOG_WARN(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("WARN"), format_str, ##__VA_ARGS__)
-#define LOG_ERROR(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("ERROR"), format_str, ##__VA_ARGS__)
+#define LOG_INFO(format_str, ...)
+#define LOG_WARN(format_str, ...)
+#define LOG_ERROR(format_str, ...)
 #else
-#define LOG_DEBUG(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("DEBUG"), format_str, ##__VA_ARGS__)
-#define LOG_INFO(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("INFO"), format_str, ##__VA_ARGS__)
-#define LOG_WARN(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("WARN"), format_str, ##__VA_ARGS__)
-#define LOG_ERROR(format_str, ...) Logger::get_instance().log(TYPE_FUNC_NAME("ERROR"), format_str, ##__VA_ARGS__)
+#define LOG_DEBUG(format_str, ...) Logger::get_instance().log(LOG_PREPEND("DEBUG"), format_str, ##__VA_ARGS__)
+#define LOG_INFO(format_str, ...) Logger::get_instance().log(LOG_PREPEND("INFO"), format_str, ##__VA_ARGS__)
+#define LOG_WARN(format_str, ...) Logger::get_instance().log(LOG_PREPEND("WARN"), format_str, ##__VA_ARGS__)
+#define LOG_ERROR(format_str, ...) Logger::get_instance().log(LOG_PREPEND("ERROR"), format_str, ##__VA_ARGS__)
 #endif
 

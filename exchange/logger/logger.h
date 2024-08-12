@@ -5,13 +5,14 @@
 #include <iostream>
 #include <ring_buffer.h>
 #include <thread>
+#include <functional>
 
 #include "data_structs.h"
 #include "defines.h"
 
 struct LogInfo {
     LogType log_type_;
-    uint64_t prepend_size_;
+    std::string_view prepend_;
 };
 
 constexpr uint64_t prepend_max_len = 128;
@@ -39,24 +40,18 @@ public:
 
     template<typename T, typename BufferStruct>
     void write_buffer(LogType type, std::string_view prepend, T &item) {
-        uint64_t needed_space = sizeof(LogInfo) + prepend.size() + sizeof(BufferStruct);
+        uint64_t needed_space = sizeof(LogInfo) + sizeof(BufferStruct);
         auto* pointer = ring_buffer_.get_write_pointer(needed_space);
 
         // write info struct to buffer
-        auto log_info = new(pointer) LogInfo(static_cast<LogType>(type), prepend.size());
+        auto log_info = new(pointer) LogInfo(static_cast<LogType>(type), prepend);
         pointer += sizeof(LogInfo);
-
-        // write string view to buffer
-        std::memcpy(pointer, prepend.data(), prepend.size());
-        pointer += prepend.size();
 
         // write struct to buffer
         auto* buffer_item = reinterpret_cast<BufferStruct*>(pointer);
         buffer_item->write(item);
 
         ring_buffer_.forward_write_pointer(needed_space);
-
-        // std::cout << "write block " << current_write_block << " offset " << current_write_offset << std::endl;
     }
 
     void read_buffer() {
@@ -69,15 +64,13 @@ public:
 
             char *pointer = ring_buffer_.get_read_pointer();
             auto* log_info = reinterpret_cast<LogInfo*>(pointer);
+            auto prepend = std::string_view(log_info->prepend_);
             pointer += sizeof(LogInfo);
-
-            auto prepend = std::string_view(pointer, log_info->prepend_size_);
-            pointer += prepend.size();
 
             auto func = function_register_[static_cast<uint8_t>(log_info->log_type_)];
             auto read_size = func(prepend, pointer);
 
-            ring_buffer_.forward_read_pointer(sizeof(LogInfo) + log_info->prepend_size_ + read_size);
+            ring_buffer_.forward_read_pointer(sizeof(LogInfo) + read_size);
         }
     }
 
