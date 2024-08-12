@@ -1,9 +1,7 @@
 #include "book_level.h"
 
 LevelUpdate BookLevel::add_order(Order& order) {
-
     LOG_ORDER(order);
-
     if(order.price() != price_) { LOG_WARN("price is not correct"); }
 
     if(order_cont.contains(order.order_id())) {
@@ -23,7 +21,7 @@ LevelUpdate BookLevel::remove_order(FindOrderHelper& helper) {
 LevelUpdate BookLevel::remove_order(OrderId id) {
     auto res = order_cont.find(id);
     if(res) {
-        LOG_DEBUG("{}", res->log_order());
+        LOG_ORDER(*res);
         total_qty_ -= res->remaining_qty();
         order_cont.remove(id);
     } else {

@@ -87,5 +87,6 @@ int main() {
     for(auto& n: num_orders) {
         benchmark_order_book(n);
     }
+    Logger::get_instance().stop();
     return 0;
 }

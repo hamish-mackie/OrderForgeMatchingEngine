@@ -5,7 +5,6 @@
 #include <iostream>
 #include <ring_buffer.h>
 #include <thread>
-#include <utility>
 
 #include "data_structs.h"
 #include "defines.h"
@@ -75,7 +74,7 @@ public:
             auto prepend = std::string_view(pointer, log_info->prepend_size_);
             pointer += prepend.size();
 
-            auto func = function_register_[static_cast<u_int8_t>(log_info->log_type_)];
+            auto func = function_register_[static_cast<uint8_t>(log_info->log_type_)];
             auto read_size = func(prepend, pointer);
 
             ring_buffer_.forward_read_pointer(sizeof(LogInfo) + log_info->prepend_size_ + read_size);
@@ -89,6 +88,12 @@ public:
 
     void stop() {
         run_.store(false);
+        if (log_thread_ && log_thread_->joinable()) {
+            log_thread_->join();
+        }
+        if (log_file_.is_open()) {
+            log_file_.close();
+        }
     }
 
     bool should_run() const {
@@ -109,7 +114,6 @@ private:
     std::unique_ptr<std::thread> log_thread_;
     std::atomic<bool> run_{true};
 
-
     Logger(bool write_std_out_ = false, uint64_t mem_block_size = MB * 20, uint32_t no_blocks = 10)
         : write_std_out_(write_std_out_)
         , ring_buffer_(mem_block_size, no_blocks)
@@ -120,11 +124,6 @@ private:
         log_thread_ = std::make_unique<std::thread>([&]() { read_buffer(); });
     }
 
-    ~Logger() {
-        LOG_INFO("stopping logging thread");
-        stop();
-        LOG_INFO("joining");
-        log_thread_->join();
-    }
+
 };
 
