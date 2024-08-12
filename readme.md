@@ -9,6 +9,8 @@ The engine can **insert/remove/match** up to:
 
 ---
 
+![](.github/images/order_forge_design.drawio.png)
+
 ## Highlights
 
 ### Hashed Linked List
