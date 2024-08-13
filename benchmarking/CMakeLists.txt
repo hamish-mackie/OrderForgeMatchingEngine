@@ -1,5 +1,5 @@
 add_executable(benchmark benchmark.cpp)
 
-add_definitions(-DRELEASE_LOGGING)
+target_compile_definitions(benchmark PUBLIC RELEASE_LOGGING)
 
 target_link_libraries(benchmark PUBLIC order_forge TracyClient)

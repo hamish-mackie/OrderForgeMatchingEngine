@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <random>
 
+#include "types.h"
+
 inline OrderId gen_random_order_id() {
     std::random_device rd;
     std::mt19937_64 gen(rd());

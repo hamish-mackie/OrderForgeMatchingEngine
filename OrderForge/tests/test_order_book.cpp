@@ -30,7 +30,7 @@ protected:
     std::vector<LastTradeUpdate> last_trade_updates_;
 };
 
-void verify_order(Order &result, Order &received) {
+void verify_order_update(Order &result, Order &received) {
     ASSERT_EQ(result.price().descaled_value(), received.price().descaled_value());
     // check sent qty vs remaining qty so we can make a result order to test against.
     ASSERT_EQ(result.qty().descaled_value(), received.remaining_qty().descaled_value());
@@ -101,7 +101,7 @@ TEST_F(TestOrderBook, test_send_and_remove_limit_orders) {
     for (auto i = 0; i < orders.size(); ++i) {
         auto order = orders[i];
         ob.add_order(order);
-        verify_order(order, order_updates[i]);
+        verify_order_update(order, order_updates[i]);
         verify_level_update(level_updates_[i], order.price(), order.qty(), order.side());
     }
 
@@ -183,20 +183,20 @@ TEST_F(TestOrderBook, test_send_market_orders) {
     for (auto i = 0; i < orders.size(); ++i) {
         auto order = orders[i];
         ob.add_order(order);
-        verify_order(order, order_updates[i]);
+        verify_order_update(order, order_updates[i]);
         verify_level_update(level_updates_[i], order.price(), order.qty(), order.side());
     }
 
     auto market_buy = Order(symbol, Price(106), Quantity(20), BUY, OPEN, LIMIT, crossing_acc_id, 100,buy_order_id);
     auto market_buy_result = Order(symbol, Price(106), Quantity(5), BUY, PARTIAL, LIMIT, crossing_acc_id, 100, buy_order_id);
     ob.add_order(market_buy);
-    verify_order(market_buy_result, order_updates.back());
+    verify_order_update(market_buy_result, order_updates.back());
     ob.remove_order(buy_order_id);
 
     auto market_sell = Order(symbol, Price(90), Quantity(100), SELL, OPEN, LIMIT, crossing_acc_id, 100, sell_order_id);
     auto market_sell_result = Order(symbol, Price(90), Quantity(85), SELL, PARTIAL, LIMIT, crossing_acc_id, 100, sell_order_id);
     ob.add_order(market_sell);
-    verify_order(market_sell_result, order_updates.back());
+    verify_order_update(market_sell_result, order_updates.back());
     ob.remove_order(sell_order_id);
 
     ASSERT_EQ(expected_level_updates.size(), level_updates_.size());
@@ -217,3 +217,31 @@ TEST_F(TestOrderBook, test_send_market_orders) {
         verify_last_trade_update(expected_last_trade_updates[i], last_trade_updates_[i]);
     }
 }
+
+TEST_F(TestOrderBook, test_order_id_assignment) {
+    // send an order without an order id, verify it has one when it comes back.
+    uint64_t order_id = 0;
+    Order input_order(symbol, Price(100), Quantity(1), BUY, OPEN, LIMIT, 555, 10, order_id);
+    Order input_order2(symbol, Price(101), Quantity(1), SELL, OPEN, LIMIT, 555, 10, order_id);
+    ob.add_order(input_order);
+    auto& order1 = order_updates.back();
+    ob.add_order(input_order2);
+    auto& order2 = order_updates.back();
+
+    ASSERT_NE(order_id, order1.order_id());
+    ASSERT_NE(order_id, order2.order_id());
+    ASSERT_NE(order1.order_id(), order2.order_id());
+}
+
+TEST_F(TestOrderBook, test_trade_generated_with_trade_id) {
+    Order buy_order(symbol, Price(100), Quantity(1), BUY, OPEN, LIMIT, 555, 1);
+    Order sell_order(symbol, Price(100), Quantity(1), SELL, OPEN, LIMIT, 556, 2);
+
+    ob.add_order(buy_order);
+    ob.add_order(sell_order);
+
+    ASSERT_FALSE(trade_updates_.empty());
+    ASSERT_NE(trade_updates_.back().trade_id(), 0);
+}
+
+

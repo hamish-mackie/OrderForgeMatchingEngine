@@ -3,6 +3,7 @@ add_executable(test_data_types
         test_scaled_int.cpp
         test_hashed_linked_list.cpp
         test_pool_allocator.cpp
+        test_id_generator.cpp
 )
 
 target_link_libraries(test_data_types gtest_main data_types)

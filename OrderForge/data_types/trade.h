@@ -31,7 +31,8 @@ public:
           passive_account_id_(passive_account_id),
           crossing_account_id_(crossing_account_id),
           passive_order_id_(passive_order_id),
-          crossing_order_id_(crossing_order_id) {}
+          crossing_order_id_(crossing_order_id),
+          trade_id_(GET_TRADE_ID) {}
 
     [[nodiscard]] const Symbol & symbol() const { return symbol_; }
     [[nodiscard]] const Price & price() const { return price_; }
@@ -41,6 +42,7 @@ public:
     [[nodiscard]] AccountId crossing_account_id() const { return crossing_account_id_; }
     [[nodiscard]] OrderId passive_order_id() const { return passive_order_id_; }
     [[nodiscard]] OrderId crossing_order_id() const { return crossing_order_id_; }
+    [[nodiscard]] TradeId trade_id() const { return trade_id_; }
 
 private:
     Symbol symbol_;
@@ -51,6 +53,7 @@ private:
     AccountId crossing_account_id_;
     OrderId passive_order_id_;
     OrderId crossing_order_id_;
+    TradeId trade_id_;
 };
 
 struct TradeLog {
@@ -63,6 +66,7 @@ struct TradeLog {
         crossing_account_id_ = trade.crossing_account_id();
         passive_order_id_ = trade.passive_order_id();
         crossing_order_id_ = trade.crossing_order_id();
+        trade_id_ = trade.trade_id();
     }
 
     Symbol symbol_;
@@ -73,12 +77,13 @@ struct TradeLog {
     AccountId crossing_account_id_;
     OrderId passive_order_id_;
     OrderId crossing_order_id_;
+    TradeId trade_id_;
 
     std::string get_str() const {
         return fmt::format("Trade: Symbol: {}, Price: {}, Quantity: {}, Crossing Side: {}, Passive Account ID: {}, Crossing Account ID: {}, "
-                           "Passive Order ID: {}, Crossing Order ID: {}",
+                           "Passive Order ID: {}, Crossing Order ID: {}, TradeId: {}",
                            symbol_, price_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(crossing_side_),
-                           passive_account_id_, crossing_account_id_, passive_order_id_, crossing_order_id_);
+                           passive_account_id_, crossing_account_id_, passive_order_id_, crossing_order_id_, trade_id_);
     }
 
 };

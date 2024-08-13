@@ -32,7 +32,7 @@ std::vector<Order> generate_orders(int num_orders) {
     for (int i = 0; i < limit_order_count / 2; ++i) {
         double price = generate_price(generator, distribution);
         if (price > 99.99) price = 99.99;
-        orders.emplace_back(symbol, Price(price), Quantity(1), BUY, OPEN, LIMIT, i, i);
+        orders.emplace_back(symbol, Price(price), Quantity(1), BUY, OPEN, LIMIT, i);
     }
 
     for (int i = 0; i < limit_order_count / 2; ++i) {

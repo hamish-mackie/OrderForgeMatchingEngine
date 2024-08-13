@@ -6,7 +6,7 @@
 
 class Order {
 public:
-    Order(Symbol symbol, Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId client_order_id, OrderId order_id = 0);
+    Order(Symbol symbol, Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId client_order_id = 0, OrderId order_id = 0);
 
     [[nodiscard]] Symbol symbol() { return symbol_; }
     [[nodiscard]] Price price() { return price_; }
@@ -23,10 +23,7 @@ public:
     [[nodiscard]] clock_t timestamp() const { return timestamp_; }
     [[nodiscard]] AccountId acc_id() const { return acc_id_; }
 
-    void set_order_id(const OrderId order_id) {
-        assert(order_id != 0);
-        order_id_ = order_id;
-    }
+    void set_order_id() { order_id_ = GET_ORDER_ID; }
 
     void set_symbol(const Symbol symbol) { symbol_ = symbol; }
 

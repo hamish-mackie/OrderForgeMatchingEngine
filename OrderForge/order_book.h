@@ -35,8 +35,6 @@ private:
     BookSideAsk asks;
     OrdersIdMap orders_id_map_;
     std::pmr::unsynchronized_pool_resource pmr_resource_;
-    uint64_t order_id_counter_prepend_;
-    uint64_t order_id_counter{0};
 
     void match_order(Order& order);
 };

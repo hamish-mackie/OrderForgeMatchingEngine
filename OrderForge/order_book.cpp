@@ -11,7 +11,6 @@ OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_siz
     REGISTER_TYPE(DEBUG, Debug);
     // Call order allocator, so it allocates up front.
     SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance(131072);
-    order_id_counter_prepend_ = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 void OrderBook::add_order(Order &order) {
@@ -27,7 +26,7 @@ void OrderBook::add_order(Order &order) {
 
     // if order id is not provided, set one.
     if(!order.order_id()) {
-        order.set_order_id(order_id_counter_prepend_ + order_id_counter++);
+        order.set_order_id();
     }
 
     if(order.type() == MARKET) {
