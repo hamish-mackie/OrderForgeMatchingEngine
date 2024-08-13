@@ -2,7 +2,7 @@
 
 #include "logger/logger.h"
 #include "order.h"
-#include "trade_producer.h"
+#include "matching_engine.h"
 #include "hashed_linked_list.h"
 
 struct LevelUpdate {
@@ -17,7 +17,7 @@ struct LevelUpdate {
     Side side;
 
     std::string log_level_update() {
-        return fmt::format("Price: {}, TotalQty: {}, Side: {}",
+        return fmt::format("Level Update: Price: {}, TotalQty: {}, Side: {}",
             price.descaled_value(), total_quantity.descaled_value(), magic_enum::enum_name(side));
     }
 };
@@ -30,7 +30,7 @@ public:
     LevelUpdate add_order(Order& order);
     LevelUpdate remove_order(FindOrderHelper& helper);
     LevelUpdate remove_order(OrderId id);
-    LevelUpdate match_order(TradeProducer& trade_producer);
+    LevelUpdate match_order(MatchingEngine& matching_engine);
 
     Quantity total_quantity() { return total_qty_; }
     size_t size() const { return order_cont.size(); }

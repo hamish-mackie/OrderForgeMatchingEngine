@@ -31,7 +31,7 @@ TEST_F(TestBookLevel, match_order) {
     }
 
     auto market_order = Order(symbol, Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id(), gen_random_order_id());
-    auto trade_producer = TradeProducer(market_order, pool);
+    auto trade_producer = MatchingEngine(market_order, pool);
     book_level_bid_.match_order(trade_producer);
 
     ASSERT_EQ(trade_producer.get_modified_orders_().size(), 2);

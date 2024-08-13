@@ -10,7 +10,7 @@ target_sources(order_forge PUBLIC
         order_book.cpp
         book_side.cpp
         book_level.cpp
-        trade_producer.cpp
+        matching_engine.cpp
 )
 
 add_subdirectory(logger)

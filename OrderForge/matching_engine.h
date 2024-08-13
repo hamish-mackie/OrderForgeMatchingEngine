@@ -6,11 +6,11 @@
 #include "data_types/order.h"
 #include "data_types/trade.h"
 
-class TradeProducer {
+class MatchingEngine {
 public:
-    explicit TradeProducer(Order& order, std::pmr::unsynchronized_pool_resource& vec_resource);
+    explicit MatchingEngine(Order& order, std::pmr::unsynchronized_pool_resource& vec_resource);
 
-    std::string log_producer() const;
+    std::string log_matching_engine() const;
 
     bool has_remaining_qty() { return remaining_qty_.value() > 0; }
     Quantity& remaining_qty() { return remaining_qty_; }

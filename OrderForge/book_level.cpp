@@ -34,16 +34,16 @@ LevelUpdate BookLevel::remove_order(OrderId id) {
     return {price_, total_qty_, side_};
 }
 
-LevelUpdate BookLevel::match_order(TradeProducer &trade_producer) {
-    LOG_DEBUG("{}", trade_producer.log_producer());
+LevelUpdate BookLevel::match_order(MatchingEngine &matching_engine) {
+    LOG_DEBUG("{}", matching_engine.log_matching_engine());
 
     for(auto& order: order_cont) {
-        if(trade_producer.has_remaining_qty()) {
-            total_qty_ -= trade_producer.match_order(order.item);
+        if(matching_engine.has_remaining_qty()) {
+            total_qty_ -= matching_engine.match_order(order.item);
         }
     }
 
-    for(auto* order: trade_producer.get_modified_orders_()) {
+    for(auto* order: matching_engine.get_modified_orders_()) {
         if(order->status() == FILLED && price_ == order->price()) {
             remove_order(order->order_id());
         }

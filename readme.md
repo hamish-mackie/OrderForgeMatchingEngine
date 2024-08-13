@@ -26,8 +26,8 @@ The engine can **insert/remove/match** up to:
 - The main engine thread only needs to copy around **100 bytes** for each order log.
 - This setup significantly speeds up the process compared to formatting and logging in the main thread.
 
-### Trade Producer
-- The Trade Producer is integral to the order matching process. It receives a crossing order and matches it against passive orders.
+### Matching Engine
+- The Matching Engine is integral to the order matching process. It receives a crossing order and matches it against passive orders.
 - **Tracked Data**:
     - Crossing order
     - Matched passive orders
@@ -43,7 +43,7 @@ The engine can **insert/remove/match** up to:
 
 1. `main.cpp`, where the demo application provides a clear overview of the interface.
 2. `order_forge/order_book.h` for insights into the core functionality.
-3. `order_forge/trade_producer.h` to understand the order matching logic.
+3. `order_forge/matching_engine.h` to understand the order matching logic.
 4. `order_forge/book_level.h` to examine the Hashed Linked List, the backbone behind many of the engine's operations.
 ---
 

@@ -2,7 +2,7 @@ add_executable(test_order_forge
         test_order_forge_main.cpp
         test_book_side.cpp
         test_book_level.cpp
-        test_trade_producer.cpp
+        test_matching_engine.cpp
         test_order_book.cpp
 )
 

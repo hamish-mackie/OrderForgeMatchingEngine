@@ -1,6 +1,6 @@
-#include "trade_producer.h"
+#include "matching_engine.h"
 
-TradeProducer::TradeProducer(Order &order, std::pmr::unsynchronized_pool_resource& vec_resource)
+MatchingEngine::MatchingEngine(Order &order, std::pmr::unsynchronized_pool_resource& vec_resource)
     : original_order_(order)
     , order_price_(order.price())
     , remaining_qty_(order.remaining_qty_ref())
@@ -8,7 +8,7 @@ TradeProducer::TradeProducer(Order &order, std::pmr::unsynchronized_pool_resourc
 
     {}
 
-Quantity TradeProducer::match_order(Order &order) {
+Quantity MatchingEngine::match_order(Order &order) {
     if(original_order_.side() == order.side()) {
         LOG_WARN("orders have the same side");
     }
@@ -42,8 +42,8 @@ Quantity TradeProducer::match_order(Order &order) {
     return removed_qty;
 }
 
-std::string TradeProducer::log_producer() const {
-    return fmt::format("Trade Producer: Symbol: {}, Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
+std::string MatchingEngine::log_matching_engine() const {
+    return fmt::format("Matching Engine: Symbol: {}, Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
                        original_order_.symbol(),
                        original_order_.price().descaled_value(),
                        remaining_qty_.descaled_value(),

@@ -95,16 +95,16 @@ void OrderBook::remove_order(OrderId id) {
 }
 
 void OrderBook::match_order(Order &order) {
-    auto trade_producer = TradeProducer(order, pmr_resource_);
+    auto matching_engine = MatchingEngine(order, pmr_resource_);
     std::vector<LevelUpdate> updates;
-    LOG_DEBUG("{}", trade_producer.log_producer());
+    LOG_DEBUG("{}", matching_engine.log_matching_engine());
     if(order.side() == BUY) {
-        updates = asks.match_order(trade_producer);
+        updates = asks.match_order(matching_engine);
     } else {
-        updates = bids.match_order(trade_producer);
+        updates = bids.match_order(matching_engine);
     }
 
-    for(auto& trade: trade_producer.get_trades()) {
+    for(auto& trade: matching_engine.get_trades()) {
         if(private_trades_update_handler) {
             private_trades_update_handler(trade);
         }
