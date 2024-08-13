@@ -1,7 +1,8 @@
 #include "order_book.h"
 
-OrderBook::OrderBook(Price starting_price, TickSize tick_size)
-    : bids(BookSideBid(BUY, tick_size))
+OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_size)
+    : symbol_(std::make_unique<std::string>(symbol))
+    , bids(BookSideBid(BUY, tick_size))
     , asks(BookSideAsk(SELL, tick_size)) {
 
     Logger::get_instance(false, MB * 50, 5);
@@ -16,8 +17,18 @@ OrderBook::OrderBook(Price starting_price, TickSize tick_size)
 void OrderBook::add_order(Order &order) {
     LevelUpdates updates;
 
-    if(!order.order_id())
+    if(order.symbol() != *symbol_) {
+        LOG_WARN("Symbol {} does not match {}", order.symbol(), symbol_->data());
+        return;
+    }
+
+    // set symbol to orderbooks symbol, so it guarantees its lifetime
+    order.set_symbol(*symbol_);
+
+    // if order id is not provided, set one.
+    if(!order.order_id()) {
         order.set_order_id(order_id_counter_prepend_ + order_id_counter++);
+    }
 
     if(order.type() == MARKET) {
         match_order(order);

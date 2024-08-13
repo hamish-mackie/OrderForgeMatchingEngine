@@ -3,7 +3,10 @@
 LevelUpdate BookLevel::add_order(Order& order) {
     LOG_ORDER(order);
     assert(order.order_id() != 0);
-    if(order.price() != price_) { LOG_WARN("price is not correct"); }
+    if(order.price() != price_) {
+        LOG_WARN("price is not correct, order: {} and member {}", order.price().value(), price_.value());
+        assert(0);
+    }
 
     if(order_cont.contains(order.order_id())) {
         LOG_WARN("Order already present in map: {}", order.order_id());

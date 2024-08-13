@@ -6,6 +6,7 @@
 
 #include "scaled_int.h"
 
+using Symbol = std::string_view;
 using Price = ScaledInt<int64_t, static_cast<uint64_t>(1e2)>;
 using TickSize = Price;
 using Quantity = ScaledInt<uint64_t, static_cast<uint64_t>(1e8)>;

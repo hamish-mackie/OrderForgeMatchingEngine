@@ -7,6 +7,8 @@
 #include <tracy/Tracy.hpp>
 #include "order_book.h"
 
+static constexpr std::string_view symbol = "TESTUSD";
+
 double generate_price(std::default_random_engine &generator, std::normal_distribution<double> &distribution) {
     double price;
     do {
@@ -18,7 +20,7 @@ double generate_price(std::default_random_engine &generator, std::normal_distrib
 OrderBook generate_order_book() {
     Price start_price = Price(100);
     TickSize tick_size = TickSize(0.01);
-    return OrderBook(start_price, tick_size);
+    return OrderBook(symbol.data(), start_price, tick_size);
 }
 
 std::vector<Order> generate_orders(int num_orders) {
@@ -32,20 +34,20 @@ std::vector<Order> generate_orders(int num_orders) {
     for (int i = 0; i < limit_order_count / 2; ++i) {
         double price = generate_price(generator, distribution);
         if (price > 99.99) price = 99.99;
-        orders.emplace_back(Price(price), Quantity(1), BUY, OPEN, LIMIT, i, i);
+        orders.emplace_back(symbol, Price(price), Quantity(1), BUY, OPEN, LIMIT, i, i);
     }
 
     for (int i = 0; i < limit_order_count / 2; ++i) {
         double price = generate_price(generator, distribution);
         if (price < 100) price = 100;
-        orders.emplace_back(Price(price), Quantity(1), SELL, OPEN, LIMIT, limit_order_count / 2 + i, limit_order_count / 2 + i);
+        orders.emplace_back(symbol, Price(price), Quantity(1), SELL, OPEN, LIMIT, limit_order_count / 2 + i, limit_order_count / 2 + i);
     }
 
     for (int i = 0; i < market_order_count / 2; ++i) {
-        orders.emplace_back(Price(110), Quantity(1), BUY, OPEN, MARKET, limit_order_count + i, limit_order_count + i);
+        orders.emplace_back(symbol, Price(110), Quantity(1), BUY, OPEN, MARKET, limit_order_count + i, limit_order_count + i);
     }
     for (int i = 0; i < market_order_count / 2; ++i) {
-        orders.emplace_back(Price(90), Quantity(1), SELL, OPEN, MARKET, limit_order_count + market_order_count / 2 + i, limit_order_count + market_order_count / 2 + i);
+        orders.emplace_back(symbol, Price(90), Quantity(1), SELL, OPEN, MARKET, limit_order_count + market_order_count / 2 + i, limit_order_count + market_order_count / 2 + i);
     }
 
     // Shuffle the orders to mix buys, sells, and market orders

@@ -6,8 +6,9 @@
 
 class Order {
 public:
-    Order(Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId client_order_id, OrderId order_id = 0);
+    Order(Symbol symbol, Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id, OrderId client_order_id, OrderId order_id = 0);
 
+    [[nodiscard]] Symbol symbol() { return symbol_; }
     [[nodiscard]] Price price() { return price_; }
     [[nodiscard]] Quantity qty() { return qty_; }
     [[nodiscard]] Quantity& remaining_qty_ref() { return remaining_qty_; }
@@ -27,6 +28,8 @@ public:
         order_id_ = order_id;
     }
 
+    void set_symbol(const Symbol symbol) { symbol_ = symbol; }
+
     void set_status(OrderStatus status) {
         status_ = status;
     }
@@ -38,6 +41,7 @@ public:
     std::string log_order() const;
 
 private:
+    Symbol symbol_;
     Price price_;
     Quantity qty_;
     Quantity remaining_qty_;
@@ -50,8 +54,8 @@ private:
     AccountId acc_id_;
 };
 
-inline Order::Order(Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id,
-                    OrderId client_order_id, OrderId order_id): price_(price), qty_(qty), remaining_qty_(qty), side_(side), status_(status),
+inline Order::Order(Symbol symbol, Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id,
+                    OrderId client_order_id, OrderId order_id): symbol_(symbol), price_(price), qty_(qty), remaining_qty_(qty), side_(side), status_(status),
                                        type_(type), client_order_id_(client_order_id), order_id_(order_id), timestamp_(get_nano_ts()),
                                        acc_id_(acc_id) {
 }
@@ -66,6 +70,7 @@ inline Quantity Order::reduce_qty(Quantity &qty) {
 }
 
 struct OrderLog {
+    Symbol symbol_;
     Price price_;
     Quantity qty_;
     Quantity remaining_qty_;
@@ -78,6 +83,7 @@ struct OrderLog {
     AccountId acc_id_;
 
     void write(Order& order) {
+        symbol_ = order.symbol();
         price_ = order.price();
         qty_ = order.qty();
         remaining_qty_ = order.remaining_qty();
@@ -91,8 +97,8 @@ struct OrderLog {
     }
 
     std::string get_str() const {
-        return fmt::format("Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, ClientOrderId: {}, Timestamp: {}",
-                           price_.descaled_value(), remaining_qty_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(side_),
+        return fmt::format("Symbol: {}, Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, ClientOrderId: {}, Timestamp: {}",
+                           symbol_, price_.descaled_value(), remaining_qty_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(side_),
                            magic_enum::enum_name(status_), magic_enum::enum_name(type_), acc_id_, order_id_, client_order_id_, timestamp_);
     }
 };

@@ -7,7 +7,7 @@ public:
     TestOrderBook()
         : start_price_(100)
           , tick_size_(0.01)
-          , ob(start_price_, tick_size_) {
+          , ob(symbol.data(), start_price_, tick_size_) {
     }
 
 protected:
@@ -20,7 +20,7 @@ protected:
             last_trade_updates_.push_back(update);
         };
     }
-
+    std::string_view symbol = "TESTUSD";
     Price start_price_;
     Price tick_size_;
     OrderBook ob;
@@ -75,12 +75,12 @@ void verify_last_trade_update(LastTradeUpdate &result, LastTradeUpdate &received
 
 TEST_F(TestOrderBook, test_send_and_remove_limit_orders) {
     std::vector<Order> orders = {
-        Order(Price(99.3),  Quantity(0.1), BUY, OPEN, LIMIT, 555, 1),
-        Order(Price(99.5),  Quantity(0.2), BUY, OPEN, LIMIT, 555, 2),
-        Order(Price(99.1),  Quantity(1), BUY, OPEN, LIMIT, 555, 3),
-        Order(Price(100),   Quantity(1), SELL, OPEN, LIMIT, 555, 4),
-        Order(Price(100.05),Quantity(5), SELL, OPEN, LIMIT, 555, 5),
-        Order(Price(100.6), Quantity(8), SELL, OPEN, LIMIT, 555, 6)
+        Order(symbol, Price(99.3),  Quantity(0.1), BUY, OPEN, LIMIT, 555, 1),
+        Order(symbol, Price(99.5),  Quantity(0.2), BUY, OPEN, LIMIT, 555, 2),
+        Order(symbol, Price(99.1),  Quantity(1), BUY, OPEN, LIMIT, 555, 3),
+        Order(symbol, Price(100),   Quantity(1), SELL, OPEN, LIMIT, 555, 4),
+        Order(symbol, Price(100.05),Quantity(5), SELL, OPEN, LIMIT, 555, 5),
+        Order(symbol, Price(100.6), Quantity(8), SELL, OPEN, LIMIT, 555, 6)
     };
 
     std::vector<LevelUpdate> expected_level_updates = {
@@ -127,12 +127,12 @@ TEST_F(TestOrderBook, test_send_market_orders) {
     auto buy_order_id = 50;
     auto sell_order_id = 51;
     std::vector<Order> orders = {
-        Order(Price(98),  Quantity(5), BUY, OPEN, LIMIT, passive_acc_id, 10, 1),
-        Order(Price(99),  Quantity(5), BUY, OPEN, LIMIT, passive_acc_id, 20, 2),
-        Order(Price(97),  Quantity(5), BUY, OPEN, LIMIT, passive_acc_id, 30, 3),
-        Order(Price(100), Quantity(5), SELL, OPEN, LIMIT, passive_acc_id, 40, 4),
-        Order(Price(101), Quantity(5), SELL, OPEN, LIMIT, passive_acc_id, 50, 5),
-        Order(Price(105), Quantity(5), SELL, OPEN, LIMIT, passive_acc_id, 60, 6)
+        Order(symbol, Price(98),  Quantity(5), BUY, OPEN, LIMIT, passive_acc_id, 10, 1),
+        Order(symbol, Price(99),  Quantity(5), BUY, OPEN, LIMIT, passive_acc_id, 20, 2),
+        Order(symbol, Price(97),  Quantity(5), BUY, OPEN, LIMIT, passive_acc_id, 30, 3),
+        Order(symbol, Price(100), Quantity(5), SELL, OPEN, LIMIT, passive_acc_id, 40, 4),
+        Order(symbol, Price(101), Quantity(5), SELL, OPEN, LIMIT, passive_acc_id, 50, 5),
+        Order(symbol, Price(105), Quantity(5), SELL, OPEN, LIMIT, passive_acc_id, 60, 6)
     };
 
     std::vector<LastTradeUpdate> expected_last_trade_updates{
@@ -148,13 +148,13 @@ TEST_F(TestOrderBook, test_send_market_orders) {
 
     std::vector<Trade> expected_trade_updates{
         // Buy order
-        Trade(Price(100), Quantity(5), BUY, passive_acc_id, crossing_acc_id, 4, buy_order_id),
-        Trade(Price(101), Quantity(5), BUY, passive_acc_id, crossing_acc_id, 5, buy_order_id),
-        Trade(Price(105), Quantity(5), BUY, passive_acc_id, crossing_acc_id, 6, buy_order_id),
+        Trade(symbol, Price(100), Quantity(5), BUY, passive_acc_id, crossing_acc_id, 4, buy_order_id),
+        Trade(symbol, Price(101), Quantity(5), BUY, passive_acc_id, crossing_acc_id, 5, buy_order_id),
+        Trade(symbol, Price(105), Quantity(5), BUY, passive_acc_id, crossing_acc_id, 6, buy_order_id),
         // Sell order
-        Trade(Price(99),  Quantity(5), SELL, passive_acc_id, crossing_acc_id, 2, sell_order_id),
-        Trade(Price(98),  Quantity(5), SELL, passive_acc_id, crossing_acc_id, 1, sell_order_id),
-        Trade(Price(97),  Quantity(5), SELL, passive_acc_id, crossing_acc_id, 3, sell_order_id),
+        Trade(symbol, Price(99),  Quantity(5), SELL, passive_acc_id, crossing_acc_id, 2, sell_order_id),
+        Trade(symbol, Price(98),  Quantity(5), SELL, passive_acc_id, crossing_acc_id, 1, sell_order_id),
+        Trade(symbol, Price(97),  Quantity(5), SELL, passive_acc_id, crossing_acc_id, 3, sell_order_id),
     };
 
     std::vector<LevelUpdate> expected_level_updates{
@@ -187,14 +187,14 @@ TEST_F(TestOrderBook, test_send_market_orders) {
         verify_level_update(level_updates_[i], order.price(), order.qty(), order.side());
     }
 
-    auto market_buy = Order(Price(106), Quantity(20), BUY, OPEN, LIMIT, crossing_acc_id, 100,buy_order_id);
-    auto market_buy_result = Order(Price(106), Quantity(5), BUY, PARTIAL, LIMIT, crossing_acc_id, 100, buy_order_id);
+    auto market_buy = Order(symbol, Price(106), Quantity(20), BUY, OPEN, LIMIT, crossing_acc_id, 100,buy_order_id);
+    auto market_buy_result = Order(symbol, Price(106), Quantity(5), BUY, PARTIAL, LIMIT, crossing_acc_id, 100, buy_order_id);
     ob.add_order(market_buy);
     verify_order(market_buy_result, order_updates.back());
     ob.remove_order(buy_order_id);
 
-    auto market_sell = Order(Price(90), Quantity(100), SELL, OPEN, LIMIT, crossing_acc_id, 100, sell_order_id);
-    auto market_sell_result = Order(Price(90), Quantity(85), SELL, PARTIAL, LIMIT, crossing_acc_id, 100, sell_order_id);
+    auto market_sell = Order(symbol, Price(90), Quantity(100), SELL, OPEN, LIMIT, crossing_acc_id, 100, sell_order_id);
+    auto market_sell_result = Order(symbol, Price(90), Quantity(85), SELL, PARTIAL, LIMIT, crossing_acc_id, 100, sell_order_id);
     ob.add_order(market_sell);
     verify_order(market_sell_result, order_updates.back());
     ob.remove_order(sell_order_id);

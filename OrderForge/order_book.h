@@ -23,13 +23,14 @@ public:
     OrderBookUpdateHandler public_order_book_update_handler;
     LastTradeUpdateHandler public_last_trade_update_handler;
 
-    OrderBook(Price starting_price, TickSize tick_size);
+    OrderBook(std::string symbol, Price starting_price, TickSize tick_size);
     void add_order(Order& order);
     void remove_order(OrderId id);
 
     void add_order_helper(Price price, OrderId order_id, Side side);
 
 private:
+    std::unique_ptr<std::string> symbol_;
     BookSideBid bids;
     BookSideAsk asks;
     OrdersIdMap orders_id_map_;

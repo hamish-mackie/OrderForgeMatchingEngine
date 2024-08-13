@@ -34,7 +34,7 @@ Quantity TradeProducer::match_order(Order &order) {
 
     modified_orders_.push_back(&order);
 
-    trades_.emplace_back(order.price(), removed_qty, original_order_.side(), order.acc_id(), original_order_.acc_id(),
+    trades_.emplace_back(order.symbol(), order.price(), removed_qty, original_order_.side(), order.acc_id(), original_order_.acc_id(),
         order.order_id(), original_order_.order_id());
 
     LOG_TRADE(trades_.back());
@@ -43,7 +43,8 @@ Quantity TradeProducer::match_order(Order &order) {
 }
 
 std::string TradeProducer::log_producer() const {
-    return fmt::format("Trade Producer: Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
+    return fmt::format("Trade Producer: Symbol: {}, Price: {}, Quantity: {} / {}, Side: {}, Status: {}, Type: {}, AccountId: {}, OrderId: {}, Timestamp: {}",
+                       original_order_.symbol(),
                        original_order_.price().descaled_value(),
                        remaining_qty_.descaled_value(),
                        original_order_.qty().descaled_value(),

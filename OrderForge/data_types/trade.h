@@ -22,9 +22,10 @@ public:
 
 class Trade {
 public:
-    Trade(const Price &price, const Quantity &qty, Side crossing_side, AccountId passive_account_id,
+    Trade(Symbol symbol, const Price &price, const Quantity &qty, Side crossing_side, AccountId passive_account_id,
         AccountId crossing_account_id, OrderId passive_order_id, OrderId crossing_order_id)
-        : price_(price),
+        : symbol_(symbol),
+          price_(price),
           qty_(qty),
           crossing_side_(crossing_side),
           passive_account_id_(passive_account_id),
@@ -32,6 +33,7 @@ public:
           passive_order_id_(passive_order_id),
           crossing_order_id_(crossing_order_id) {}
 
+    [[nodiscard]] const Symbol & symbol() const { return symbol_; }
     [[nodiscard]] const Price & price() const { return price_; }
     [[nodiscard]] const Quantity & qty() const { return qty_; }
     [[nodiscard]] Side crossing_side() const { return crossing_side_; }
@@ -41,6 +43,7 @@ public:
     [[nodiscard]] OrderId crossing_order_id() const { return crossing_order_id_; }
 
 private:
+    Symbol symbol_;
     Price price_;
     Quantity qty_;
     Side crossing_side_;
@@ -52,6 +55,7 @@ private:
 
 struct TradeLog {
     void write(Trade& trade) {
+        symbol_ = trade.symbol();
         price_ = trade.price();
         qty_ = trade.qty();
         crossing_side_ = trade.crossing_side();
@@ -61,6 +65,7 @@ struct TradeLog {
         crossing_order_id_ = trade.crossing_order_id();
     }
 
+    Symbol symbol_;
     Price price_;
     Quantity qty_;
     Side crossing_side_;
@@ -70,9 +75,9 @@ struct TradeLog {
     OrderId crossing_order_id_;
 
     std::string get_str() const {
-        return fmt::format("Trade: Price: {}, Quantity: {}, Crossing Side: {}, Passive Account ID: {}, Crossing Account ID: {}, "
+        return fmt::format("Trade: Symbol: {}, Price: {}, Quantity: {}, Crossing Side: {}, Passive Account ID: {}, Crossing Account ID: {}, "
                            "Passive Order ID: {}, Crossing Order ID: {}",
-                           price_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(crossing_side_),
+                           symbol_, price_.descaled_value(), qty_.descaled_value(), magic_enum::enum_name(crossing_side_),
                            passive_account_id_, crossing_account_id_, passive_order_id_, crossing_order_id_);
     }
 

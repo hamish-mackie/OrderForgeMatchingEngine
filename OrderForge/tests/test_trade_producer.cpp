@@ -2,11 +2,13 @@
 
 #include "trade_producer.h"
 
+static constexpr std::string_view symbol = "TESTUSD";
+
 TEST(TestTradeProducer, test_matching_same_size) {
 
     auto pool = std::pmr::unsynchronized_pool_resource();
-    auto limit = Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id());
-    auto market = Order(Price(99), Quantity(1), SELL, OPEN, MARKET, 9999, gen_random_order_id());
+    auto limit = Order(symbol, Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id());
+    auto market = Order(symbol, Price(99), Quantity(1), SELL, OPEN, MARKET, 9999, gen_random_order_id());
 
     auto trade_producer = TradeProducer(market, pool);
     trade_producer.match_order(limit);
@@ -20,8 +22,8 @@ TEST(TestTradeProducer, test_matching_same_size) {
 
 TEST(TestTradeProducer, test_matching_limit_greater) {
     auto pool = std::pmr::unsynchronized_pool_resource();
-    auto limit = Order(Price(100), Quantity(2), BUY, OPEN, LIMIT, 9999, gen_random_order_id());
-    auto market = Order(Price(99), Quantity(1), SELL, OPEN, MARKET, 9999, gen_random_order_id());
+    auto limit = Order(symbol, Price(100), Quantity(2), BUY, OPEN, LIMIT, 9999, gen_random_order_id());
+    auto market = Order(symbol, Price(99), Quantity(1), SELL, OPEN, MARKET, 9999, gen_random_order_id());
 
     auto trade_producer = TradeProducer(market, pool);
     trade_producer.match_order(limit);
@@ -35,8 +37,8 @@ TEST(TestTradeProducer, test_matching_limit_greater) {
 
 TEST(TestTradeProducer, test_matching_limit_less) {
     auto pool = std::pmr::unsynchronized_pool_resource();
-    auto limit = Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id());
-    auto market = Order(Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id());
+    auto limit = Order(symbol, Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, gen_random_order_id());
+    auto market = Order(symbol, Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id());
 
     auto trade_producer = TradeProducer(market, pool);
     trade_producer.match_order(limit);
