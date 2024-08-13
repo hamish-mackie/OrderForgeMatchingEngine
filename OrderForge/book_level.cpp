@@ -2,6 +2,7 @@
 
 LevelUpdate BookLevel::add_order(Order& order) {
     LOG_ORDER(order);
+    assert(order.order_id() != 0);
     if(order.price() != price_) { LOG_WARN("price is not correct"); }
 
     if(order_cont.contains(order.order_id())) {

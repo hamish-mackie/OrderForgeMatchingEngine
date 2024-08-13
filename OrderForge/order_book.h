@@ -26,7 +26,6 @@ public:
     OrderBook(Price starting_price, TickSize tick_size);
     void add_order(Order& order);
     void remove_order(OrderId id);
-    void match_order(Order& order);
 
     void add_order_helper(Price price, OrderId order_id, Side side);
 
@@ -35,5 +34,9 @@ private:
     BookSideAsk asks;
     OrdersIdMap orders_id_map_;
     std::pmr::unsynchronized_pool_resource pmr_resource_;
+    uint64_t order_id_counter_prepend_;
+    uint64_t order_id_counter{0};
+
+    void match_order(Order& order);
 };
 

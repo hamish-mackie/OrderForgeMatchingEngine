@@ -22,15 +22,15 @@ protected:
 TEST_F(TestBookLevel, match_order) {
 
     std::vector<Order> limit_orders = {
-        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 1),
-        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 2),
-        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 3),
+        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 1, 001),
+        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 2, 001),
+        Order(Price(100), Quantity(1), BUY, OPEN, LIMIT, 9999, 3, 003),
     };
     for (auto& order : limit_orders) {
         auto update = book_level_bid_.add_order(order);
     }
 
-    auto market_order = Order(Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id());
+    auto market_order = Order(Price(99), Quantity(2), SELL, OPEN, MARKET, 9999, gen_random_order_id(), gen_random_order_id());
     auto trade_producer = TradeProducer(market_order, pool);
     book_level_bid_.match_order(trade_producer);
 
@@ -39,8 +39,9 @@ TEST_F(TestBookLevel, match_order) {
 
 TEST_F(TestBookLevel, add_order) {
     Quantity qty = Quantity(5);
+    const OrderId client_id = gen_random_order_id();
     const OrderId id = gen_random_order_id();
-    auto order = Order(bid_price_, qty, BUY, OPEN, LIMIT, 12345, id);
+    auto order = Order(bid_price_, qty, BUY, OPEN, LIMIT, 12345, client_id, id);
 
     ASSERT_EQ(book_level_bid_.total_quantity(), Quantity(0));
     ASSERT_EQ(book_level_bid_.size(), 0);
@@ -55,9 +56,10 @@ TEST_F(TestBookLevel, add_order) {
 
 TEST_F(TestBookLevel, remove_order) {
     Quantity qty = Quantity(5);
+    const OrderId client_id = gen_random_order_id();
     const OrderId id = gen_random_order_id();
 
-    auto order = Order(bid_price_, qty, BUY, OPEN, LIMIT, 12345, id);
+    auto order = Order(bid_price_, qty, BUY, OPEN, LIMIT, 12345, client_id, id);
 
     auto update = book_level_bid_.add_order(order);
     ASSERT_EQ(update.price, bid_price_);
