@@ -1,10 +1,8 @@
 #pragma once
 
 #include <memory_resource>
-#include <vector>
 
-#include "data_types/order.h"
-#include "data_types/trade.h"
+#include "order_forge_types.h"
 
 class MatchingEngine {
 public:

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "logger/logger.h"
-#include "order.h"
+#include "order_forge_types.h"
 #include "matching_engine.h"
-#include "hashed_linked_list.h"
 
 struct LevelUpdate {
     LevelUpdate(const Price &price, const Quantity &total_quantity, Side side)

@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <queue>
-#include <iostream>
 #include <ring_buffer.h>
 #include <thread>
 #include <functional>

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "types.h"
 #include "enums.h"
-#include "logger/logger.h"
 
 class LastTradeUpdate {
 public:

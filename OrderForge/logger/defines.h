@@ -9,6 +9,12 @@ enum LogType : uint8_t {
     TRADE = 11,
 };
 
+#define REGISTER_TYPE(enum, type) \
+    Logger::get_instance().register_type(LogType::enum, [](std::string_view prepend, char* pointer) -> auto { \
+        Logger::get_instance().write<type##Log>(prepend, reinterpret_cast<type##Log*>(pointer)); \
+        return sizeof(type##Log); \
+})
+
 template <std::size_t...Idxs>
 constexpr auto substring_as_array(std::string_view str, std::index_sequence<Idxs...>)
 {
@@ -99,13 +105,6 @@ const char* get_str(std::string_view str, std::string_view str2, std::string_vie
 #define FUNCTION STR_VIEW(__FUNCTION__)
 
 #define LOG_PREPEND(str) get_str<STR_VIEW(str).size(), TYPENAME.size(), FUNCTION.size()>(STR_VIEW(str), TYPENAME, FUNCTION)
-
-#define REGISTER_TYPE(enum, type) \
-    Logger::get_instance().register_type(LogType::enum, [](std::string_view prepend, char* pointer) -> auto { \
-        Logger::get_instance().write<type##Log>(prepend, reinterpret_cast<type##Log*>(pointer)); \
-        return sizeof(type##Log); \
-    })
-
 
 #ifdef DISABLE_LOGGING
 #define LOG_TRADE(trade)

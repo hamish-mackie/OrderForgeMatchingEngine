@@ -2,12 +2,10 @@
 
 #include <cstdint>
 
-
 template<typename T, uint64_t Scale>
 class ScaledInt {
     using int_type = T;
 public:
-
     ScaledInt(): value_(0) {};
     explicit ScaledInt(const double value) : value_(value * Scale) {}
     explicit ScaledInt(int_type value, bool raw) : value_(raw ? value : value * Scale) {}

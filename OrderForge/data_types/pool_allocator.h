@@ -1,9 +1,6 @@
 #pragma once
 
-#include <stdexcept>
-#include <vector>
 #include <memory>
-#include <unordered_map>
 
 template<typename T>
 class PoolAllocator {
