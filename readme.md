@@ -41,7 +41,7 @@ The engine can **insert/remove/match** up to:
 
 ## Getting Started
 
-1. `main.cpp`, where the demo application provides a clear overview of the interface.
+1. `demo_run.cpp`, where the demo application provides a clear overview of the interface.
 2. `order_forge/order_book.h` for insights into the core functionality.
 3. `order_forge/matching_engine.h` to understand the order matching logic.
 4. `order_forge/book_level.h` to examine the Hashed Linked List, the backbone behind many of the engine's operations.

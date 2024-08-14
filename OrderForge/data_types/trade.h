@@ -32,7 +32,7 @@ public:
           crossing_account_id_(crossing_account_id),
           passive_order_id_(passive_order_id),
           crossing_order_id_(crossing_order_id),
-          trade_id_(GET_TRADE_ID) {}
+          trade_id_(get_id<Trade>()) {}
 
     [[nodiscard]] const Symbol & symbol() const { return symbol_; }
     [[nodiscard]] const Price & price() const { return price_; }

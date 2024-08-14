@@ -24,7 +24,7 @@ public:
     [[nodiscard]] OrderId& client_order_id() { return client_order_id_; }
     [[nodiscard]] OrderId& order_id() { return order_id_; }
 
-    void set_order_id() { order_id_ = GET_ORDER_ID; }
+    void set_order_id() { order_id_ = get_id<Order>();; }
 
     void set_symbol(const Symbol symbol) { symbol_ = symbol; }
 

@@ -7,12 +7,6 @@ constexpr uint64_t COUNTER_SPACE = 1000000000ULL;
 // They need to be independent accross unique assets and times/days
 // Will start by using the first 8 digits as year, month, day and then a counter.
 
-class Order;
-class Trade;
-
-#define GET_ORDER_ID IdGenerator<Order>::instance().generate_id()
-#define GET_TRADE_ID IdGenerator<Trade>::instance().generate_id()
-
 template<typename T>
 class IdGenerator {
 public:

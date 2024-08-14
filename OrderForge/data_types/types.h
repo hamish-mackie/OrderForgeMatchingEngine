@@ -27,3 +27,9 @@ template<typename Enum>
 auto enum_str(Enum enum_val) -> auto {
     return std::string(magic_enum::enum_name(enum_val));
 }
+
+// templated so we can use different singletons for orders and trades
+template<typename T>
+auto get_id() {
+    return IdGenerator<T>::instance().generate_id();
+}
