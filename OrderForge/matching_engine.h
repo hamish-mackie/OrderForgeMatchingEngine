@@ -4,6 +4,8 @@
 
 #include "order_forge_types.h"
 
+class BookLevel;
+
 class MatchingEngine {
 public:
     explicit MatchingEngine(Order& order, std::pmr::unsynchronized_pool_resource& vec_resource);
@@ -16,6 +18,8 @@ public:
     std::pmr::vector<Trade>& get_trades() { return trades_; }
 
     Quantity match_order(Order& order);
+
+    std::vector<std::function<void()>> remove_levels;
 
 private:
     Order& original_order_;

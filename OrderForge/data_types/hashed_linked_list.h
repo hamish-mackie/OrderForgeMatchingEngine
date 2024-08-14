@@ -74,16 +74,19 @@ public:
         back_ = node_ptr;
     };
 
+    void remove_node(NodeTypePtr node_ptr) {
+        if(node_ptr == front_) {
+            pop_front();
+        } else if(node_ptr == back_) {
+            pop_back();
+        } else {
+            pop_middle(node_ptr);
+        }
+    }
+
     void remove(Id& id) {
         if(auto it = node_map_.find(id); it != node_map_.end()) {
-            auto node_ptr = it->second;
-            if(node_ptr == front_) {
-                pop_front();
-            } else if(node_ptr == back_) {
-                pop_back();
-            } else {
-                pop_middle(it->second);
-            }
+            remove_node(it->second);
         }
     }
 

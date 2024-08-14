@@ -74,16 +74,16 @@ constexpr auto generate_str(std::string_view str, std::string_view str2, std::st
         result[index++] = ch;
     }
 
-    result[index++] = ']';
-    result[index++] = ' ';
-    result[index++] = '[';
+    result[index++] = ':';
+    result[index++] = ':';
 
     for (char ch : str2) {
         result[index++] = ch;
     }
 
-    result[index++] = ':';
-    result[index++] = ':';
+    result[index++] = ']';
+    result[index++] = ' ';
+    result[index++] = '[';
 
     for (char ch : str3) {
         result[index++] = ch;
@@ -94,7 +94,9 @@ constexpr auto generate_str(std::string_view str, std::string_view str2, std::st
 }
 
 // this is just a wrapper because we cannot declare a static variable in generate_str until c++23
-template<std::size_t N1, std::size_t N2, std::size_t N3>
+// using the n template is a bit of a hack to get the compiler making different functions and therefore different static strings,
+// probably can be done better
+template<std::size_t N1, std::size_t N2, std::size_t N3, std::size_t n>
 const char* get_str(std::string_view str, std::string_view str2, std::string_view str3) {
     static const auto result = generate_str<N1, N2, N3>(str, str2, str3);
     return result.data();
@@ -104,7 +106,7 @@ const char* get_str(std::string_view str, std::string_view str2, std::string_vie
 #define STR_VIEW(str) std::string_view(str)
 #define FUNCTION STR_VIEW(__FUNCTION__)
 
-#define LOG_PREPEND(str) get_str<STR_VIEW(str).size(), TYPENAME.size(), FUNCTION.size()>(STR_VIEW(str), TYPENAME, FUNCTION)
+#define LOG_PREPEND(str, n) get_str<TYPENAME.size(), FUNCTION.size(), STR_VIEW(str).size(), n>(TYPENAME, FUNCTION, STR_VIEW(str))
 
 #ifdef DISABLE_LOGGING
 #define LOG_TRADE(trade)
@@ -114,18 +116,18 @@ const char* get_str(std::string_view str, std::string_view str2, std::string_vie
 #define LOG_WARN(format_str, ...)
 #define LOG_ERROR(format_str, ...)
 #elif RELEASE_LOGGING
-#define LOG_ORDER(order) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER"), order)
-#define LOG_TRADE(order) Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE"), order)
+#define LOG_ORDER(order) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), order)
+#define LOG_TRADE(order) Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), order)
 #define LOG_DEBUG(format_str, ...)
 #define LOG_INFO(format_str, ...)
 #define LOG_WARN(format_str, ...)
 #define LOG_ERROR(format_str, ...)
 #else
-#define LOG_ORDER(order) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER"), order)
-#define LOG_TRADE(order) Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE"), order)
-#define LOG_DEBUG(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("DEBUG"), format_str, ##__VA_ARGS__)
-#define LOG_INFO(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("INFO"), format_str, ##__VA_ARGS__)
-#define LOG_WARN(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("WARN"), format_str, ##__VA_ARGS__)
-#define LOG_ERROR(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("ERROR"), format_str, ##__VA_ARGS__)
+#define LOG_ORDER(order) Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), order)
+#define LOG_TRADE(trade) Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), trade)
+#define LOG_DEBUG(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("DEBUG", 3), format_str, ##__VA_ARGS__)
+#define LOG_INFO(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("INFO", 4), format_str, ##__VA_ARGS__)
+#define LOG_WARN(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("WARN", 5), format_str, ##__VA_ARGS__)
+#define LOG_ERROR(format_str, ...) Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("ERROR", 6), format_str, ##__VA_ARGS__)
 #endif
 

@@ -102,14 +102,16 @@ void OrderBook::match_order(Order &order) {
     } else {
         updates = bids.match_order(matching_engine);
     }
+    LOG_ORDER(order);
 
-    for(auto [modified_order, order_container]: matching_engine.get_modified_orders_()) {
+    for(auto modified_order: matching_engine.get_modified_orders_()) {
         if(private_order_update_handler) {
             private_order_update_handler(*modified_order);
-            auto* container = reinterpret_cast<OrdersCont*>(order_container);
-            if(modified_order->status() == FILLED )
-                container->remove(modified_order->order_id());
         }
+    }
+
+    for(const auto& level: matching_engine.remove_levels) {
+        level();
     }
 
     for(auto& trade: matching_engine.get_trades()) {

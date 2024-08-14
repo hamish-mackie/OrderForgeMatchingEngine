@@ -5,7 +5,7 @@
 
 constexpr std::string_view test_prepend = "test_prepend";
 
-#define LOG_TEST(test_struct) Logger::get_instance().write_buffer<TestStructOriginal, TestStructLog>(LogType::TEST_STRUCT, LOG_PREPEND("TEST_STRUCT"), test_struct);
+#define LOG_TEST(test_struct) Logger::get_instance().write_buffer<TestStructOriginal, TestStructLog>(LogType::TEST_STRUCT, LOG_PREPEND("TEST_STRUCT", 999), test_struct);
 
 TEST(TestLogger, test) {
     Logger::get_instance(true, 1024);

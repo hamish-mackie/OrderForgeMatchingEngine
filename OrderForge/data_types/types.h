@@ -22,3 +22,5 @@ using OrderId = uint64_t;
 using TradeId = uint64_t;
 
 using ErrorMessage = std::optional<std::string_view>;
+
+#define ENUM_STR(enum_val) std::string(magic_enum::enum_name(enum_val))
