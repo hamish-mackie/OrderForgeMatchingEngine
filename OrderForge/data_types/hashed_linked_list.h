@@ -26,6 +26,7 @@ public:
 
 template<typename Id, typename T>
 class HashLinkedList {
+public:
     using Item = T;
     using ItemRef = T&;
     using ItemPtr = T*;
@@ -34,7 +35,6 @@ class HashLinkedList {
     using NodeTypeRef = NodeType&;
     using NodeMap = std::unordered_map<Id, NodeTypePtr>;
 
-public:
     void pop() { pop_front(); }
     size_t size() const { return node_map_.size(); }
     bool empty() const { return node_map_.empty(); }

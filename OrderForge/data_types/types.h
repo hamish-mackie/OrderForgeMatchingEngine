@@ -8,8 +8,8 @@
 #include <optional>
 
 #include <magic_enum.hpp>
-#include <logger.h>
 
+#include "logger.h"
 #include "scaled_int.h"
 #include "id_generator.h"
 

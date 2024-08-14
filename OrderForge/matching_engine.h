@@ -19,7 +19,7 @@ public:
 
     Quantity match_order(Order& order);
 
-    std::vector<std::function<void()>> remove_levels;
+    std::pmr::vector<BookLevel*> remove_levels;
 
 private:
     Order& original_order_;

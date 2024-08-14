@@ -31,7 +31,7 @@ public:
     LevelUpdate remove_order(OrderId id);
     LevelUpdate match_order(MatchingEngine& matching_engine);
 
-    void remove_node();
+    void remove_marked_order_nodes();
 
     Quantity total_quantity() const { return total_qty_; }
     size_t size() const { return order_cont.size(); }
@@ -42,5 +42,5 @@ private:
     Quantity total_qty_;
     Side side_;
     OrdersCont order_cont;
-    std::vector<Node<uint64_t, Order>*> orders_to_be_removed_;
+    std::vector<OrdersCont::NodeTypePtr> orders_to_be_removed_;
 };
