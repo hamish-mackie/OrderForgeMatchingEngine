@@ -46,10 +46,10 @@ TEST_F(TestBookLevel, add_order) {
     ASSERT_EQ(book_level_bid_.total_quantity(), Quantity(0));
     ASSERT_EQ(book_level_bid_.size(), 0);
     auto update = book_level_bid_.add_order(order);
-    LOG_INFO("{}", update.log_level_update());
+    // LOG_INFO("{}", update.log_level_update());
 
-    ASSERT_EQ(update.price, bid_price_);
-    ASSERT_EQ(update.total_quantity, Quantity(5));
+    ASSERT_EQ(update.price(), bid_price_);
+    ASSERT_EQ(update.total_quantity(), Quantity(5));
     ASSERT_EQ(book_level_bid_.size(), 1);
     ASSERT_EQ(book_level_bid_.total_quantity(), qty);
 }
@@ -62,15 +62,15 @@ TEST_F(TestBookLevel, remove_order) {
     auto order = Order(symbol, bid_price_, qty, BUY, OPEN, LIMIT, 12345, client_id, id);
 
     auto update = book_level_bid_.add_order(order);
-    ASSERT_EQ(update.price, bid_price_);
-    ASSERT_EQ(update.total_quantity, Quantity(5));
+    ASSERT_EQ(update.price(), bid_price_);
+    ASSERT_EQ(update.total_quantity(), Quantity(5));
 
     ASSERT_EQ(book_level_bid_.size(), 1);
     ASSERT_EQ(book_level_bid_.total_quantity(), qty);
 
     auto update2 = book_level_bid_.remove_order(id);
-    ASSERT_EQ(update2.price, bid_price_);
-    ASSERT_EQ(update2.total_quantity, Quantity(0));
+    ASSERT_EQ(update2.price(), bid_price_);
+    ASSERT_EQ(update2.total_quantity(), Quantity(0));
 
     ASSERT_EQ(book_level_bid_.size(), 0);
     ASSERT_EQ(book_level_bid_.total_quantity(), Quantity(0));

@@ -1,19 +1,19 @@
 #include "order_book.h"
 
 void order_handler(const Order& order) {
-    fmt::println("Order: Price {}, Quantity {}/{}, Side: {}, Status: {}", order.price(), order.remaining_qty(), order.qty(), ENUM_STR(order.side()), ENUM_STR(order.status()));
+    fmt::println("Order: Price {}, Quantity {}/{}, Side: {}, Status: {}", order.price(), order.remaining_qty(), order.qty(), enum_str(order.side()), enum_str(order.status()));
 }
 
 void trade_handler(const Trade& trade) {
-    fmt::println("Trade: Price {}, Quantity {}, Side: {}", trade.price(), trade.qty(), ENUM_STR(trade.crossing_side()));
+    fmt::println("Trade: Price {}, Quantity {}, Side: {}", trade.price(), trade.qty(), enum_str(trade.crossing_side()));
 }
 
 void level_update_handler(const LevelUpdate& update) {
-    fmt::println("Level Update: Price: {}, Quantity: {}, Side: {}", update.price, update.total_quantity, ENUM_STR(update.side));
+    fmt::println("Level Update: Price: {}, Quantity: {}, Side: {}", update.price(), update.total_quantity(), enum_str(update.side()));
 }
 
 void last_trade_handler(const LastTradeUpdate& update) {
-    fmt::println("Last Trade: Price: {}, Quantity: {}, Side: {}", update.price(), update.quantity(), ENUM_STR(update.side()));
+    fmt::println("Last Trade: Price: {}, Quantity: {}, Side: {}", update.price(), update.quantity(), enum_str(update.side()));
 }
 
 int main() {

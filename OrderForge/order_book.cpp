@@ -62,7 +62,8 @@ void OrderBook::add_order(Order &order) {
     }
 
     for(auto& update: updates) {
-        LOG_DEBUG("{}", update.log_level_update());
+        // TODO Log Type Correctly
+        // LOG_DEBUG("{}", update.log_level_update());
         if(public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }
@@ -86,7 +87,7 @@ void OrderBook::remove_order(OrderId id) {
     }
 
     for(auto& update: updates) {
-        LOG_DEBUG("{}", update.log_level_update());
+        // LOG_DEBUG("{}", update.log_level_update());
         if(public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }
@@ -124,7 +125,7 @@ void OrderBook::match_order(Order &order) {
     }
 
     for(auto& update: updates) {
-        LOG_DEBUG("{}", update.log_level_update());
+        // LOG_DEBUG("{}", update.log_level_update());
         if(public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }

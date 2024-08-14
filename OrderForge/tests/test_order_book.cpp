@@ -46,9 +46,9 @@ void verify_order_update(Order &result, Order &received) {
 }
 
 void verify_level_update(LevelUpdate &result, LevelUpdate &received) {
-    ASSERT_EQ(result.price.descaled_value(), received.price.descaled_value());
-    ASSERT_EQ(result.total_quantity.descaled_value(), received.total_quantity.descaled_value());
-    ASSERT_EQ(result.side, received.side);
+    ASSERT_EQ(result.price(), received.price());
+    ASSERT_EQ(result.total_quantity(), received.total_quantity());
+    ASSERT_EQ(result.side(), received.side());
 }
 
 void verify_level_update(LevelUpdate &result, Price price, Quantity total_qty, Side side) {

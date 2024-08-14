@@ -38,8 +38,8 @@ template<typename CompFunc>
 LevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper& helper) {
     auto ptr = levels_.get_book_level(helper.price);
     auto update = ptr->remove_order(helper);
-    if(update.total_quantity.value() == 0) {
-        levels_.remove_book_level(update.price);
+    if(update.total_quantity().value() == 0) {
+        levels_.remove_book_level(update.price());
     }
     return update;
 }
@@ -54,8 +54,8 @@ std::vector<LevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine& trade_p
     }
 
     for(auto& update: updates) {
-        if(update.total_quantity.value() == 0) {
-            levels_.remove_book_level(update.price);
+        if(update.total_quantity().value() == 0) {
+            levels_.remove_book_level(update.price());
         }
     }
 

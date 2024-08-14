@@ -23,4 +23,7 @@ using TradeId = uint64_t;
 
 using ErrorMessage = std::optional<std::string_view>;
 
-#define ENUM_STR(enum_val) std::string(magic_enum::enum_name(enum_val))
+template<typename Enum>
+auto enum_str(Enum enum_val) -> auto {
+    return std::string(magic_enum::enum_name(enum_val));
+}
