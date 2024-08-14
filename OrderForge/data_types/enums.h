@@ -12,19 +12,19 @@ inline OrderId gen_random_order_id() {
     return dis(gen);
 }
 
-enum Side: uint8_t {
+enum Side : uint8_t {
     BUY = 0,
     SELL = 1,
 };
 
-enum OrderStatus: uint8_t {
+enum OrderStatus : uint8_t {
     OPEN = 0,
     PARTIAL = 1,
     FILLED = 2,
     CANCELLED = 3,
 };
 
-enum OrderType: uint8_t {
+enum OrderType : uint8_t {
     LIMIT = 0,
     MARKET = 1,
 };

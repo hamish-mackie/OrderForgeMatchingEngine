@@ -1,17 +1,17 @@
 #pragma once
 
 #include <iostream>
-#include <string_view>
-#include <vector>
 #include <map>
-#include <unordered_map>
 #include <optional>
+#include <string_view>
+#include <unordered_map>
+#include <vector>
 
 #include <magic_enum.hpp>
 
+#include "id_generator.h"
 #include "logger.h"
 #include "scaled_int.h"
-#include "id_generator.h"
 
 using Symbol = std::string_view;
 using Price = ScaledInt<int64_t, static_cast<uint64_t>(1e2)>;

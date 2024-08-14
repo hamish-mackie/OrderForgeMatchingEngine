@@ -4,23 +4,22 @@
 
 class OrderBookDataInterface {
 public:
-    using BookLvlPtr = BookLevel*;
+    using BookLvlPtr = BookLevel *;
 
-    OrderBookDataInterface(Side side, TickSize tick_size): side_(side), tick_size_(tick_size) {}
+    OrderBookDataInterface(Side side, TickSize tick_size) : side_(side), tick_size_(tick_size) {}
+
     virtual ~OrderBookDataInterface() = 0;
 
     virtual std::optional<Price> best_price() = 0;
-    virtual BookLvlPtr get_book_level(const Price& price) = 0;
-    virtual BookLvlPtr add_book_level(const Price& price) = 0;
-    virtual void remove_book_level(const Price& price) = 0;
+    virtual BookLvlPtr get_book_level(const Price &price) = 0;
+    virtual BookLvlPtr add_book_level(const Price &price) = 0;
+    virtual void remove_book_level(const Price &price) = 0;
 
 protected:
     const Side side_;
 
 private:
     virtual void generate_data_structure() = 0;
-    // price range to keep in memory, eg price is 100, range is 20, store ticks from 80-120
-    uint32_t range_percent_;
     const TickSize tick_size_;
 };
 
@@ -28,45 +27,45 @@ private:
 inline OrderBookDataInterface::~OrderBookDataInterface() {}
 
 template<typename CompFunc>
-class OrderBookDataMap: public OrderBookDataInterface  {
+class OrderBookDataMap : public OrderBookDataInterface {
 public:
     using OrderBookContainer = std::map<Price, BookLvlPtr, CompFunc>;
 
-    OrderBookDataMap(const Side side, const TickSize &tick_size)
-        : OrderBookDataInterface(side, tick_size), book_cont_() {}
+    OrderBookDataMap(const Side side, const TickSize &tick_size) :
+        OrderBookDataInterface(side, tick_size), book_cont_() {}
 
     std::optional<Price> best_price() override {
-        if(book_cont_.empty()) return {};
+        if (book_cont_.empty())
+            return {};
         return {book_cont_.begin()->first};
     };
 
-    BookLvlPtr get_book_level(const Price& price) override {
+    BookLvlPtr get_book_level(const Price &price) override {
         auto it = book_cont_.find(price);
-        if(it != book_cont_.end()) {
+        if (it != book_cont_.end()) {
             return it->second;
         } else {
             return add_book_level(price);
         }
     };
 
-    BookLvlPtr add_book_level(const Price& price) override {
+    BookLvlPtr add_book_level(const Price &price) override {
         auto res = book_cont_.emplace(price, new BookLevel(price, side_));
         return res.first->second;
     };
 
-    void remove_book_level(const Price& price) override {
-        auto res = book_cont_.erase(price);
-    }
+    void remove_book_level(const Price &price) override { auto res = book_cont_.erase(price); }
 
     ~OrderBookDataMap() override {
-        for(auto r: book_cont_) { delete r.second; }
+        for (auto r: book_cont_) {
+            delete r.second;
+        }
     };
 
     typename OrderBookContainer::iterator begin() { return book_cont_.begin(); }
     typename OrderBookContainer::iterator end() { return book_cont_.end(); }
 
 private:
-    void generate_data_structure() override {};
+    void generate_data_structure() override{};
     OrderBookContainer book_cont_;
 };
-

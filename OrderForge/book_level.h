@@ -1,15 +1,12 @@
 #pragma once
 
-#include "order_forge_types.h"
 #include "matching_engine.h"
+#include "order_forge_types.h"
 
 class LevelUpdate {
 public:
-    LevelUpdate(const Price &price, const Quantity &total_quantity, Side side)
-        : price_(price),
-          total_qty_(total_quantity),
-          side_(side) {
-    }
+    LevelUpdate(const Price &price, const Quantity &total_quantity, Side side) :
+        price_(price), total_qty_(total_quantity), side_(side) {}
 
     [[nodiscard]] Quantity total_quantity() const { return total_qty_; }
     [[nodiscard]] Price price() const { return price_; }
@@ -25,11 +22,12 @@ class BookLevel {
 public:
     using OrdersCont = HashLinkedList<OrderId, Order>;
 
-    explicit BookLevel(const Price& price, Side side): price_(price), total_qty_(0), side_(side) {}
-    LevelUpdate add_order(Order& order);
-    LevelUpdate remove_order(FindOrderHelper& helper);
+    explicit BookLevel(const Price &price, Side side) : price_(price), total_qty_(0), side_(side) {}
+
+    LevelUpdate add_order(Order &order);
+    LevelUpdate remove_order(FindOrderHelper &helper);
     LevelUpdate remove_order(OrderId id);
-    LevelUpdate match_order(MatchingEngine& matching_engine);
+    LevelUpdate match_order(MatchingEngine &matching_engine);
 
     void remove_marked_order_nodes();
 
