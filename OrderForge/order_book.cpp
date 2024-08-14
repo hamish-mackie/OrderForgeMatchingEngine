@@ -110,7 +110,7 @@ void OrderBook::match_order(Order &order) {
         }
     }
 
-    for (const auto &level: matching_engine.remove_levels) {
+    for (const auto &level: matching_engine.get_levels_to_remove_orders()) {
         level->remove_marked_order_nodes();
     }
 

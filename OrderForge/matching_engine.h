@@ -18,8 +18,8 @@ public:
     std::pmr::vector<Trade> &get_trades() { return trades_; }
 
     Quantity match_order(Order &order);
-
-    std::pmr::vector<BookLevel *> remove_levels;
+    void add_level_to_remove_orders(BookLevel *book_level) { remove_levels.push_back(book_level); }
+    std::pmr::vector<BookLevel *>& get_levels_to_remove_orders() { return remove_levels; }
 
 private:
     Order &original_order_;
@@ -30,5 +30,6 @@ private:
     std::pmr::vector<Trade> trades_;
     // We also report vector of orders which have been removed or changed.
     std::pmr::vector<Order *> modified_orders_;
+    std::pmr::vector<BookLevel *> remove_levels;
     std::pmr::unsynchronized_pool_resource &vec_resource_;
 };

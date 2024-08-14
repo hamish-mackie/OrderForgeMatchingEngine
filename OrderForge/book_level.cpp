@@ -18,9 +18,7 @@ LevelUpdate BookLevel::add_order(Order &order) {
     return {price_, total_qty_, side_};
 }
 
-LevelUpdate BookLevel::remove_order(FindOrderHelper &helper) {
-    return remove_order(helper.order_id);
-}
+LevelUpdate BookLevel::remove_order(FindOrderHelper &helper) { return remove_order(helper.order_id); }
 
 LevelUpdate BookLevel::remove_order(OrderId id) {
     auto res = order_cont.find(id);
@@ -56,7 +54,7 @@ LevelUpdate BookLevel::match_order(MatchingEngine &matching_engine) {
     }
 
     if (total_qty_ != prev_total_qty) {
-        matching_engine.remove_levels.emplace_back(this);
+        matching_engine.add_level_to_remove_orders(this);
     }
 
     return {price_, total_qty_, side_};
