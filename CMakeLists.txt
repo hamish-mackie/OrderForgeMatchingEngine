@@ -3,7 +3,7 @@ project(OrderForge)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(demo_run main.cpp)
+add_executable(demo_run demo_run.cpp)
 
 include(FetchContent)
 FetchContent_Declare(

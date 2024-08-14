@@ -52,6 +52,8 @@ The engine can **insert/remove/match** up to:
 Getting the demo app running is straightforward:
 
 ```bash
+git clone https://github.com/hamish-mackie/OrderForgeMatchingEngine.git
+cd OrderForgeMatchingEngine
 mkdir build-release && cd build-release
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
