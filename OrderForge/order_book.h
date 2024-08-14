@@ -23,7 +23,7 @@ public:
     OrderBookUpdateHandler public_order_book_update_handler;
     LastTradeUpdateHandler public_last_trade_update_handler;
 
-    OrderBook(std::string symbol, Price starting_price, TickSize tick_size);
+    OrderBook(std::string symbol, Price starting_price, TickSize tick_size, bool write_std_out);
     void add_order(Order& order);
     void remove_order(OrderId id);
 

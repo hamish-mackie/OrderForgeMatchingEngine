@@ -1,11 +1,11 @@
 #include "order_book.h"
 
-OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_size)
+OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_size, bool write_std_out)
     : symbol_(std::make_unique<std::string>(symbol))
     , bids(BookSideBid(BUY, tick_size))
     , asks(BookSideAsk(SELL, tick_size)) {
 
-    Logger::get_instance(false, MB * 50, 5);
+    Logger::get_instance(write_std_out, MB * 50, 5);
     REGISTER_TYPE(ORDER, Order);
     REGISTER_TYPE(TRADE, Trade);
     REGISTER_TYPE(DEBUG, Debug);
@@ -101,6 +101,15 @@ void OrderBook::match_order(Order &order) {
         updates = asks.match_order(matching_engine);
     } else {
         updates = bids.match_order(matching_engine);
+    }
+
+    for(auto [modified_order, order_container]: matching_engine.get_modified_orders_()) {
+        if(private_order_update_handler) {
+            private_order_update_handler(*modified_order);
+            auto* container = reinterpret_cast<OrdersCont*>(order_container);
+            if(modified_order->status() == FILLED )
+                container->remove(modified_order->order_id());
+        }
     }
 
     for(auto& trade: matching_engine.get_trades()) {

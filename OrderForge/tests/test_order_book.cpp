@@ -7,7 +7,7 @@ public:
     TestOrderBook()
         : start_price_(100)
           , tick_size_(0.01)
-          , ob(symbol.data(), start_price_, tick_size_) {
+          , ob(symbol.data(), start_price_, tick_size_, true) {
     }
 
 protected:
