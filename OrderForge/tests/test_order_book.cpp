@@ -274,7 +274,7 @@ TEST_F(TestOrderBook, test_market_order_into_empty_book) {
     Order buy_order(symbol, Price(101), Quantity(1), BUY, OPEN, MARKET, 556, 2);
 
     ob.add_order(sell_order);
-    ob.add_order(sell_order);
+    ob.add_order(buy_order);
 
     ASSERT_EQ(order_updates.size(), 2);
     for (auto &order: order_updates) {
@@ -303,20 +303,22 @@ TEST_F(TestOrderBook, test_fak_order_fully_filled_with_liquidity) {
 
 
 TEST_F(TestOrderBook, test_fak_order_partial_fill_and_cancel) {
-    std::vector<Order> initial_orders = {Order(symbol, Price(100), Quantity(3), SELL, OPEN, LIMIT, 555)};
+    std::vector<Order> initial_orders = {Order(symbol, Price(100), Quantity(3), SELL, OPEN, LIMIT, 555, 1)};
 
     for (auto &order: initial_orders) {
         ob.add_order(order);
     }
 
-    Order fak_buy_order(symbol, Price(101), Quantity(5), BUY, OPEN, FILL_AND_KILL, 555);
+    Order fak_buy_order(symbol, Price(101), Quantity(5), BUY, OPEN, FILL_AND_KILL, 555, 2);
     ob.add_order(fak_buy_order);
 
     ASSERT_EQ(trade_updates_.size(), 1);
     ASSERT_EQ(trade_updates_.back().qty().descaled_value(), 3);
-    ASSERT_EQ(order_updates[1].status(), PARTIAL);
-    ASSERT_EQ(order_updates[2].status(), FILLED);
+    ASSERT_EQ(order_updates[1].status(), FILLED);
+    ASSERT_EQ(order_updates[2].status(), PARTIAL);
 
-    ASSERT_EQ(order_updates.back().remaining_qty().descaled_value(), 0);
-    ASSERT_EQ(level_updates_.back().total_quantity(), Quantity(0));
+    ASSERT_EQ(order_updates[1].remaining_qty().descaled_value(), 0);
+    ASSERT_EQ(order_updates[2].remaining_qty().descaled_value(), 2);
+
+    ASSERT_EQ(level_updates_[1].total_quantity(), Quantity(0));
 }

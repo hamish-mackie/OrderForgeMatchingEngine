@@ -36,6 +36,10 @@ private:
     OrdersIdMap orders_id_map_;
     std::pmr::unsynchronized_pool_resource pmr_resource_;
 
+    void limit_order(Order &order);
+    void market_order(Order &order);
+    void fill_and_kill_order(Order &order);
+
     void match_order(Order &order);
     bool is_crossing_order(Order &order);
     void reject_order(Order &order);

@@ -87,15 +87,15 @@ void benchmark_order_book(uint64_t num_orders) {
                fmt::group_digits(orders.size()), duration_market_orders.count(), fmt::group_digits(market_ops_per_sec));
 }
 
-void *operator new(std ::size_t count) {
-    auto ptr = malloc(count);
-    TracyAlloc(ptr, count);
-    return ptr;
-}
-void operator delete(void *ptr) noexcept {
-    TracyFree(ptr);
-    free(ptr);
-}
+// void *operator new(std ::size_t count) {
+//     auto ptr = malloc(count);
+//     TracyAlloc(ptr, count);
+//     return ptr;
+// }
+// void operator delete(void *ptr) noexcept {
+//     TracyFree(ptr);
+//     free(ptr);
+// }
 
 int main() {
     TracyAppInfo("Benchmark", 0);

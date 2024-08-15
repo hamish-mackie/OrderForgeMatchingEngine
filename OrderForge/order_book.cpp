@@ -28,43 +28,23 @@ void OrderBook::add_order(Order &order) {
         order.set_order_id();
     }
 
-    if (order.type() == MARKET) {
-        match_order(order);
-        return;
-    }
-
-    if (is_crossing_order(order)) {
-        match_order(order);
-    }
-
-    if (order.type() == FILL_AND_KILL) {
-        return;
-    }
-
-    // order fully traded
-    if (order.remaining_qty().value() == 0) {
-        return;
-    }
-
-    LevelUpdates updates;
-
-    if (order.side() == BUY) {
-        updates.push_back(bids.add_order(order));
-        add_order_helper(order.price(), order.order_id(), order.side());
-    } else {
-        updates.push_back(asks.add_order(order));
-        add_order_helper(order.price(), order.order_id(), order.side());
+    switch (order.type()) {
+        case MARKET: {
+            market_order(order);
+            break;
+        }
+        case FILL_AND_KILL: {
+            fill_and_kill_order(order);
+            break;
+        }
+        case LIMIT: {
+            limit_order(order);
+            break;
+        }
     }
 
     if (private_order_update_handler) {
         private_order_update_handler(order);
-    }
-
-    for (auto &update: updates) {
-        LOG_UPDATE_LEVEL(update);
-        if (public_order_book_update_handler) {
-            public_order_book_update_handler(update);
-        }
     }
 }
 
@@ -92,27 +72,55 @@ void OrderBook::remove_order(OrderId id) {
     }
 }
 
+void OrderBook::limit_order(Order &order) {
+    if (is_crossing_order(order)) {
+        match_order(order);
+    }
+    if (order.status() == FILLED) {
+        return;
+    }
+
+    LevelUpdate update;
+
+    if (order.is_buy()) {
+        update = bids.add_order(order);
+        add_order_helper(order.price(), order.order_id(), order.side());
+    } else {
+        update = asks.add_order(order);
+        add_order_helper(order.price(), order.order_id(), order.side());
+    }
+
+    LOG_UPDATE_LEVEL(update);
+    if (public_order_book_update_handler) {
+        public_order_book_update_handler(update);
+    }
+}
+
+void OrderBook::market_order(Order &order) { match_order(order); }
+
+void OrderBook::fill_and_kill_order(Order &order) {
+    if (is_crossing_order(order)) {
+        match_order(order);
+    }
+}
+
 void OrderBook::match_order(Order &order) {
     auto matching_engine = MatchingEngine(order, pmr_resource_);
     std::vector<LevelUpdate> updates;
 
     // If there are no orders in the book, reject the market order
     if (order.type() == MARKET) {
-        if (order.side() == BUY && asks.empty() || order.side() == SELL && bids.empty()) {
+        if (order.is_buy() && asks.empty() || !order.is_buy() && bids.empty()) {
             reject_order(order);
             return;
         }
     }
 
     LOG_ORDER(order);
-    if (order.side() == BUY) {
+    if (order.is_buy()) {
         updates = asks.match_order(matching_engine);
     } else {
         updates = bids.match_order(matching_engine);
-    }
-
-    if (private_order_update_handler) {
-        private_order_update_handler(order);
     }
 
     for (auto modified_order: matching_engine.get_modified_orders_()) {
@@ -129,6 +137,7 @@ void OrderBook::match_order(Order &order) {
         if (private_trades_update_handler) {
             private_trades_update_handler(trade);
         }
+
         if (public_last_trade_update_handler) {
             auto last_trade_update = LastTradeUpdate(trade.price(), trade.qty(), trade.crossing_side());
             public_last_trade_update_handler(last_trade_update);
@@ -145,24 +154,21 @@ void OrderBook::match_order(Order &order) {
 
 bool OrderBook::is_crossing_order(Order &order) {
     // If there is no orders on the opposite side, nothing to match with. return false.
-    if (order.side() == BUY && asks.empty()) {
+    if (order.is_buy() && asks.empty()) {
         return false;
     }
-    if (order.side() == SELL && bids.empty()) {
+    if (!order.is_buy() && bids.empty()) {
         return false;
     }
 
-    auto opposite_best_price = order.side() == BUY ? asks.best_price() : bids.best_price();
+    auto opposite_best_price = order.is_buy() ? asks.best_price() : bids.best_price();
 
-    return (order.side() == BUY && order.price() >= opposite_best_price) ||
-           (order.side() == SELL && order.price() <= opposite_best_price);
+    return (order.is_buy() && order.price() >= opposite_best_price) ||
+           (!order.is_buy() && order.price() <= opposite_best_price);
 }
 void OrderBook::reject_order(Order &order) {
     order.set_status(REJECTED);
     LOG_ORDER(order);
-    if (private_order_update_handler) {
-        private_order_update_handler(order);
-    }
 }
 
 void OrderBook::add_order_helper(Price price, OrderId order_id, Side side) {

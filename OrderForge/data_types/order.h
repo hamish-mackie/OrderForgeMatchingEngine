@@ -33,6 +33,8 @@ public:
 
     Quantity reduce_qty(Quantity &qty);
 
+    [[nodiscard]] bool is_buy() const { return side_ == Side::BUY; }
+
 private:
     Symbol symbol_;
     Price price_;

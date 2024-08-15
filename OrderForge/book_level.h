@@ -5,6 +5,8 @@
 
 class LevelUpdate {
 public:
+    LevelUpdate() : side_() {}
+
     LevelUpdate(const Price &price, const Quantity &total_quantity, Side side) :
         price_(price), total_qty_(total_quantity), side_(side) {}
 
