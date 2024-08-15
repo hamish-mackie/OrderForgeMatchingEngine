@@ -95,8 +95,7 @@ void OrderBook::match_order(Order &order) {
     // If there are no orders in the book, reject the market order
     if (order.type() == MARKET) {
         if (order.side() == BUY && asks.empty() || order.side() == SELL && bids.empty()) {
-            order.set_status(REJECTED);
-            LOG_ORDER(order);
+            reject_order(order);
             return;
         }
     }
@@ -153,6 +152,13 @@ bool OrderBook::is_crossing_order(Order &order) {
 
     return (order.side() == BUY && order.price() >= opposite_best_price) ||
            (order.side() == SELL && order.price() <= opposite_best_price);
+}
+void OrderBook::reject_order(Order &order) {
+    order.set_status(REJECTED);
+    LOG_ORDER(order);
+    if (private_order_update_handler) {
+        private_order_update_handler(order);
+    }
 }
 
 void OrderBook::add_order_helper(Price price, OrderId order_id, Side side) {

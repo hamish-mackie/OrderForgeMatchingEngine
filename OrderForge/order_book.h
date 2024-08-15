@@ -38,4 +38,5 @@ private:
 
     void match_order(Order &order);
     bool is_crossing_order(Order &order);
+    void reject_order(Order &order);
 };

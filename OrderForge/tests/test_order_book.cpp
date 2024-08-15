@@ -254,6 +254,7 @@ TEST_F(TestOrderBook, test_market_order_into_empty_book) {
     ob.add_order(sell_order);
     ob.add_order(sell_order);
 
+    ASSERT_EQ(order_updates.size(), 2);
     for (auto &order: order_updates) {
         ASSERT_EQ(order.status(), REJECTED);
     }
