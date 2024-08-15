@@ -92,6 +92,15 @@ void OrderBook::match_order(Order &order) {
     auto matching_engine = MatchingEngine(order, pmr_resource_);
     std::vector<LevelUpdate> updates;
 
+    // If there are no orders in the book, reject the market order
+    if (order.type() == MARKET) {
+        if (order.side() == BUY && asks.empty() || order.side() == SELL && bids.empty()) {
+            order.set_status(REJECTED);
+            LOG_ORDER(order);
+            return;
+        }
+    }
+
     LOG_ORDER(order);
     if (order.side() == BUY) {
         updates = asks.match_order(matching_engine);

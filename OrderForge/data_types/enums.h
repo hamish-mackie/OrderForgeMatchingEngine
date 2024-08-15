@@ -22,6 +22,7 @@ enum OrderStatus : uint8_t {
     PARTIAL = 1,
     FILLED = 2,
     CANCELLED = 3,
+    REJECTED = 4,
 };
 
 enum OrderType : uint8_t {
