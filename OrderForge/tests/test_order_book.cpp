@@ -8,13 +8,11 @@ public:
 
 protected:
     void SetUp() override {
-        ob.private_order_update_handler = [&](const Order &order) { order_updates.push_back(order); };
+        ob.private_order_update_handler = [&](const Order &order) { order_handler(order); };
         ob.private_account_update_handler = [&]() {};
-        ob.private_trades_update_handler = [&](const Trade &trade) { trade_updates_.push_back(trade); };
-        ob.public_order_book_update_handler = [&](const LevelUpdate &update) { level_updates_.push_back(update); };
-        ob.public_last_trade_update_handler = [&](const LastTradeUpdate &update) {
-            last_trade_updates_.push_back(update);
-        };
+        ob.private_trades_update_handler = [&](const Trade &trade) { trade_handler(trade); };
+        ob.public_order_book_update_handler = [&](const LevelUpdate &update) { level_update_handler(update); };
+        ob.public_last_trade_update_handler = [&](const LastTradeUpdate &update) { last_trade_handler(update); };
     }
     std::string_view symbol = "TESTUSD";
     Price start_price_;
@@ -24,6 +22,30 @@ protected:
     std::vector<LevelUpdate> level_updates_;
     std::vector<Trade> trade_updates_;
     std::vector<LastTradeUpdate> last_trade_updates_;
+
+    void order_handler(const Order &order) {
+        fmt::println("Order: Price {}, Quantity {}/{}, Side: {}, Status: {}", order.price(), order.remaining_qty(),
+                     order.qty(), enum_str(order.side()), enum_str(order.status()));
+        order_updates.push_back(order);
+    }
+
+    void trade_handler(const Trade &trade) {
+        fmt::println("Trade: Price {}, Quantity {}, Side: {}", trade.price(), trade.qty(),
+                     enum_str(trade.crossing_side()));
+        trade_updates_.push_back(trade);
+    }
+
+    void level_update_handler(const LevelUpdate &update) {
+        fmt::println("Level Update: Price: {}, Quantity: {}, Side: {}", update.price(), update.total_quantity(),
+                     enum_str(update.side()));
+        level_updates_.push_back(update);
+    }
+
+    void last_trade_handler(const LastTradeUpdate &update) {
+        fmt::println("Last Trade: Price: {}, Quantity: {}, Side: {}", update.price(), update.quantity(),
+                     enum_str(update.side()));
+        last_trade_updates_.push_back(update);
+    }
 };
 
 void verify_order_update(Order &result, Order &received) {
@@ -258,4 +280,43 @@ TEST_F(TestOrderBook, test_market_order_into_empty_book) {
     for (auto &order: order_updates) {
         ASSERT_EQ(order.status(), REJECTED);
     }
+}
+
+TEST_F(TestOrderBook, test_fak_order_fully_filled_with_liquidity) {
+    std::vector<Order> initial_orders = {Order(symbol, Price(100), Quantity(5), SELL, OPEN, LIMIT, 555)};
+
+    for (auto &order: initial_orders) {
+        ob.add_order(order);
+    }
+
+    // FAK Buy Order
+    Order fak_buy_order(symbol, Price(100), Quantity(5), BUY, OPEN, FILL_AND_KILL, 555);
+    ob.add_order(fak_buy_order);
+
+    ASSERT_EQ(trade_updates_.size(), 1);
+    ASSERT_EQ(trade_updates_.back().qty().descaled_value(), 5);
+    ASSERT_EQ(order_updates.size(), 3);
+    ASSERT_EQ(order_updates.back().status(), FILLED);
+
+    ASSERT_EQ(level_updates_.back().total_quantity(), Quantity(0));
+}
+
+
+TEST_F(TestOrderBook, test_fak_order_partial_fill_and_cancel) {
+    std::vector<Order> initial_orders = {Order(symbol, Price(100), Quantity(3), SELL, OPEN, LIMIT, 555)};
+
+    for (auto &order: initial_orders) {
+        ob.add_order(order);
+    }
+
+    Order fak_buy_order(symbol, Price(101), Quantity(5), BUY, OPEN, FILL_AND_KILL, 555);
+    ob.add_order(fak_buy_order);
+
+    ASSERT_EQ(trade_updates_.size(), 1);
+    ASSERT_EQ(trade_updates_.back().qty().descaled_value(), 3);
+    ASSERT_EQ(order_updates[1].status(), PARTIAL);
+    ASSERT_EQ(order_updates[2].status(), FILLED);
+
+    ASSERT_EQ(order_updates.back().remaining_qty().descaled_value(), 0);
+    ASSERT_EQ(level_updates_.back().total_quantity(), Quantity(0));
 }

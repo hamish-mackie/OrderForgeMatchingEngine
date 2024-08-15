@@ -28,4 +28,5 @@ enum OrderStatus : uint8_t {
 enum OrderType : uint8_t {
     LIMIT = 0,
     MARKET = 1,
+    FILL_AND_KILL = 2,
 };

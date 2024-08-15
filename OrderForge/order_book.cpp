@@ -37,6 +37,10 @@ void OrderBook::add_order(Order &order) {
         match_order(order);
     }
 
+    if (order.type() == FILL_AND_KILL) {
+        return;
+    }
+
     // order fully traded
     if (order.remaining_qty().value() == 0) {
         return;
