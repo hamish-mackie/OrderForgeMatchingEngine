@@ -41,6 +41,6 @@ private:
     void fill_and_kill_order(Order &order);
 
     void match_order(Order &order);
-    bool is_crossing_order(Order &order);
+    inline bool is_crossing_order(Order &order);
     void reject_order(Order &order);
 };

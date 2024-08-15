@@ -96,25 +96,26 @@ void OrderBook::limit_order(Order &order) {
     }
 }
 
-void OrderBook::market_order(Order &order) { match_order(order); }
+void OrderBook::market_order(Order &order) {
+    if (order.is_buy() && asks.empty() || !order.is_buy() && bids.empty()) {
+        reject_order(order);
+        return;
+    }
+
+    match_order(order);
+}
 
 void OrderBook::fill_and_kill_order(Order &order) {
     if (is_crossing_order(order)) {
         match_order(order);
+    } else {
+        reject_order(order);
     }
 }
 
 void OrderBook::match_order(Order &order) {
     auto matching_engine = MatchingEngine(order, pmr_resource_);
     std::vector<LevelUpdate> updates;
-
-    // If there are no orders in the book, reject the market order
-    if (order.type() == MARKET) {
-        if (order.is_buy() && asks.empty() || !order.is_buy() && bids.empty()) {
-            reject_order(order);
-            return;
-        }
-    }
 
     LOG_ORDER(order);
     if (order.is_buy()) {
@@ -153,19 +154,14 @@ void OrderBook::match_order(Order &order) {
 }
 
 bool OrderBook::is_crossing_order(Order &order) {
-    // If there is no orders on the opposite side, nothing to match with. return false.
-    if (order.is_buy() && asks.empty()) {
+    bool is_buy = order.is_buy();
+    if ((is_buy && asks.empty()) || (!is_buy && bids.empty())) {
         return false;
     }
-    if (!order.is_buy() && bids.empty()) {
-        return false;
-    }
-
-    auto opposite_best_price = order.is_buy() ? asks.best_price() : bids.best_price();
-
-    return (order.is_buy() && order.price() >= opposite_best_price) ||
-           (!order.is_buy() && order.price() <= opposite_best_price);
+    auto opposite_best_price = is_buy ? asks.best_price() : bids.best_price();
+    return is_buy ? (order.price() >= opposite_best_price) : (order.price() <= opposite_best_price);
 }
+
 void OrderBook::reject_order(Order &order) {
     order.set_status(REJECTED);
     LOG_ORDER(order);

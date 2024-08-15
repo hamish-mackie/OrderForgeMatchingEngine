@@ -322,3 +322,16 @@ TEST_F(TestOrderBook, test_fak_order_partial_fill_and_cancel) {
 
     ASSERT_EQ(level_updates_[1].total_quantity(), Quantity(0));
 }
+
+TEST_F(TestOrderBook, test_fak_wont_fill_at_all) {
+    Order sell_order(symbol, Price(101), Quantity(1), SELL, OPEN, LIMIT, 556, 2);
+    Order buy_order(symbol, Price(100), Quantity(1), BUY, OPEN, FILL_AND_KILL, 556, 2);
+
+    ob.add_order(sell_order);
+    ob.add_order(buy_order);
+
+    ASSERT_EQ(order_updates.size(), 2);
+
+    ASSERT_EQ(order_updates[0].status(), OPEN);
+    ASSERT_EQ(order_updates[1].status(), REJECTED);
+}
