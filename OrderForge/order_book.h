@@ -19,7 +19,7 @@ public:
 
     // Public feed handlers
     using OrderBookUpdateHandler = std::function<void(const LevelUpdate &update)>;
-    using LastTradeUpdateHandler = std::function<void(const LastTradeUpdate &&update)>;
+    using LastTradeUpdateHandler = std::function<void(const LastTradeUpdate &update)>;
     OrderBookUpdateHandler public_order_book_update_handler;
     LastTradeUpdateHandler public_last_trade_update_handler;
 
@@ -37,4 +37,5 @@ private:
     std::pmr::unsynchronized_pool_resource pmr_resource_;
 
     void match_order(Order &order);
+    bool is_crossing_order(Order &order);
 };

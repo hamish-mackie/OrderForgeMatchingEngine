@@ -7,6 +7,9 @@ enum LogType : uint8_t {
     DEBUG = 2,
     ORDER = 10,
     TRADE = 11,
+
+    LEVEL_UPDATE = 20,
+    LAST_TRADE_UPDATE = 21,
 };
 
 #define REGISTER_TYPE(enum, type)                                                                                      \
@@ -107,32 +110,52 @@ const char *get_str(std::string_view str, std::string_view str2, std::string_vie
     get_str<TYPENAME.size(), FUNCTION.size(), STR_VIEW(str).size(), n>(TYPENAME, FUNCTION, STR_VIEW(str))
 
 #ifdef DISABLE_LOGGING
+
 #define LOG_TRADE(trade)
 #define LOG_ORDER(order)
+#define LOG_UPDATE_LEVEL(level_update)
+#define LOG_UPDATE_LAST_TRADE(last_trade_update)
 #define LOG_DEBUG(format_str, ...)
 #define LOG_INFO(format_str, ...)
 #define LOG_WARN(format_str, ...)
 #define LOG_ERROR(format_str, ...)
+
 #elif RELEASE_LOGGING
-#define LOG_ORDER(order)                                                                                               \
-    Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), order)
-#define LOG_TRADE(order)                                                                                               \
-    Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), order)
-#define LOG_DEBUG(format_str, ...)
-#define LOG_INFO(format_str, ...)
-#define LOG_WARN(format_str, ...)
-#define LOG_ERROR(format_str, ...)
-#else
+
 #define LOG_ORDER(order)                                                                                               \
     Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), order)
 #define LOG_TRADE(trade)                                                                                               \
     Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), trade)
+#define LOG_UPDATE_LEVEL(level_update)                                                                                 \
+    Logger::get_instance().write_buffer<LevelUpdate, LevelUpdateLog>(LogType::LEVEL_UPDATE,                            \
+                                                                     LOG_PREPEND("LEVEL UPDATE", 3), level_update)
+#define LOG_UPDATE_LAST_TRADE(last_trade_update)                                                                       \
+    Logger::get_instance().write_buffer<LastTradeUpdate, LastTradeUpdateLog>(                                          \
+            LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4), last_trade_update)
+#define LOG_DEBUG(format_str, ...)
+#define LOG_INFO(format_str, ...)
+#define LOG_WARN(format_str, ...)
+#define LOG_ERROR(format_str, ...)
+
+#else
+
+#define LOG_ORDER(order)                                                                                               \
+    Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), order)
+#define LOG_TRADE(trade)                                                                                               \
+    Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), trade)
+#define LOG_UPDATE_LEVEL(level_update)                                                                                 \
+    Logger::get_instance().write_buffer<LevelUpdate, LevelUpdateLog>(LogType::LEVEL_UPDATE,                            \
+                                                                     LOG_PREPEND("LEVEL UPDATE", 3), level_update)
+#define LOG_UPDATE_LAST_TRADE(last_trade_update)                                                                       \
+    Logger::get_instance().write_buffer<LastTradeUpdate, LastTradeUpdateLog>(                                          \
+            LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4), last_trade_update)
+
 #define LOG_DEBUG(format_str, ...)                                                                                     \
-    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("DEBUG", 3), format_str, ##__VA_ARGS__)
+    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("DEBUG", 5), format_str, ##__VA_ARGS__)
 #define LOG_INFO(format_str, ...)                                                                                      \
-    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("INFO", 4), format_str, ##__VA_ARGS__)
+    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("INFO", 6), format_str, ##__VA_ARGS__)
 #define LOG_WARN(format_str, ...)                                                                                      \
-    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("WARN", 5), format_str, ##__VA_ARGS__)
+    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("WARN", 7), format_str, ##__VA_ARGS__)
 #define LOG_ERROR(format_str, ...)                                                                                     \
-    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("ERROR", 6), format_str, ##__VA_ARGS__)
+    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("ERROR", 8), format_str, ##__VA_ARGS__)
 #endif

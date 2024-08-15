@@ -4,17 +4,17 @@ OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_siz
     symbol_(std::make_unique<std::string>(symbol)), bids(BookSideBid(BUY, tick_size)),
     asks(BookSideAsk(SELL, tick_size)) {
 
-    Logger::get_instance(write_std_out, MB * 50, 5);
+    Logger::get_instance(write_std_out, MB * 100, 5);
     REGISTER_TYPE(ORDER, Order);
     REGISTER_TYPE(TRADE, Trade);
+    REGISTER_TYPE(LEVEL_UPDATE, LevelUpdate);
+    REGISTER_TYPE(LAST_TRADE_UPDATE, LastTradeUpdate);
     REGISTER_TYPE(DEBUG, Debug);
     // Call order allocator, so it allocates up front.
     SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance(131072);
 }
 
 void OrderBook::add_order(Order &order) {
-    LevelUpdates updates;
-
     if (order.symbol() != *symbol_) {
         LOG_WARN("Symbol {} does not match {}", order.symbol(), symbol_->data());
         return;
@@ -30,39 +30,34 @@ void OrderBook::add_order(Order &order) {
 
     if (order.type() == MARKET) {
         match_order(order);
+        return;
     }
 
-    if (order.type() == LIMIT) {
-        if (order.side() == BUY) {
-            auto best_price = asks.best_price();
-            if (best_price.has_value() && best_price <= order.price()) {
-                match_order(order);
-            }
-            if (order.remaining_qty().value() > 0) {
-                updates.push_back(bids.add_order(order));
-                add_order_helper(order.price(), order.order_id(), order.side());
-                if (private_order_update_handler) {
-                    private_order_update_handler(order);
-                }
-            }
-        } else {
-            auto best_price = bids.best_price();
-            if (best_price.has_value() && best_price >= order.price()) {
-                match_order(order);
-            }
-            if (order.remaining_qty().value() > 0) {
-                updates.push_back(asks.add_order(order));
-                add_order_helper(order.price(), order.order_id(), order.side());
-                if (private_order_update_handler) {
-                    private_order_update_handler(order);
-                }
-            }
-        }
+    if (is_crossing_order(order)) {
+        match_order(order);
+    }
+
+    // order fully traded
+    if (order.remaining_qty().value() == 0) {
+        return;
+    }
+
+    LevelUpdates updates;
+
+    if (order.side() == BUY) {
+        updates.push_back(bids.add_order(order));
+        add_order_helper(order.price(), order.order_id(), order.side());
+    } else {
+        updates.push_back(asks.add_order(order));
+        add_order_helper(order.price(), order.order_id(), order.side());
+    }
+
+    if (private_order_update_handler) {
+        private_order_update_handler(order);
     }
 
     for (auto &update: updates) {
-        // TODO Log Type Correctly
-        // LOG_DEBUG("{}", update.log_level_update());
+        LOG_UPDATE_LEVEL(update);
         if (public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }
@@ -86,7 +81,7 @@ void OrderBook::remove_order(OrderId id) {
     }
 
     for (auto &update: updates) {
-        // LOG_DEBUG("{}", update.log_level_update());
+        LOG_UPDATE_LEVEL(update);
         if (public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }
@@ -96,13 +91,17 @@ void OrderBook::remove_order(OrderId id) {
 void OrderBook::match_order(Order &order) {
     auto matching_engine = MatchingEngine(order, pmr_resource_);
     std::vector<LevelUpdate> updates;
-    LOG_DEBUG("{}", matching_engine.log_matching_engine());
+
+    LOG_ORDER(order);
     if (order.side() == BUY) {
         updates = asks.match_order(matching_engine);
     } else {
         updates = bids.match_order(matching_engine);
     }
-    LOG_ORDER(order);
+
+    if (private_order_update_handler) {
+        private_order_update_handler(order);
+    }
 
     for (auto modified_order: matching_engine.get_modified_orders_()) {
         if (private_order_update_handler) {
@@ -119,16 +118,32 @@ void OrderBook::match_order(Order &order) {
             private_trades_update_handler(trade);
         }
         if (public_last_trade_update_handler) {
-            public_last_trade_update_handler({trade.price(), trade.qty(), trade.crossing_side()});
+            auto last_trade_update = LastTradeUpdate(trade.price(), trade.qty(), trade.crossing_side());
+            public_last_trade_update_handler(last_trade_update);
         }
     }
 
     for (auto &update: updates) {
-        // LOG_DEBUG("{}", update.log_level_update());
+        LOG_UPDATE_LEVEL(update);
         if (public_order_book_update_handler) {
             public_order_book_update_handler(update);
         }
     }
+}
+
+bool OrderBook::is_crossing_order(Order &order) {
+    // If there is no orders on the opposite side, nothing to match with. return false.
+    if (order.side() == BUY && asks.empty()) {
+        return false;
+    }
+    if (order.side() == SELL && bids.empty()) {
+        return false;
+    }
+
+    auto opposite_best_price = order.side() == BUY ? asks.best_price() : bids.best_price();
+
+    return (order.side() == BUY && order.price() >= opposite_best_price) ||
+           (order.side() == SELL && order.price() <= opposite_best_price);
 }
 
 void OrderBook::add_order_helper(Price price, OrderId order_id, Side side) {

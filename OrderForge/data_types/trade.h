@@ -17,6 +17,23 @@ public:
     Side side_;
 };
 
+struct LastTradeUpdateLog {
+    Price price_;
+    Quantity quantity_;
+    Side side_;
+
+    void write(const LastTradeUpdate &update) {
+        price_ = update.price();
+        quantity_ = update.quantity();
+        side_ = update.side();
+    }
+
+    std::string get_str() const {
+        return fmt::format("Price: {}, Quantity: {}, Side: {}", price_.descaled_value(), quantity_.descaled_value(),
+                           enum_str(side_));
+    }
+};
+
 class Trade {
 public:
     Trade(Symbol symbol, const Price &price, const Quantity &qty, Side crossing_side, AccountId passive_account_id,

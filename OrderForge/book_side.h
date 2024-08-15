@@ -15,7 +15,8 @@ public:
     LevelUpdate remove_order(FindOrderHelper &helper);
     std::vector<LevelUpdate> match_order(MatchingEngine &trade_producer);
 
-    std::optional<Price> best_price() { return levels_.best_price(); }
+    Price best_price() { return levels_.best_price(); }
+    bool empty() { return levels_.empty(); }
 
 private:
     Side side_;

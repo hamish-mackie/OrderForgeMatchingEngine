@@ -9,7 +9,6 @@ Quantity MatchingEngine::match_order(Order &order) {
         LOG_WARN("orders have the same side");
     }
 
-    LOG_ORDER(original_order_);
     LOG_ORDER(order);
 
     Quantity removed_qty = std::min(order.remaining_qty(), remaining_qty_);

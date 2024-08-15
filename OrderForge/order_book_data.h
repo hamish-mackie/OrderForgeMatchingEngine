@@ -10,7 +10,7 @@ public:
 
     virtual ~OrderBookDataInterface() = 0;
 
-    virtual std::optional<Price> best_price() = 0;
+    virtual Price best_price() = 0;
     virtual BookLvlPtr get_book_level(const Price &price) = 0;
     virtual BookLvlPtr add_book_level(const Price &price) = 0;
     virtual void remove_book_level(const Price &price) = 0;
@@ -34,11 +34,7 @@ public:
     OrderBookDataMap(const Side side, const TickSize &tick_size) :
         OrderBookDataInterface(side, tick_size), book_cont_() {}
 
-    std::optional<Price> best_price() override {
-        if (book_cont_.empty())
-            return {};
-        return {book_cont_.begin()->first};
-    };
+    Price best_price() override { return book_cont_.begin()->first; };
 
     BookLvlPtr get_book_level(const Price &price) override {
         auto it = book_cont_.find(price);
@@ -64,6 +60,7 @@ public:
 
     typename OrderBookContainer::iterator begin() { return book_cont_.begin(); }
     typename OrderBookContainer::iterator end() { return book_cont_.end(); }
+    bool empty() { return book_cont_.empty(); }
 
 private:
     void generate_data_structure() override{};

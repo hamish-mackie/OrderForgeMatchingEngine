@@ -18,6 +18,23 @@ private:
     Side side_;
 };
 
+struct LevelUpdateLog {
+    Price price_;
+    Quantity total_qty_;
+    Side side_;
+
+    void write(const LevelUpdate &update) {
+        price_ = update.price();
+        total_qty_ = update.total_quantity();
+        side_ = update.side();
+    }
+
+    std::string get_str() const {
+        return fmt::format("Price: {}, Total Quantity: {}, Side: {}", price_.descaled_value(),
+                           total_qty_.descaled_value(), enum_str(side_));
+    }
+};
+
 class BookLevel {
 public:
     using OrdersCont = HashLinkedList<OrderId, Order>;
