@@ -13,7 +13,7 @@ public:
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;
 
-    explicit PoolAllocator(size_t initial_size = 1024) : pool_size_(initial_size) { expand_pool(initial_size); }
+    explicit PoolAllocator(size_t initial_size = MB * 1) : pool_size_(initial_size) { expand_pool(initial_size); }
 
     template<typename U>
     PoolAllocator(const PoolAllocator<U> &) noexcept : PoolAllocator(1024) {}
@@ -50,11 +50,6 @@ public:
         }
     }
 
-private:
-    size_t pool_size_;
-    std::vector<pointer> pool_blocks_;
-    std::vector<pointer> free_list_;
-
     void expand_pool(size_type n) {
         size_t new_pool_size = std::max(pool_size_, n);
 
@@ -65,6 +60,11 @@ private:
         }
         pool_size_ = new_pool_size * 2;
     }
+
+private:
+    size_t pool_size_;
+    std::vector<pointer> pool_blocks_;
+    std::vector<pointer> free_list_;
 };
 
 template<typename T>

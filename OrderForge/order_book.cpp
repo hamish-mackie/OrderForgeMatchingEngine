@@ -4,14 +4,14 @@ OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_siz
     symbol_(std::make_unique<std::string>(symbol)), bids(BookSideBid(BUY, tick_size)),
     asks(BookSideAsk(SELL, tick_size)) {
 
-    Logger::get_instance(write_std_out, MB * 100, 5);
+    Logger::get_instance(write_std_out, MB * 100, 2);
     REGISTER_TYPE(ORDER, Order);
     REGISTER_TYPE(TRADE, Trade);
     REGISTER_TYPE(LEVEL_UPDATE, LevelUpdate);
     REGISTER_TYPE(LAST_TRADE_UPDATE, LastTradeUpdate);
     REGISTER_TYPE(DEBUG, Debug);
     // Call order allocator, so it allocates up front.
-    SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance(131072);
+    SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance().expand_pool(MB * 50);
 }
 
 void OrderBook::add_order(Order &order) {
