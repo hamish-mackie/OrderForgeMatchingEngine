@@ -100,11 +100,16 @@ void benchmark_order_book(uint64_t num_orders) {
 
 } // namespace of
 
+using namespace of;
+
 int main() {
     TracyAppInfo("Benchmark", 0);
+    // Call order allocator, so it allocates up front.
+    Logger::get_instance(false, of::MB * 100, 2);
+    SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance().expand_pool(of::MB * 50);
     std::vector<u_int64_t> num_orders = {50000, 100000, 500000};
     for (auto &n: num_orders) {
-        of::benchmark_order_book(n);
+        benchmark_order_book(n);
     }
     Logger::get_instance().stop();
     return 0;

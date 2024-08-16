@@ -5,7 +5,7 @@ constexpr uint64_t MB = 1048576;
 
 class RingBuffer {
 public:
-    explicit RingBuffer(uint64_t mem_block_size = MB * 20, uint32_t no_blocks = 10) :
+    explicit RingBuffer(uint64_t mem_block_size = MB * 5, uint32_t no_blocks = 2) :
         mem_block_size_(mem_block_size), no_blocks_(no_blocks) {
         for (int i = 0; i < no_blocks_; ++i) {
             mem_blocks_.push_back(static_cast<char *>(std::malloc(mem_block_size_)));
