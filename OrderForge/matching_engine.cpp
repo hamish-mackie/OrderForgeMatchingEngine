@@ -1,5 +1,7 @@
 #include "matching_engine.h"
 
+namespace of {
+
 MatchingEngine::MatchingEngine(Order &order, std::pmr::unsynchronized_pool_resource &vec_resource) :
     original_order_(order), order_price_(order.price()), remaining_qty_(order.remaining_qty_ref()),
     vec_resource_(vec_resource) {}
@@ -45,3 +47,4 @@ std::string MatchingEngine::log_matching_engine() const {
                        enum_str(original_order_.type()), original_order_.acc_id(), original_order_.order_id(),
                        original_order_.timestamp());
 }
+} // namespace of

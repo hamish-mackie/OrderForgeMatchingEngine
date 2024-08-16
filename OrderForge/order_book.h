@@ -1,7 +1,7 @@
 #pragma once
 
 #include "book_side.h"
-
+namespace of {
 class OrderBook {
 public:
     using BookSideBid = BookSide<std::greater<>>;
@@ -44,3 +44,4 @@ private:
     inline bool is_crossing_order(Order &order);
     void reject_order(Order &order);
 };
+} // namespace of

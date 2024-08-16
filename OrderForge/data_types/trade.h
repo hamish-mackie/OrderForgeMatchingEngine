@@ -2,6 +2,7 @@
 
 #include "enums.h"
 #include "types.h"
+namespace of {
 
 class LastTradeUpdate {
 public:
@@ -95,3 +96,4 @@ struct TradeLog {
                            passive_account_id_, crossing_account_id_, passive_order_id_, crossing_order_id_, trade_id_);
     }
 };
+} // namespace of

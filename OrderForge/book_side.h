@@ -3,6 +3,8 @@
 #include "book_level.h"
 #include "order_book_data.h"
 
+namespace of {
+
 template<typename CompFunc>
 class BookSide {
 public:
@@ -13,6 +15,7 @@ public:
 
     LevelUpdate add_order(Order &order);
     LevelUpdate remove_order(FindOrderHelper &helper);
+    LevelUpdate remove_orders(Price price, std::vector<OrderId> &order_ids);
     std::vector<LevelUpdate> match_order(MatchingEngine &trade_producer);
 
     Price best_price() { return levels_.best_price(); }
@@ -43,6 +46,17 @@ LevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper &helper) {
 }
 
 template<typename CompFunc>
+LevelUpdate BookSide<CompFunc>::remove_orders(Price price, std::vector<OrderId> &order_ids) {
+    auto ptr = levels_.get_book_level(price);
+    auto update = ptr->remove_order(price);
+    if (update.total_quantity().value() == 0) {
+        levels_.remove_book_level(update.price());
+    }
+    return update;
+}
+
+
+template<typename CompFunc>
 std::vector<LevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine &trade_producer) {
     std::vector<LevelUpdate> updates;
     for (auto &level: levels_) {
@@ -59,3 +73,4 @@ std::vector<LevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine &trade_p
 
     return updates;
 }
+} // namespace of

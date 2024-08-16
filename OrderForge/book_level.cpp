@@ -1,4 +1,5 @@
 #include "book_level.h"
+namespace of {
 
 LevelUpdate BookLevel::add_order(Order &order) {
     LOG_ORDER(order);
@@ -59,3 +60,4 @@ LevelUpdate BookLevel::match_order(MatchingEngine &matching_engine) {
 
     return {price_, total_qty_, side_};
 }
+} // namespace of

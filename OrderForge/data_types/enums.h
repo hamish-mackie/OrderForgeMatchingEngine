@@ -5,6 +5,7 @@
 
 #include "types.h"
 
+namespace of {
 inline OrderId gen_random_order_id() {
     std::random_device rd;
     std::mt19937_64 gen(rd());
@@ -30,3 +31,4 @@ enum OrderType : uint8_t {
     MARKET = 1,
     FILL_AND_KILL = 2,
 };
+} // namespace of

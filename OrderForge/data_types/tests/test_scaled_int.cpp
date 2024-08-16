@@ -1,6 +1,8 @@
-#include <unordered_set>
 #include <gtest/gtest.h>
+#include <unordered_set>
 #include "scaled_int.h"
+
+using namespace of;
 
 using int_type = ScaledInt<int64_t, 100>;
 
@@ -31,7 +33,7 @@ TEST(TestScaledInt, Subtraction) {
 TEST(TestScaledInt, Multiplication) {
     int_type a(10.0);
     int_type b(5.0);
-    ScaledInt<int64_t,100> result = a * b;
+    ScaledInt<int64_t, 100> result = a * b;
     EXPECT_EQ(result, int_type(50.0));
 }
 

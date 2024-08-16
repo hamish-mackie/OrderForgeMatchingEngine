@@ -2,6 +2,8 @@
 
 #include <map>
 
+namespace of {
+
 class OrderBookDataInterface {
 public:
     using BookLvlPtr = BookLevel *;
@@ -66,3 +68,4 @@ private:
     void generate_data_structure() override{};
     OrderBookContainer book_cont_;
 };
+} // namespace of

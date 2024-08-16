@@ -12,6 +12,7 @@
 #include "id_generator.h"
 #include "logger.h"
 #include "scaled_int.h"
+namespace of {
 
 using Symbol = std::string_view;
 using Price = ScaledInt<int64_t, static_cast<uint64_t>(1e2)>;
@@ -33,3 +34,4 @@ template<typename T>
 auto get_id() {
     return IdGenerator<T>::instance().generate_id();
 }
+} // namespace of

@@ -2,6 +2,8 @@
 
 #include "order_book.h"
 
+using namespace of;
+
 class TestOrderBook : public ::testing::Test {
 public:
     TestOrderBook() : start_price_(100), tick_size_(0.01), ob(symbol.data(), start_price_, tick_size_, true) {}

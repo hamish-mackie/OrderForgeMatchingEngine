@@ -4,6 +4,8 @@
 #include "time_utils.h"
 #include "types.h"
 
+namespace of {
+
 class Order {
 public:
     Order(Symbol symbol, Price price, Quantity qty, Side side, OrderStatus status, OrderType type, uint64_t acc_id,
@@ -106,3 +108,4 @@ struct FindOrderHelper {
     Price price;
     Side side;
 };
+} // namespace of

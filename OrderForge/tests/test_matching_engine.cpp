@@ -2,6 +2,8 @@
 
 #include "matching_engine.h"
 
+using namespace of;
+
 static constexpr std::string_view symbol = "TESTUSD";
 
 TEST(TestMatchingEngine, test_matching_same_size) {

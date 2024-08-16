@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+namespace of {
 
 template<typename T, uint64_t Scale>
 class ScaledInt {
@@ -62,10 +63,11 @@ public:
 private:
     int_type value_;
 };
+} // namespace of
 
 namespace std {
-    template<typename T, uint64_t Scale>
-    struct hash<ScaledInt<T, Scale>> {
-        std::size_t operator()(const ScaledInt<T, Scale> &s) const noexcept { return std::hash<T>{}(s.value()); }
-    };
+template<typename T, uint64_t Scale>
+struct hash<of::ScaledInt<T, Scale>> {
+    std::size_t operator()(const of::ScaledInt<T, Scale> &s) const noexcept { return std::hash<T>{}(s.value()); }
+};
 } // namespace std

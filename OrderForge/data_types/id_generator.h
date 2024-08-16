@@ -1,5 +1,7 @@
 #pragma once
 
+namespace of {
+
 constexpr uint64_t COUNTER_SPACE = 1000000000ULL;
 
 // Id generator used to generate unique trade id's and order id's
@@ -35,3 +37,4 @@ private:
         return (year * 10000ULL) + (month * 100ULL) + day;
     }
 };
+} // namespace of

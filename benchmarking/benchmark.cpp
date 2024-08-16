@@ -4,6 +4,7 @@
 
 #include <tracy/Tracy.hpp>
 #include "order_book.h"
+namespace of {
 
 static constexpr std::string_view symbol = "TESTUSD";
 
@@ -97,11 +98,13 @@ void benchmark_order_book(uint64_t num_orders) {
 //     free(ptr);
 // }
 
+} // namespace of
+
 int main() {
     TracyAppInfo("Benchmark", 0);
     std::vector<u_int64_t> num_orders = {50000, 100000, 500000};
     for (auto &n: num_orders) {
-        benchmark_order_book(n);
+        of::benchmark_order_book(n);
     }
     Logger::get_instance().stop();
     return 0;

@@ -2,6 +2,8 @@
 
 #include "order_forge_types.h"
 
+using namespace of;
+
 TEST(TestIdGenerator, test_macros) {
     auto order_id = get_id<Order>();
     auto trade_id = get_id<Trade>();

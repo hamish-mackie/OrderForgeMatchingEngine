@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+namespace of {
 
 constexpr uint64_t MB = 1048576;
 
@@ -87,3 +88,4 @@ public:
 private:
     SingleTonWrapper() = default;
 };
+} // namespace of

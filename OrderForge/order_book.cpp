@@ -1,5 +1,7 @@
 #include "order_book.h"
 
+namespace of {
+
 OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_size, bool write_std_out) :
     symbol_(std::make_unique<std::string>(symbol)), bids(BookSideBid(BUY, tick_size)),
     asks(BookSideAsk(SELL, tick_size)) {
@@ -171,3 +173,4 @@ void OrderBook::add_order_helper(Price price, OrderId order_id, Side side) {
     auto helper = FindOrderHelper(order_id, side, price);
     orders_id_map_.emplace(order_id, std::move(helper));
 }
+} // namespace of

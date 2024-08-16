@@ -2,6 +2,7 @@
 
 #include "matching_engine.h"
 #include "order_forge_types.h"
+namespace of {
 
 class LevelUpdate {
 public:
@@ -61,3 +62,4 @@ private:
     OrdersCont order_cont;
     std::vector<OrdersCont::NodeTypePtr> orders_to_be_removed_;
 };
+} // namespace of
