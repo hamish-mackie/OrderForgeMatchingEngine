@@ -2,6 +2,8 @@
 
 #include <memory>
 
+constexpr uint64_t MB = 1048576;
+
 template<typename T>
 class PoolAllocator {
 public:
