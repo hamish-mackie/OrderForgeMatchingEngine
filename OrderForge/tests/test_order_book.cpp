@@ -19,8 +19,8 @@ protected:
     std::string_view symbol = "TESTUSD";
     Price start_price_;
     Price tick_size_;
-    OrderBook ob;
     OrderBookConfig cfg;
+    OrderBook ob;
     std::vector<Order> order_updates;
     std::vector<LevelUpdate> level_updates_;
     std::vector<Trade> trade_updates_;
