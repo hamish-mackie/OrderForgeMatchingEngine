@@ -33,7 +33,7 @@ public:
 
 private:
     OrderBookConfig& cfg_;
-    std::string& symbol_;
+    std::string symbol_;
     BookSideBid bids;
     BookSideAsk asks;
     OrdersIdMap orders_id_map_;
