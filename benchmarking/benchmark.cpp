@@ -8,7 +8,7 @@ namespace of {
 
 static constexpr std::string_view symbol = "TESTUSD";
 
-double generate_price(std::default_random_engine &generator, std::normal_distribution<double> &distribution) {
+double generate_price(std::default_random_engine& generator, std::normal_distribution<double>& distribution) {
     double price;
     do {
         price = distribution(generator);
@@ -19,7 +19,7 @@ double generate_price(std::default_random_engine &generator, std::normal_distrib
 OrderBook generate_order_book() {
     Price start_price = Price(100);
     TickSize tick_size = TickSize(0.01);
-    return OrderBook(symbol.data(), start_price, tick_size, false);
+    return OrderBook(symbol.data(), start_price, tick_size);
 }
 
 std::vector<Order> generate_orders(int num_orders) {
@@ -61,14 +61,14 @@ std::vector<Order> generate_orders(int num_orders) {
     return orders;
 }
 
-std::chrono::duration<double> benchmark_market_orders(OrderBook &&ob, std::vector<Order> &orders) {
+std::chrono::duration<double> benchmark_market_orders(OrderBook&& ob, std::vector<Order>& orders) {
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (auto &order: orders) {
+    for (auto& order: orders) {
         ob.add_order(order);
     }
 
-    for (const auto &order: orders) {
+    for (const auto& order: orders) {
         ob.remove_order(order.order_id());
     }
 
@@ -102,13 +102,19 @@ void benchmark_order_book(uint64_t num_orders) {
 
 using namespace of;
 
+
 int main() {
     TracyAppInfo("Benchmark", 0);
+
+    auto log_cfg = LoggerConfig{};
+    log_cfg.write_std_out = false;
+    log_cfg.mem_block_size = of::MB * 100;
+    log_cfg.number_blocks = 2;
     // Call order allocator, so it allocates up front.
-    Logger::get_instance(false, of::MB * 100, 2);
+    Logger::get_instance(log_cfg);
     SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance().expand_pool(of::MB * 50);
     std::vector<u_int64_t> num_orders = {50000, 100000, 500000};
-    for (auto &n: num_orders) {
+    for (auto& n: num_orders) {
         benchmark_order_book(n);
     }
     Logger::get_instance().stop();

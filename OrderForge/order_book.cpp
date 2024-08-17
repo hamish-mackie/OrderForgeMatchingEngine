@@ -2,7 +2,7 @@
 
 namespace of {
 
-OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_size, bool write_std_out) :
+OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_size) :
     symbol_(std::make_unique<std::string>(symbol)), bids(BookSideBid(BUY, tick_size)),
     asks(BookSideAsk(SELL, tick_size)) {
 
@@ -13,7 +13,7 @@ OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_siz
     REGISTER_TYPE(DEBUG, Debug);
 }
 
-void OrderBook::add_order(Order &order) {
+void OrderBook::add_order(Order& order) {
     if (order.symbol() != *symbol_) {
         LOG_WARN("Symbol {} does not match {}", order.symbol(), symbol_->data());
         return;
@@ -63,7 +63,7 @@ void OrderBook::remove_order(OrderId id) {
         LOG_WARN(fmt::format("Could not find order id {}", id));
     }
 
-    for (auto &update: updates) {
+    for (auto& update: updates) {
         LOG_UPDATE_LEVEL(update);
         if (public_order_book_update_handler) {
             public_order_book_update_handler(update);
@@ -71,7 +71,7 @@ void OrderBook::remove_order(OrderId id) {
     }
 }
 
-void OrderBook::limit_order(Order &order) {
+void OrderBook::limit_order(Order& order) {
     if (is_crossing_order(order)) {
         match_order(order);
     }
@@ -95,7 +95,7 @@ void OrderBook::limit_order(Order &order) {
     }
 }
 
-void OrderBook::market_order(Order &order) {
+void OrderBook::market_order(Order& order) {
     if (order.is_buy() && asks.empty() || !order.is_buy() && bids.empty()) {
         reject_order(order);
         return;
@@ -104,7 +104,7 @@ void OrderBook::market_order(Order &order) {
     match_order(order);
 }
 
-void OrderBook::fill_and_kill_order(Order &order) {
+void OrderBook::fill_and_kill_order(Order& order) {
     if (is_crossing_order(order)) {
         match_order(order);
     } else {
@@ -112,7 +112,7 @@ void OrderBook::fill_and_kill_order(Order &order) {
     }
 }
 
-void OrderBook::match_order(Order &order) {
+void OrderBook::match_order(Order& order) {
     auto matching_engine = MatchingEngine(order, pmr_resource_);
     std::vector<LevelUpdate> updates;
 
@@ -129,11 +129,11 @@ void OrderBook::match_order(Order &order) {
         }
     }
 
-    for (const auto &level: matching_engine.get_levels_to_remove_orders()) {
+    for (const auto& level: matching_engine.get_levels_to_remove_orders()) {
         level->remove_marked_order_nodes();
     }
 
-    for (auto &trade: matching_engine.get_trades()) {
+    for (auto& trade: matching_engine.get_trades()) {
         if (private_trades_update_handler) {
             private_trades_update_handler(trade);
         }
@@ -144,7 +144,7 @@ void OrderBook::match_order(Order &order) {
         }
     }
 
-    for (auto &update: updates) {
+    for (auto& update: updates) {
         LOG_UPDATE_LEVEL(update);
         if (public_order_book_update_handler) {
             public_order_book_update_handler(update);
@@ -152,7 +152,7 @@ void OrderBook::match_order(Order &order) {
     }
 }
 
-bool OrderBook::is_crossing_order(Order &order) {
+bool OrderBook::is_crossing_order(Order& order) {
     bool is_buy = order.is_buy();
     if ((is_buy && asks.empty()) || (!is_buy && bids.empty())) {
         return false;
@@ -161,7 +161,7 @@ bool OrderBook::is_crossing_order(Order &order) {
     return is_buy ? (order.price() >= opposite_best_price) : (order.price() <= opposite_best_price);
 }
 
-void OrderBook::reject_order(Order &order) {
+void OrderBook::reject_order(Order& order) {
     order.set_status(REJECTED);
     LOG_ORDER(order);
 }

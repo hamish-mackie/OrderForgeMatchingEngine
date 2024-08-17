@@ -1,14 +1,23 @@
-#include <magic_enum.hpp>
 #include <gtest/gtest.h>
+#include <magic_enum.hpp>
 
 #include "logger.h"
 
 constexpr std::string_view test_prepend = "test_prepend";
 
-#define LOG_TEST(test_struct) Logger::get_instance().write_buffer<TestStructOriginal, TestStructLog>(LogType::TEST_STRUCT, LOG_PREPEND("TEST_STRUCT", 999), test_struct);
+#define LOG_TEST(test_struct)                                                                                          \
+    Logger::get_instance().write_buffer<TestStructOriginal, TestStructLog>(                                            \
+            LogType::TEST_STRUCT, LOG_PREPEND("TEST_STRUCT", 999), test_struct);
+
+void set_up_logger() {
+    LoggerConfig log_cfg = LoggerConfig{};
+    log_cfg.write_std_out = true;
+    log_cfg.mem_block_size = 1024;
+    Logger::get_instance(log_cfg);
+}
 
 TEST(TestLogger, test) {
-    Logger::get_instance(true, 1024);
+    set_up_logger();
     auto test_struct = TestStructOriginal(1, 2, 3);
     REGISTER_TYPE(TEST_STRUCT, TestStruct);
     LOG_TEST(test_struct);
@@ -17,10 +26,10 @@ TEST(TestLogger, test) {
 }
 
 TEST(TestLogger, test_alot) {
-    Logger::get_instance(true, 1024);
+    set_up_logger();
     auto test_struct = TestStructOriginal(111, 222, 333);
     REGISTER_TYPE(TEST_STRUCT, TestStruct);
-    for(int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; ++i) {
         LOG_TEST(test_struct);
     }
     Logger::get_instance().stop();

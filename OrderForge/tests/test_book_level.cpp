@@ -7,7 +7,12 @@ using namespace of;
 class TestBookLevel : public ::testing::Test {
 protected:
     void SetUp() override {
-        Logger::get_instance(true, of::MB * 1, 5);
+        LoggerConfig log_cfg = LoggerConfig{};
+        log_cfg.write_std_out = true;
+        log_cfg.mem_block_size = of::MB * 1;
+        log_cfg.number_blocks = 5;
+
+        Logger::get_instance(log_cfg);
         REGISTER_TYPE(ORDER, Order);
         REGISTER_TYPE(TRADE, Trade);
         REGISTER_TYPE(DEBUG, Debug);
@@ -28,7 +33,7 @@ TEST_F(TestBookLevel, match_order) {
             Order(symbol, bid_price_, Quantity(1), BUY, OPEN, LIMIT, 9999, 2, 200),
             Order(symbol, bid_price_, Quantity(1), BUY, OPEN, LIMIT, 9999, 3, 300),
     };
-    for (auto &order: limit_orders) {
+    for (auto& order: limit_orders) {
         auto update = book_level_bid_.add_order(order);
     }
 
