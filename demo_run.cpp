@@ -23,7 +23,8 @@ void last_trade_handler(const LastTradeUpdate& update) {
 
 int main() {
     std::string_view symbol = "TESTUSD";
-    auto ob = OrderBook(symbol.data(), Price(100), TickSize(0.01));
+    OrderBookConfig config{symbol.data(), TickSize(0.01)};
+    auto ob = OrderBook(config);
     ob.private_order_update_handler = order_handler;
     ob.private_trades_update_handler = trade_handler;
     ob.public_order_book_update_handler = level_update_handler;

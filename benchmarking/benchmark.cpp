@@ -19,7 +19,8 @@ double generate_price(std::default_random_engine& generator, std::normal_distrib
 OrderBook generate_order_book() {
     Price start_price = Price(100);
     TickSize tick_size = TickSize(0.01);
-    return OrderBook(symbol.data(), start_price, tick_size);
+    OrderBookConfig cfg = OrderBookConfig(symbol.data(), tick_size);
+    return OrderBook(cfg);
 }
 
 std::vector<Order> generate_orders(int num_orders) {

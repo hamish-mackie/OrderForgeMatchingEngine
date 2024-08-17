@@ -1,6 +1,8 @@
 #pragma once
 
 #include "book_side.h"
+#include "order_book_config.h"
+
 namespace of {
 class OrderBook {
 public:
@@ -23,14 +25,15 @@ public:
     OrderBookUpdateHandler public_order_book_update_handler;
     LastTradeUpdateHandler public_last_trade_update_handler;
 
-    OrderBook(std::string symbol, Price starting_price, TickSize tick_size);
+    explicit OrderBook(OrderBookConfig&);
     void add_order(Order& order);
     void remove_order(OrderId id);
 
     void add_order_helper(Price price, OrderId order_id, Side side);
 
 private:
-    std::unique_ptr<std::string> symbol_;
+    OrderBookConfig& cfg_;
+    std::string& symbol_;
     BookSideBid bids;
     BookSideAsk asks;
     OrdersIdMap orders_id_map_;

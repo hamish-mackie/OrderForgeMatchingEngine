@@ -2,9 +2,8 @@
 
 namespace of {
 
-OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_size) :
-    symbol_(std::make_unique<std::string>(symbol)), bids(BookSideBid(BUY, tick_size)),
-    asks(BookSideAsk(SELL, tick_size)) {
+OrderBook::OrderBook(OrderBookConfig& cfg) :
+    cfg_(cfg), symbol_(cfg.symbol), bids(BookSideBid(BUY, cfg.tick_size)), asks(BookSideAsk(SELL, cfg.tick_size)) {
 
     REGISTER_TYPE(ORDER, Order);
     REGISTER_TYPE(TRADE, Trade);
@@ -14,13 +13,13 @@ OrderBook::OrderBook(std::string symbol, Price starting_price, TickSize tick_siz
 }
 
 void OrderBook::add_order(Order& order) {
-    if (order.symbol() != *symbol_) {
-        LOG_WARN("Symbol {} does not match {}", order.symbol(), symbol_->data());
+    if (order.symbol() != symbol_) {
+        LOG_WARN("Symbol {} does not match {}", order.symbol(), symbol_.data());
         return;
     }
 
     // set symbol to orderbooks symbol, so it guarantees its lifetime
-    order.set_symbol(*symbol_);
+    order.set_symbol(symbol_);
 
     // if order id is not provided, set one.
     if (!order.order_id()) {

@@ -6,7 +6,7 @@ using namespace of;
 
 class TestOrderBook : public ::testing::Test {
 public:
-    TestOrderBook() : start_price_(100), tick_size_(0.01), ob(symbol.data(), start_price_, tick_size_) {}
+    TestOrderBook() : start_price_(100), tick_size_(0.01), cfg(symbol.data(), tick_size_), ob(cfg) {}
 
 protected:
     void SetUp() override {
@@ -20,6 +20,7 @@ protected:
     Price start_price_;
     Price tick_size_;
     OrderBook ob;
+    OrderBookConfig cfg;
     std::vector<Order> order_updates;
     std::vector<LevelUpdate> level_updates_;
     std::vector<Trade> trade_updates_;
