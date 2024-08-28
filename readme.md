@@ -64,6 +64,9 @@ The engine can **insert/remove/match** up to:
 Getting the demo app running is straightforward:
 
 ```bash
+// required packages
+apt install cmake git build-essential
+
 git clone https://github.com/hamish-mackie/OrderForgeMatchingEngine.git
 cd OrderForgeMatchingEngine
 mkdir build-release && cd build-release
