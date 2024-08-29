@@ -1,4 +1,6 @@
 #pragma once
+
+#include <set>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -8,9 +10,12 @@
 
 #include "event_handler_tcp.h"
 
+#include <logger.h>
+
 class Reactor {
 public:
     Reactor() {
+        REGISTER_TYPE(DEBUG, Debug);
         epoll_fd_ = epoll_create1(0);
         if (epoll_fd_ == -1) {
             perror("epoll_create1");
@@ -18,7 +23,8 @@ public:
         }
     }
 
-    void register_handler(EventHandler* handler, const uint32_t events) const {
+    void register_handler(EventHandler* handler, const uint32_t events) {
+        LOG_INFO("register fd: {}", handler->get_fd());
         epoll_event ev{};
         ev.data.ptr = handler->get_handle();
         ev.events = events;
@@ -26,16 +32,20 @@ public:
             perror("epoll_ctl");
             exit(EXIT_FAILURE);
         }
+        connected_clients_.insert(handler);
     }
 
-    void unregister_handler(EventHandler* handler) const {
+    void unregister_handler(EventHandler* handler) {
+        LOG_INFO("unregister fd: {}", handler->get_fd());
         if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, handler->get_fd(), nullptr) == -1) {
             perror("epoll_ctl");
             exit(EXIT_FAILURE);
         }
+        close(handler->get_fd());
+        connected_clients_.erase(handler);
     }
 
-    void run() const {
+    void run() {
         constexpr uint64_t max_events = 100;
         epoll_event events[max_events];
 
@@ -54,6 +64,10 @@ public:
     }
 
     ~Reactor() {
+        LOG_DEBUG("Destructor");
+        for(auto& handler : connected_clients_) {
+            unregister_handler(handler);
+        }
         if (epoll_fd_ != -1) {
             close(epoll_fd_);
         }
@@ -61,5 +75,5 @@ public:
 
 private:
     FileDescriptor epoll_fd_;
-    // EventHandler* handler_;
+    std::set<EventHandler*> connected_clients_;
 };

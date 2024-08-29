@@ -21,6 +21,7 @@ class Logger {
 public:
     static Logger& get_instance(const LoggerConfig& cfg = get_default_config()) {
         static Logger instance(cfg);
+
         return instance;
     }
 

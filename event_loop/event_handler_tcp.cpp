@@ -1,5 +1,8 @@
 #include "event_handler_tcp.h"
 
+#include <defines.h>
+#include <logger.h>
+
 #include "event_loop.h"
 
 inline void TCPClientHandler::handle_event(uint64_t events) {
@@ -11,11 +14,11 @@ inline void TCPClientHandler::handle_event(uint64_t events) {
             close(fd_);
             delete this;
         } else if (n == 0) {
-            std::cout << "client disconnected: " << fd_ << std::endl;
+            LOG_INFO("client disconnected: {}", fd_);
             close(fd_);
             delete this;
         } else {
-            std::cout << "client received:  " << std::string(buffer, n) << std::endl;
+            LOG_INFO("client received: {}", std::string(buffer, n));
         }
     }
 }
@@ -26,7 +29,7 @@ inline void TCPHandler::handle_event(uint64_t events) {
         if (client_fd == -1) {
             perror("accept");
         } else {
-            std::cout << "client fd: " << client_fd << std::endl;
+            LOG_INFO("client connected: {}", fd_);
             auto* client_handler = new TCPClientHandler(client_fd);
             reactor_.register_handler(reinterpret_cast<EventHandler*>(client_handler), EPOLLIN | EPOLLET);
         }

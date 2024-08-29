@@ -7,7 +7,7 @@ using FileDescriptor = int32_t;
 
 class EventHandler {
 public:
-    explicit EventHandler(const FileDescriptor fd): fd_(fd) {}
+    explicit EventHandler(FileDescriptor fd): fd_(fd) {}
 
     virtual void handle_event(uint64_t events) = 0;
 
@@ -17,5 +17,5 @@ public:
     virtual ~EventHandler() = default;
 
 protected:
-    const FileDescriptor fd_;
+    FileDescriptor fd_;
 };

@@ -102,6 +102,20 @@ const char *get_str(std::string_view str, std::string_view str2, std::string_vie
     return result.data();
 }
 
+// Defines
+// These defines are quite messy and ugly, and you might wonder why?
+// The reason is static compile time strings.
+// The prepend part of the log "[class::function] [INFO]" is statically generated at compile time.
+// This gives a significant speed boost when logging, instead of copying a string,
+// the logger just copies a string view, and the background logging thread can take care of the rest.
+// There is also independent int provided on each call to get str, Again, compile time static strings.
+// If there is not some sort of unique identifier on each, the static string will be overwritten.
+
+// The defines which use custom objects like trade and order and custom-made, and are very fast to log.
+// The second struct exists so we can copy data, and then format in another thread later.
+// Debug, Info, Warn, Error use a struct but the formatting of the string is done by the main thread.
+// Be careful where these log lines are used.
+
 #define TYPENAME type_name<decltype(*this)>()
 #define STR_VIEW(str) std::string_view(str)
 #define FUNCTION STR_VIEW(__FUNCTION__)
