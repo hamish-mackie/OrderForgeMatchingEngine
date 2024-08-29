@@ -35,7 +35,26 @@ FetchContent_MakeAvailable(tracy)
 
 enable_testing()
 
+add_library(precompiled_lib INTERFACE)
+
+target_link_libraries(precompiled_lib INTERFACE
+    fmt::fmt
+    magic_enum
+)
+
+target_precompile_headers(precompiled_lib INTERFACE
+        <string>
+        <vector>
+        <unordered_map>
+        <map>
+        <memory>
+        <fmt/format.h>
+        <magic_enum.hpp>
+)
+
+add_subdirectory(logger)
+add_subdirectory(event_loop)
+
 add_subdirectory(OrderForge)
 target_link_libraries(demo_run PUBLIC order_forge)
 add_subdirectory(benchmarking)
-add_subdirectory(event_loop)

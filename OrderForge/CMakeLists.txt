@@ -13,15 +13,11 @@ target_sources(order_forge PUBLIC
         matching_engine.cpp
 )
 
-add_subdirectory(logger)
 add_subdirectory(data_types)
 
 target_link_libraries(order_forge PUBLIC
-        fmt::fmt
-        magic_enum
-        TracyClient
-        logger
         data_types
+        TracyClient
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
