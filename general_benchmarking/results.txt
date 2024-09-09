@@ -1,0 +1,53 @@
+// File to keep track of benchmarking results
+
+// This result is the first run, I've used a release build and turned logging off, nothing has really been optimised.
+// The results were very bad with logging turned on.
+// We can also see that as we hold more data in our order book, the process time gets considerably worse.
+
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.219833 seconds (227,445.67 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.876737 seconds (114,059.30 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 21.846674 seconds (22,886.78 orders/second)
+
+// I noticed that the thing that was taking the time was removing (linear search, slow to remove from front vector), and iterating the vector.
+// I've changed the data structure of the order book level to a vector<orderid, Order*> and got significant speed ups.
+// Despite having to copy and allocate a new pointer on the heap, its much faster to iterate the vector of smaller objects,
+// When the vector needs to reallocate, it also won't have to copy as much.
+// This gives me an idea, Since we need to allocate each time anyway, We may as well use a map.
+
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.094536 seconds (528,900.27 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.331053 seconds (302,066.67 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 7.511813 seconds (66,561.83 orders/second)
+
+// Getting faster...
+// Changed the book level data structure into a custom made hashed linked list...
+
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.034224 seconds (1,460,975.06 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.101978 seconds (980,601.95 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 0.920041 seconds (543,454.25 orders/second)
+
+// Bit of an interesting benchmark here, I've swapped computers with a 3950x and 32gb of ram and it seems to have doubled.
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.020098 seconds (2,487,781.63 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.049794 seconds (2,008,256.30 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 0.564575 seconds (885,621.60 orders/second)
+
+// Implemented a custom allocator, and it seems the performance is not as good...?
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.090644 seconds (551,608.05 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.210105 seconds (475,952.17 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 1.221789 seconds (409,236.09 orders/second)
+
+// Fixed a small issue and the allocator is similar, maybe slightly better than the std::allocator, use pmr vectors in orderbook
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.018510 seconds (2,701,238.49 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.043155 seconds (2,317,247.39 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 0.484181 seconds (1,032,671.51 orders/second)
+
+// Some numbers with logging turned on
+Logging to std out, 500,000 orders took ~7 seconds
+Logging to file, 500,000 orders took ~2 seconds (240,000 orders/second)
+
+// These numbers are ok, But we can do better.
+// If the formatting and logging could be offloaded to a back up thread we could get close to the speed without logging I think.
+
+// Moved the logging to a separate thread! 2.3 million orders per second with logging turned on!
+Time to insert and remove 50,000 orders with market orders crossing the book: 0.021658 seconds 2,308,576 orders/second)
+Time to insert and remove 100,000 orders with market orders crossing the book: 0.074372 seconds 1,344,595 orders/second)
+Time to insert and remove 500,000 orders with market orders crossing the book: 0.568038 seconds 880,223 orders/second)

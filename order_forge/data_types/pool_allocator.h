@@ -1,6 +1,9 @@
 #pragma once
 
 #include <memory>
+
+#include "singleton_wrapper.h"
+
 namespace of {
 
 constexpr uint64_t MB = 1048576;
@@ -48,7 +51,7 @@ public:
     }
 
     ~PoolAllocator() {
-        for (auto *block: pool_blocks_) {
+        for (auto* block: pool_blocks_) {
             free(block);
         }
     }
@@ -70,22 +73,4 @@ private:
     std::vector<pointer> free_list_;
 };
 
-template<typename T>
-class SingleTonWrapper {
-    using Type = T;
-
-public:
-    template<typename... Args>
-    static Type &get_instance(Args &&...args) {
-        static Type instance(std::forward<Args>(args)...);
-        return instance;
-    }
-
-    SingleTonWrapper(const SingleTonWrapper &) = delete;
-
-    SingleTonWrapper &operator=(const SingleTonWrapper &) = delete;
-
-private:
-    SingleTonWrapper() = default;
-};
 } // namespace of
