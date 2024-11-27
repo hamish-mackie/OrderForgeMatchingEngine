@@ -1,7 +1,7 @@
-#include "book_level.h"
+#include "price_level.h"
 namespace of {
 
-LevelUpdate BookLevel::add_order(Order &order) {
+PriceLevelUpdate PriceLevel::add_order(Order& order) {
     LOG_ORDER(order);
     assert(order.order_id() != 0);
     if (order.price() != price_) {
@@ -19,9 +19,9 @@ LevelUpdate BookLevel::add_order(Order &order) {
     return {price_, total_qty_, side_};
 }
 
-LevelUpdate BookLevel::remove_order(FindOrderHelper &helper) { return remove_order(helper.order_id); }
+PriceLevelUpdate PriceLevel::remove_order(FindOrderHelper& helper) { return remove_order(helper.order_id); }
 
-LevelUpdate BookLevel::remove_order(OrderId id) {
+PriceLevelUpdate PriceLevel::remove_order(OrderId id) {
     auto res = order_cont.find(id);
     if (res) {
         LOG_ORDER(*res);
@@ -33,7 +33,7 @@ LevelUpdate BookLevel::remove_order(OrderId id) {
     return {price_, total_qty_, side_};
 }
 
-void BookLevel::remove_marked_order_nodes() {
+void PriceLevel::remove_marked_order_nodes() {
     for (auto node: orders_to_be_removed_) {
         LOG_ORDER(node->item);
         order_cont.remove_node(node);
@@ -41,7 +41,7 @@ void BookLevel::remove_marked_order_nodes() {
     orders_to_be_removed_.clear();
 }
 
-LevelUpdate BookLevel::match_order(MatchingEngine &matching_engine) {
+PriceLevelUpdate PriceLevel::match_order(MatchingEngine& matching_engine) {
     LOG_DEBUG("{}", matching_engine.log_matching_engine());
     const auto prev_total_qty = total_qty_;
 

@@ -13,7 +13,7 @@ protected:
         ob.private_order_update_handler = [&](const Order& order) { order_handler(order); };
         ob.private_account_update_handler = [&]() {};
         ob.private_trades_update_handler = [&](const Trade& trade) { trade_handler(trade); };
-        ob.public_order_book_update_handler = [&](const LevelUpdate& update) { level_update_handler(update); };
+        ob.public_order_book_update_handler = [&](const PriceLevelUpdate& update) { level_update_handler(update); };
         ob.public_last_trade_update_handler = [&](const LastTradeUpdate& update) { last_trade_handler(update); };
     }
     std::string_view symbol = "TESTUSD";
@@ -22,7 +22,7 @@ protected:
     OrderBookConfig cfg;
     OrderBook ob;
     std::vector<Order> order_updates;
-    std::vector<LevelUpdate> level_updates_;
+    std::vector<PriceLevelUpdate> level_updates_;
     std::vector<Trade> trade_updates_;
     std::vector<LastTradeUpdate> last_trade_updates_;
 
@@ -38,7 +38,7 @@ protected:
         trade_updates_.push_back(trade);
     }
 
-    void level_update_handler(const LevelUpdate& update) {
+    void level_update_handler(const PriceLevelUpdate& update) {
         fmt::println("Level Update: Price: {}, Quantity: {}, Side: {}", update.price(), update.total_quantity(),
                      enum_str(update.side()));
         level_updates_.push_back(update);
@@ -66,14 +66,14 @@ void verify_order_update(Order& result, Order& received) {
     ASSERT_EQ(result.client_order_id(), received.client_order_id());
 }
 
-void verify_level_update(LevelUpdate& result, LevelUpdate& received) {
+void verify_level_update(PriceLevelUpdate& result, PriceLevelUpdate& received) {
     ASSERT_EQ(result.price(), received.price());
     ASSERT_EQ(result.total_quantity(), received.total_quantity());
     ASSERT_EQ(result.side(), received.side());
 }
 
-void verify_level_update(LevelUpdate& result, Price price, Quantity total_qty, Side side) {
-    auto received = LevelUpdate(price, total_qty, side);
+void verify_level_update(PriceLevelUpdate& result, Price price, Quantity total_qty, Side side) {
+    auto received = PriceLevelUpdate(price, total_qty, side);
     verify_level_update(result, received);
 }
 
@@ -102,13 +102,13 @@ TEST_F(TestOrderBook, test_send_and_remove_limit_orders) {
                                  Order(symbol, Price(100.05), Quantity(5), SELL, OPEN, LIMIT, 555, 5),
                                  Order(symbol, Price(100.6), Quantity(8), SELL, OPEN, LIMIT, 555, 6)};
 
-    std::vector<LevelUpdate> expected_level_updates = {
-            LevelUpdate(Price(99.3), Quantity(0.1), BUY),  LevelUpdate(Price(99.5), Quantity(0.2), BUY),
-            LevelUpdate(Price(99.1), Quantity(1), BUY),    LevelUpdate(Price(100), Quantity(1), SELL),
-            LevelUpdate(Price(100.05), Quantity(5), SELL), LevelUpdate(Price(100.6), Quantity(8), SELL),
-            LevelUpdate(Price(99.3), Quantity(0), BUY),    LevelUpdate(Price(99.5), Quantity(0), BUY),
-            LevelUpdate(Price(99.1), Quantity(0), BUY),    LevelUpdate(Price(100), Quantity(0), SELL),
-            LevelUpdate(Price(100.05), Quantity(0), SELL), LevelUpdate(Price(100.6), Quantity(0), SELL)};
+    std::vector<PriceLevelUpdate> expected_level_updates = {
+            PriceLevelUpdate(Price(99.3), Quantity(0.1), BUY),  PriceLevelUpdate(Price(99.5), Quantity(0.2), BUY),
+            PriceLevelUpdate(Price(99.1), Quantity(1), BUY),    PriceLevelUpdate(Price(100), Quantity(1), SELL),
+            PriceLevelUpdate(Price(100.05), Quantity(5), SELL), PriceLevelUpdate(Price(100.6), Quantity(8), SELL),
+            PriceLevelUpdate(Price(99.3), Quantity(0), BUY),    PriceLevelUpdate(Price(99.5), Quantity(0), BUY),
+            PriceLevelUpdate(Price(99.1), Quantity(0), BUY),    PriceLevelUpdate(Price(100), Quantity(0), SELL),
+            PriceLevelUpdate(Price(100.05), Quantity(0), SELL), PriceLevelUpdate(Price(100.6), Quantity(0), SELL)};
 
     for (auto i = 0; i < orders.size(); ++i) {
         auto order = orders[i];
@@ -167,20 +167,20 @@ TEST_F(TestOrderBook, test_send_market_orders) {
             Trade(symbol, Price(97), Quantity(5), SELL, passive_acc_id, crossing_acc_id, 3, sell_order_id),
     };
 
-    std::vector<LevelUpdate> expected_level_updates{
-            LevelUpdate(Price(98), Quantity(5), BUY), LevelUpdate(Price(99), Quantity(5), BUY),
-            LevelUpdate(Price(97), Quantity(5), BUY), LevelUpdate(Price(100), Quantity(5), SELL),
-            LevelUpdate(Price(101), Quantity(5), SELL), LevelUpdate(Price(105), Quantity(5), SELL),
+    std::vector<PriceLevelUpdate> expected_level_updates{
+            PriceLevelUpdate(Price(98), Quantity(5), BUY), PriceLevelUpdate(Price(99), Quantity(5), BUY),
+            PriceLevelUpdate(Price(97), Quantity(5), BUY), PriceLevelUpdate(Price(100), Quantity(5), SELL),
+            PriceLevelUpdate(Price(101), Quantity(5), SELL), PriceLevelUpdate(Price(105), Quantity(5), SELL),
 
             // Sell Order
-            LevelUpdate(Price(100), Quantity(0), SELL), LevelUpdate(Price(101), Quantity(0), SELL),
-            LevelUpdate(Price(105), Quantity(0), SELL), LevelUpdate(Price(106), Quantity(5), BUY),
-            LevelUpdate(Price(106), Quantity(0), BUY),
+            PriceLevelUpdate(Price(100), Quantity(0), SELL), PriceLevelUpdate(Price(101), Quantity(0), SELL),
+            PriceLevelUpdate(Price(105), Quantity(0), SELL), PriceLevelUpdate(Price(106), Quantity(5), BUY),
+            PriceLevelUpdate(Price(106), Quantity(0), BUY),
 
             // Buy O
-            LevelUpdate(Price(99), Quantity(0), BUY), LevelUpdate(Price(98), Quantity(0), BUY),
-            LevelUpdate(Price(97), Quantity(0), BUY), LevelUpdate(Price(90), Quantity(85), SELL),
-            LevelUpdate(Price(90), Quantity(0), SELL)};
+            PriceLevelUpdate(Price(99), Quantity(0), BUY), PriceLevelUpdate(Price(98), Quantity(0), BUY),
+            PriceLevelUpdate(Price(97), Quantity(0), BUY), PriceLevelUpdate(Price(90), Quantity(85), SELL),
+            PriceLevelUpdate(Price(90), Quantity(0), SELL)};
 
     for (auto i = 0; i < orders.size(); ++i) {
         auto order = orders[i];

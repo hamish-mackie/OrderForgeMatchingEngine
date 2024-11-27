@@ -141,7 +141,7 @@ const char *get_str(std::string_view str, std::string_view str2, std::string_vie
 #define LOG_TRADE(trade)                                                                                               \
     Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), trade)
 #define LOG_UPDATE_LEVEL(level_update)                                                                                 \
-    Logger::get_instance().write_buffer<LevelUpdate, LevelUpdateLog>(LogType::LEVEL_UPDATE,                            \
+    Logger::get_instance().write_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(LogType::LEVEL_UPDATE,                            \
                                                                      LOG_PREPEND("LEVEL UPDATE", 3), level_update)
 #define LOG_UPDATE_LAST_TRADE(last_trade_update)                                                                       \
     Logger::get_instance().write_buffer<LastTradeUpdate, LastTradeUpdateLog>(                                          \
@@ -158,8 +158,8 @@ const char *get_str(std::string_view str, std::string_view str2, std::string_vie
 #define LOG_TRADE(trade)                                                                                               \
     Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), trade)
 #define LOG_UPDATE_LEVEL(level_update)                                                                                 \
-    Logger::get_instance().write_buffer<LevelUpdate, LevelUpdateLog>(LogType::LEVEL_UPDATE,                            \
-                                                                     LOG_PREPEND("LEVEL UPDATE", 3), level_update)
+    Logger::get_instance().write_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(                                        \
+            LogType::LEVEL_UPDATE, LOG_PREPEND("LEVEL UPDATE", 3), level_update)
 #define LOG_UPDATE_LAST_TRADE(last_trade_update)                                                                       \
     Logger::get_instance().write_buffer<LastTradeUpdate, LastTradeUpdateLog>(                                          \
             LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4), last_trade_update)

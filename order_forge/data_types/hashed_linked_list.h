@@ -94,13 +94,9 @@ namespace of {
         }
 
         HashLinkedList() = default;
-
         HashLinkedList(HashLinkedList &) = delete;
-
         HashLinkedList &operator=(HashLinkedList &) = delete;
-
         HashLinkedList(HashLinkedList &&) = delete;
-
         HashLinkedList &operator=(HashLinkedList &&) = delete;
 
         ~HashLinkedList() {

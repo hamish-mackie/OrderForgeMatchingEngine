@@ -1,7 +1,7 @@
 #pragma once
 
-#include "book_level.h"
 #include "order_book_data.h"
+#include "price_level.h"
 
 namespace of {
 
@@ -13,10 +13,10 @@ public:
 
     BookSide(Side side, Price &tick_size) : side_(side), tick_size_(tick_size), levels_(side, tick_size) {}
 
-    LevelUpdate add_order(Order &order);
-    LevelUpdate remove_order(FindOrderHelper &helper);
-    LevelUpdate remove_orders(Price price, std::vector<OrderId> &order_ids);
-    std::vector<LevelUpdate> match_order(MatchingEngine &trade_producer);
+    PriceLevelUpdate add_order(Order& order);
+    PriceLevelUpdate remove_order(FindOrderHelper& helper);
+    PriceLevelUpdate remove_orders(Price price, std::vector<OrderId>& order_ids);
+    std::vector<PriceLevelUpdate> match_order(MatchingEngine& trade_producer);
 
     Price best_price() { return levels_.best_price(); }
     bool empty() { return levels_.empty(); }
@@ -28,7 +28,7 @@ private:
 };
 
 template<typename CompFunc>
-LevelUpdate BookSide<CompFunc>::add_order(Order &order) {
+PriceLevelUpdate BookSide<CompFunc>::add_order(Order& order) {
     assert(order.side() == side_);
 
     auto ptr = levels_.get_book_level(order.price());
@@ -36,7 +36,7 @@ LevelUpdate BookSide<CompFunc>::add_order(Order &order) {
 }
 
 template<typename CompFunc>
-LevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper &helper) {
+PriceLevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper& helper) {
     auto ptr = levels_.get_book_level(helper.price);
     auto update = ptr->remove_order(helper);
     if (update.total_quantity().value() == 0) {
@@ -46,7 +46,7 @@ LevelUpdate BookSide<CompFunc>::remove_order(FindOrderHelper &helper) {
 }
 
 template<typename CompFunc>
-LevelUpdate BookSide<CompFunc>::remove_orders(Price price, std::vector<OrderId> &order_ids) {
+PriceLevelUpdate BookSide<CompFunc>::remove_orders(Price price, std::vector<OrderId>& order_ids) {
     auto ptr = levels_.get_book_level(price);
     auto update = ptr->remove_order(price);
     if (update.total_quantity().value() == 0) {
@@ -57,8 +57,8 @@ LevelUpdate BookSide<CompFunc>::remove_orders(Price price, std::vector<OrderId> 
 
 
 template<typename CompFunc>
-std::vector<LevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine &trade_producer) {
-    std::vector<LevelUpdate> updates;
+std::vector<PriceLevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine& trade_producer) {
+    std::vector<PriceLevelUpdate> updates;
     for (auto &level: levels_) {
         if (trade_producer.has_remaining_qty()) {
             updates.push_back(level.second->match_order(trade_producer));

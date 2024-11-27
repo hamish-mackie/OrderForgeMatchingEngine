@@ -11,7 +11,7 @@ void trade_handler(const Trade& trade) {
     fmt::println("Trade: Price {}, Quantity {}, Side: {}", trade.price(), trade.qty(), enum_str(trade.crossing_side()));
 }
 
-void level_update_handler(const LevelUpdate& update) {
+void level_update_handler(const PriceLevelUpdate& update) {
     fmt::println("Level Update: Price: {}, Quantity: {}, Side: {}", update.price(), update.total_quantity(),
                  enum_str(update.side()));
 }

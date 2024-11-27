@@ -7,7 +7,7 @@ OrderBook::OrderBook(OrderBookConfig& cfg) :
 
     REGISTER_TYPE(ORDER, Order);
     REGISTER_TYPE(TRADE, Trade);
-    REGISTER_TYPE(LEVEL_UPDATE, LevelUpdate);
+    REGISTER_TYPE(LEVEL_UPDATE, PriceLevelUpdate);
     REGISTER_TYPE(LAST_TRADE_UPDATE, LastTradeUpdate);
     REGISTER_TYPE(DEBUG, Debug);
 }
@@ -78,7 +78,7 @@ void OrderBook::limit_order(Order& order) {
         return;
     }
 
-    LevelUpdate update;
+    PriceLevelUpdate update;
 
     if (order.is_buy()) {
         update = bids.add_order(order);
@@ -113,7 +113,7 @@ void OrderBook::fill_and_kill_order(Order& order) {
 
 void OrderBook::match_order(Order& order) {
     auto matching_engine = MatchingEngine(order, pmr_resource_);
-    std::vector<LevelUpdate> updates;
+    std::vector<PriceLevelUpdate> updates;
 
     LOG_ORDER(order);
     if (order.is_buy()) {

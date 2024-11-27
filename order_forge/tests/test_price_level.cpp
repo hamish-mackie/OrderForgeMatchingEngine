@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "book_level.h"
+#include "price_level.h"
 
 using namespace of;
 
-class TestBookLevel : public ::testing::Test {
+class TestPriceLevel : public ::testing::Test {
 protected:
     void SetUp() override {
         LoggerConfig log_cfg = LoggerConfig{};
@@ -20,13 +20,13 @@ protected:
     std::string_view symbol = "TESTUSD";
     Price bid_price_{50};
     Price ask_price_{100};
-    BookLevel book_level_bid_{bid_price_, BUY};
-    BookLevel book_level_ask_{ask_price_, SELL};
-    std::vector<LevelUpdate> level_updates_;
+    PriceLevel book_level_bid_{bid_price_, BUY};
+    PriceLevel book_level_ask_{ask_price_, SELL};
+    std::vector<PriceLevelUpdate> level_updates_;
     std::pmr::unsynchronized_pool_resource pool{};
 };
 
-TEST_F(TestBookLevel, match_order) {
+TEST_F(TestPriceLevel, match_order) {
 
     std::vector<Order> limit_orders = {
             Order(symbol, bid_price_, Quantity(1), BUY, OPEN, LIMIT, 9999, 1, 100),
@@ -45,7 +45,7 @@ TEST_F(TestBookLevel, match_order) {
     ASSERT_EQ(trade_producer.get_modified_orders_().size(), 2);
 }
 
-TEST_F(TestBookLevel, add_order) {
+TEST_F(TestPriceLevel, add_order) {
     Quantity qty = Quantity(5);
     const OrderId client_id = gen_random_order_id();
     const OrderId id = gen_random_order_id();
@@ -62,7 +62,7 @@ TEST_F(TestBookLevel, add_order) {
     ASSERT_EQ(book_level_bid_.total_quantity(), qty);
 }
 
-TEST_F(TestBookLevel, remove_order) {
+TEST_F(TestPriceLevel, remove_order) {
     Quantity qty = Quantity(5);
     const OrderId client_id = gen_random_order_id();
     const OrderId id = gen_random_order_id();

@@ -2,19 +2,21 @@
 
 #include <map>
 
+#include "price_level.h"
+
 namespace of {
 
 class OrderBookDataInterface {
 public:
-    using BookLvlPtr = BookLevel *;
+    using PriceLvlPtr = PriceLevel*;
 
     OrderBookDataInterface(Side side, TickSize tick_size) : side_(side), tick_size_(tick_size) {}
 
     virtual ~OrderBookDataInterface() = 0;
 
     virtual Price best_price() = 0;
-    virtual BookLvlPtr get_book_level(const Price &price) = 0;
-    virtual BookLvlPtr add_book_level(const Price &price) = 0;
+    virtual PriceLvlPtr get_book_level(const Price& price) = 0;
+    virtual PriceLvlPtr add_book_level(const Price& price) = 0;
     virtual void remove_book_level(const Price &price) = 0;
 
 protected:
@@ -31,14 +33,14 @@ inline OrderBookDataInterface::~OrderBookDataInterface() {}
 template<typename CompFunc>
 class OrderBookDataMap : public OrderBookDataInterface {
 public:
-    using OrderBookContainer = std::map<Price, BookLvlPtr, CompFunc>;
+    using OrderBookContainer = std::map<Price, PriceLvlPtr, CompFunc>;
 
     OrderBookDataMap(const Side side, const TickSize &tick_size) :
         OrderBookDataInterface(side, tick_size), book_cont_() {}
 
     Price best_price() override { return book_cont_.begin()->first; };
 
-    BookLvlPtr get_book_level(const Price &price) override {
+    PriceLvlPtr get_book_level(const Price& price) override {
         auto it = book_cont_.find(price);
         if (it != book_cont_.end()) {
             return it->second;
@@ -47,8 +49,8 @@ public:
         }
     };
 
-    BookLvlPtr add_book_level(const Price &price) override {
-        auto res = book_cont_.emplace(price, new BookLevel(price, side_));
+    PriceLvlPtr add_book_level(const Price& price) override {
+        auto res = book_cont_.emplace(price, new PriceLevel(price, side_));
         return res.first->second;
     };
 

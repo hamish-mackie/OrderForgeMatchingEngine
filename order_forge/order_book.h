@@ -9,7 +9,7 @@ public:
     using BookSideBid = BookSide<std::greater<>>;
     using BookSideAsk = BookSide<std::less<>>;
     using OrdersIdMap = std::unordered_map<OrderId, FindOrderHelper>;
-    using LevelUpdates = std::pmr::vector<LevelUpdate>;
+    using LevelUpdates = std::pmr::vector<PriceLevelUpdate>;
 
     // Private feed handlers
     using OrderUpdateHandler = std::function<void(const Order& order)>;
@@ -20,7 +20,7 @@ public:
     TradesUpdateHandler private_trades_update_handler;
 
     // Public feed handlers
-    using OrderBookUpdateHandler = std::function<void(const LevelUpdate& update)>;
+    using OrderBookUpdateHandler = std::function<void(const PriceLevelUpdate& update)>;
     using LastTradeUpdateHandler = std::function<void(const LastTradeUpdate& update)>;
     OrderBookUpdateHandler public_order_book_update_handler;
     LastTradeUpdateHandler public_last_trade_update_handler;

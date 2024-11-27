@@ -4,11 +4,11 @@
 #include "order_forge_types.h"
 namespace of {
 
-class LevelUpdate {
+class PriceLevelUpdate {
 public:
-    LevelUpdate() : side_() {}
+    PriceLevelUpdate() : side_() {}
 
-    LevelUpdate(const Price &price, const Quantity &total_quantity, Side side) :
+    PriceLevelUpdate(const Price& price, const Quantity& total_quantity, Side side) :
         price_(price), total_qty_(total_quantity), side_(side) {}
 
     [[nodiscard]] Quantity total_quantity() const { return total_qty_; }
@@ -21,12 +21,12 @@ private:
     Side side_;
 };
 
-struct LevelUpdateLog {
+struct PriceLevelUpdateLog {
     Price price_;
     Quantity total_qty_;
     Side side_;
 
-    void write(const LevelUpdate &update) {
+    void write(const PriceLevelUpdate& update) {
         price_ = update.price();
         total_qty_ = update.total_quantity();
         side_ = update.side();
@@ -38,16 +38,16 @@ struct LevelUpdateLog {
     }
 };
 
-class BookLevel {
+class PriceLevel {
 public:
     using OrdersCont = HashLinkedList<OrderId, Order>;
 
-    explicit BookLevel(const Price &price, Side side) : price_(price), total_qty_(0), side_(side) {}
+    explicit PriceLevel(const Price& price, Side side) : price_(price), total_qty_(0), side_(side) {}
 
-    LevelUpdate add_order(Order &order);
-    LevelUpdate remove_order(FindOrderHelper &helper);
-    LevelUpdate remove_order(OrderId id);
-    LevelUpdate match_order(MatchingEngine &matching_engine);
+    PriceLevelUpdate add_order(Order& order);
+    PriceLevelUpdate remove_order(FindOrderHelper& helper);
+    PriceLevelUpdate remove_order(OrderId id);
+    PriceLevelUpdate match_order(MatchingEngine& matching_engine);
 
     void remove_marked_order_nodes();
 
