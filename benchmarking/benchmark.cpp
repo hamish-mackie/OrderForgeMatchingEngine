@@ -89,16 +89,6 @@ void benchmark_order_book(uint64_t num_orders) {
                fmt::group_digits(orders.size()), duration_market_orders.count(), fmt::group_digits(market_ops_per_sec));
 }
 
-// void *operator new(std ::size_t count) {
-//     auto ptr = malloc(count);
-//     TracyAlloc(ptr, count);
-//     return ptr;
-// }
-// void operator delete(void *ptr) noexcept {
-//     TracyFree(ptr);
-//     free(ptr);
-// }
-
 } // namespace of
 
 using namespace of;
@@ -109,7 +99,7 @@ int main() {
 
     auto log_cfg = LoggerConfig{};
     log_cfg.write_std_out = false;
-    log_cfg.mem_block_size_mb = of::MB * 100;
+    log_cfg.mem_block_size_mb = 100;
     log_cfg.number_blocks = 2;
     // Call order allocator, so it allocates up front.
     Logger::get_instance(log_cfg);
