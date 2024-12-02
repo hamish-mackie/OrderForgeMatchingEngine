@@ -6,9 +6,10 @@
 #include <ring_buffer.h>
 #include <thread>
 
+#include "logger_config.h"
+
 #include "data_structs.h"
 #include "defines.h"
-#include "logger_config.h"
 
 struct LogInfo {
     LogType log_type_;
@@ -19,20 +20,19 @@ class Logger {
     using RegisterFunc = std::function<uint64_t(std::string_view, char*)>;
 
 public:
-    static Logger& get_instance(const LoggerConfig& cfg = get_default_config()) {
+    static Logger& get_instance(const LoggerConfig& cfg = get_default_logger_config()) {
         static Logger instance(cfg);
 
         return instance;
     }
 
-    static const LoggerConfig& get_default_config() {
-        static const LoggerConfig default_cfg;
-        return default_cfg;
-    }
-
     void register_type(const LogType type, RegisterFunc func) {
         function_register_[static_cast<u_int8_t>(type)] = func;
     }
+
+    // Register the logger types DEBUG, INFO, WARN, ERROR so macro's LOG_DEBUG LOG_INFO etc. can be written/read from
+    // log buffer
+    static void register_common_types() { REGISTER_TYPE(FORMAT_STRING, FormatString); }
 
     template<typename T>
     void write(std::string_view prepend, T* t) {
@@ -83,8 +83,8 @@ public:
 
     template<typename... Args>
     void log(LogType log_type, std::string_view log_prepend, std::string_view format_str, Args&&... args) {
-        auto debug = Debug(fmt::format("{}", fmt::vformat(format_str, fmt::make_format_args(args...))));
-        write_buffer<Debug, DebugLog>(log_type, log_prepend, debug);
+        auto str = FormatString(fmt::format("{}", fmt::vformat(format_str, fmt::make_format_args(args...))));
+        write_buffer<FormatString, FormatStringLog>(log_type, log_prepend, str);
     }
 
     void stop() {
@@ -112,10 +112,10 @@ private:
     std::ofstream log_file_;
     std::unique_ptr<std::thread> log_thread_;
     std::atomic<bool> run_{true};
-    LoggerConfig cfg_;
+    const LoggerConfig cfg_;
 
-    Logger(const LoggerConfig& cfg) :
-        cfg_(cfg), write_std_out_(cfg.write_std_out), ring_buffer_(cfg.mem_block_size, cfg.number_blocks),
+    explicit Logger(const LoggerConfig& cfg) :
+        cfg_(cfg), write_std_out_(cfg.write_std_out), ring_buffer_(cfg.mem_block_size_mb * MB, cfg.number_blocks),
         function_register_(UINT8_MAX) {
 
         log_file_.open(cfg.log_file_path, std::ios::out | std::ios::ate);

@@ -1,0 +1,7 @@
+add_library(message_protocols_json INTERFACE)
+
+target_include_directories(message_protocols_json INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(message_protocols_json INTERFACE message_protocols order_forge)
+
+add_subdirectory(tests)

@@ -2,14 +2,15 @@
 
 #include <fmt/core.h>
 
-struct Debug {
+// wraps a format string to pass to the logger
+struct FormatString {
     std::string str;
 };
 
-struct DebugLog {
-    DebugLog() : str(256, ' ') {}
+struct FormatStringLog {
+    FormatStringLog() : str(256, ' ') {}
 
-    void write(Debug &debug) { str = debug.str; }
+    void write(FormatString& debug) { str = debug.str; }
     std::string str;
 
     std::string get_str() {

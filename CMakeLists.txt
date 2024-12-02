@@ -33,13 +33,21 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(tracy)
 
+FetchContent_Declare(json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.3
+)
+FetchContent_MakeAvailable(json)
+
 enable_testing()
 
 add_library(precompiled_lib INTERFACE)
 
 target_link_libraries(precompiled_lib INTERFACE
-    fmt::fmt
-    magic_enum
+        ${Protobuf_LIBRARIES}
+        nlohmann_json
+        fmt::fmt
+        magic_enum
 )
 
 target_precompile_headers(precompiled_lib INTERFACE
@@ -50,11 +58,15 @@ target_precompile_headers(precompiled_lib INTERFACE
         <memory>
         <fmt/format.h>
         <magic_enum.hpp>
+        <nlohmann/json.hpp>
 )
 
+add_subdirectory(config)
 add_subdirectory(logger)
 add_subdirectory(event_loop)
 
 add_subdirectory(order_forge)
+add_subdirectory(message_protocols)
 target_link_libraries(demo_run PUBLIC order_forge)
 add_subdirectory(benchmarking)
+add_subdirectory(order_forge_app)

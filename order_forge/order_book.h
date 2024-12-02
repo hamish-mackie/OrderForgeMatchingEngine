@@ -32,7 +32,7 @@ public:
     void add_order_helper(Price price, OrderId order_id, Side side);
 
 private:
-    OrderBookConfig& cfg_;
+    const OrderBookConfig& cfg_;
     std::string symbol_;
     BookSideBid bids;
     BookSideAsk asks;

@@ -31,7 +31,7 @@ private:
     // We report a vector of trades made.
     std::pmr::vector<Trade> trades_;
     // We also report vector of orders which have been removed or changed.
-    std::pmr::vector<Order *> modified_orders_;
+    std::pmr::vector<Order*> modified_orders_;
     std::pmr::vector<PriceLevel*> remove_levels;
     std::pmr::unsynchronized_pool_resource &vec_resource_;
 };

@@ -9,12 +9,7 @@ constexpr std::string_view test_prepend = "test_prepend";
     Logger::get_instance().write_buffer<TestStructOriginal, TestStructLog>(                                            \
             LogType::TEST_STRUCT, LOG_PREPEND("TEST_STRUCT", 999), test_struct);
 
-void set_up_logger() {
-    LoggerConfig log_cfg = LoggerConfig{};
-    log_cfg.write_std_out = true;
-    log_cfg.mem_block_size = 1024;
-    Logger::get_instance(log_cfg);
-}
+void set_up_logger() { Logger::get_instance(); }
 
 TEST(TestLogger, test) {
     set_up_logger();

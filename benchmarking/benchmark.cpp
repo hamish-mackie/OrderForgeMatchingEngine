@@ -109,7 +109,7 @@ int main() {
 
     auto log_cfg = LoggerConfig{};
     log_cfg.write_std_out = false;
-    log_cfg.mem_block_size = of::MB * 100;
+    log_cfg.mem_block_size_mb = of::MB * 100;
     log_cfg.number_blocks = 2;
     // Call order allocator, so it allocates up front.
     Logger::get_instance(log_cfg);

@@ -6,7 +6,7 @@ constexpr uint64_t COUNTER_SPACE = 1000000000ULL;
 
 // Id generator used to generate unique trade id's and order id's
 
-// They need to be independent accross unique assets and times/days
+// They need to be independent across unique assets and times/days
 // Will start by using the first 8 digits as year, month, day and then a counter.
 
 template<typename T>
@@ -31,7 +31,7 @@ private:
 
         const auto year = now_tm.tm_year + 1900; // tm_year is years since 1900
         const auto month = now_tm.tm_mon + 1; // tm_mon is months since January [0,11]
-        const auto day = now_tm.tm_mday; // tm_mday is day of the month [1,31]
+        const auto day = now_tm.tm_mday; // tm_day is day of the month [1,31]
 
         // Combine year, month, and day into a YYYYMMDD format
         return (year * 10000ULL) + (month * 100ULL) + day;

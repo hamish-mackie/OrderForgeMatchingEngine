@@ -9,14 +9,15 @@ protected:
     void SetUp() override {
         LoggerConfig log_cfg = LoggerConfig{};
         log_cfg.write_std_out = true;
-        log_cfg.mem_block_size = of::MB * 1;
+        log_cfg.mem_block_size_mb = of::MB * 1;
         log_cfg.number_blocks = 5;
 
         Logger::get_instance(log_cfg);
+        Logger::register_common_types();
         REGISTER_TYPE(ORDER, Order);
         REGISTER_TYPE(TRADE, Trade);
-        REGISTER_TYPE(DEBUG, Debug);
     }
+
     std::string_view symbol = "TESTUSD";
     Price bid_price_{50};
     Price ask_price_{100};

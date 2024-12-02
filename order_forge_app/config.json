@@ -1,0 +1,16 @@
+{
+  "logger_config": {
+    "write_std_out": true,
+    "write_log_file": false
+  },
+
+  "tcp_listeners": [
+    { "port": 7001 },
+    { "port": 7002 }
+  ],
+
+  "order_book_configs": [
+    { "symbol": "TEST1",  "tick_size": 0.01},
+    { "symbol": "TEST2",  "tick_size": 100}
+  ]
+}

@@ -53,10 +53,10 @@ public:
         }
     }
 
-    void expand_pool(size_type n) {
-        size_t new_pool_size = std::max(pool_size_, n);
+    void expand_pool(const size_type n) {
+        const size_t new_pool_size = std::max(pool_size_, n);
 
-        T *ptr = static_cast<pointer>(malloc(new_pool_size * sizeof(T)));
+        T* ptr = static_cast<pointer>(operator new[](new_pool_size * sizeof(T)));
         pool_blocks_.push_back(ptr);
         for (size_t i = 0; i < new_pool_size; ++i) {
             free_list_.push_back(&pool_blocks_.back()[i]);

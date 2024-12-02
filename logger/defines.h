@@ -4,7 +4,7 @@
 
 enum LogType : uint8_t {
     TEST_STRUCT = 1,
-    DEBUG = 2,
+    FORMAT_STRING = 2,
     ORDER = 10,
     TRADE = 11,
 
@@ -165,11 +165,11 @@ const char *get_str(std::string_view str, std::string_view str2, std::string_vie
             LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4), last_trade_update)
 
 #define LOG_DEBUG(format_str, ...)                                                                                     \
-    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("DEBUG", 5), format_str, ##__VA_ARGS__)
+    Logger::get_instance().log(LogType::FORMAT_STRING, LOG_PREPEND("DEBUG", 5), format_str, ##__VA_ARGS__)
 #define LOG_INFO(format_str, ...)                                                                                      \
-    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("INFO", 6), format_str, ##__VA_ARGS__)
+    Logger::get_instance().log(LogType::FORMAT_STRING, LOG_PREPEND("INFO", 6), format_str, ##__VA_ARGS__)
 #define LOG_WARN(format_str, ...)                                                                                      \
-    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("WARN", 7), format_str, ##__VA_ARGS__)
+    Logger::get_instance().log(LogType::FORMAT_STRING, LOG_PREPEND("WARN", 7), format_str, ##__VA_ARGS__)
 #define LOG_ERROR(format_str, ...)                                                                                     \
-    Logger::get_instance().log(LogType::DEBUG, LOG_PREPEND("ERROR", 8), format_str, ##__VA_ARGS__)
+    Logger::get_instance().log(LogType::FORMAT_STRING, LOG_PREPEND("ERROR", 8), format_str, ##__VA_ARGS__)
 #endif

@@ -1,18 +1,21 @@
 #pragma once
 
 #include <cstdint>
-#include <iostream>
+#include <defines.h>
+#include <logger.h>
+#include <netinet/in.h>
 
 using FileDescriptor = int32_t;
 
 class EventHandler {
 public:
-    explicit EventHandler(FileDescriptor fd): fd_(fd) {}
+    EventHandler() : fd_(0) {}
+    explicit EventHandler(const FileDescriptor fd) : fd_(fd) {}
 
     virtual void handle_event(uint64_t events) = 0;
 
     void* get_handle() { return static_cast<void*>(this); }
-    FileDescriptor get_fd() { return fd_; }
+    [[nodiscard]] FileDescriptor get_fd() const { return fd_; }
 
     virtual ~EventHandler() = default;
 

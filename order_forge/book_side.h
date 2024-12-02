@@ -16,7 +16,7 @@ public:
     PriceLevelUpdate add_order(Order& order);
     PriceLevelUpdate remove_order(FindOrderHelper& helper);
     PriceLevelUpdate remove_orders(Price price, std::vector<OrderId>& order_ids);
-    std::vector<PriceLevelUpdate> match_order(MatchingEngine& trade_producer);
+    std::vector<PriceLevelUpdate> match_order(MatchingEngine& matching_engine);
 
     Price best_price() { return levels_.best_price(); }
     bool empty() { return levels_.empty(); }
@@ -57,11 +57,11 @@ PriceLevelUpdate BookSide<CompFunc>::remove_orders(Price price, std::vector<Orde
 
 
 template<typename CompFunc>
-std::vector<PriceLevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine& trade_producer) {
+std::vector<PriceLevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine& matching_engine) {
     std::vector<PriceLevelUpdate> updates;
     for (auto &level: levels_) {
-        if (trade_producer.has_remaining_qty()) {
-            updates.push_back(level.second->match_order(trade_producer));
+        if (matching_engine.has_remaining_qty()) {
+            updates.push_back(level.second->match_order(matching_engine));
         }
     }
 

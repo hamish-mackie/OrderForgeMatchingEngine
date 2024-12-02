@@ -5,20 +5,20 @@ namespace of {
 OrderBook::OrderBook(OrderBookConfig& cfg) :
     cfg_(cfg), symbol_(cfg.symbol), bids(BookSideBid(BUY, cfg.tick_size)), asks(BookSideAsk(SELL, cfg.tick_size)) {
 
+    LOG_INFO("creating order book {}, tick_size {}", symbol_, cfg.tick_size.descaled_value());
     REGISTER_TYPE(ORDER, Order);
     REGISTER_TYPE(TRADE, Trade);
     REGISTER_TYPE(LEVEL_UPDATE, PriceLevelUpdate);
     REGISTER_TYPE(LAST_TRADE_UPDATE, LastTradeUpdate);
-    REGISTER_TYPE(DEBUG, Debug);
 }
 
 void OrderBook::add_order(Order& order) {
-    if (order.symbol() != symbol_) {
+    if (!order.is_same_symbol(symbol_)) {
         LOG_WARN("Symbol {} does not match {}", order.symbol(), symbol_.data());
         return;
     }
 
-    // set symbol to orderbooks symbol, so it guarantees its lifetime
+    // set the order symbol to view the order book symbol. This will guarantee the lifetime of the view.
     order.set_symbol(symbol_);
 
     // if order id is not provided, set one.

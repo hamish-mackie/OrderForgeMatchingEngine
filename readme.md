@@ -65,7 +65,7 @@ Getting the demo app running is straightforward:
 
 ```bash
 // required packages
-apt install cmake git build-essential
+apt install cmake git build-essential protobuf-compiler
 
 git clone https://github.com/hamish-mackie/OrderForgeMatchingEngine.git
 cd OrderForgeMatchingEngine

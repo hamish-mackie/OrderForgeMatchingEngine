@@ -31,11 +31,12 @@ public:
 
     void set_symbol(const Symbol symbol) { symbol_ = symbol; }
 
-    void set_status(OrderStatus status) { status_ = status; }
+    void set_status(const OrderStatus status) { status_ = status; }
 
     Quantity reduce_qty(Quantity &qty);
 
     [[nodiscard]] bool is_buy() const { return side_ == Side::BUY; }
+    [[nodiscard]] bool is_same_symbol(const Symbol& symbol) const { return symbol == symbol_; }
 
 private:
     Symbol symbol_;

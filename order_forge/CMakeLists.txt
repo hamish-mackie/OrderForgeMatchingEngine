@@ -16,6 +16,7 @@ target_sources(order_forge PUBLIC
 add_subdirectory(data_types)
 
 target_link_libraries(order_forge PUBLIC
+        config
         data_types
         TracyClient
 )
