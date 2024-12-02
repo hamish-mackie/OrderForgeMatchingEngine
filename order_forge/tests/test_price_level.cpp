@@ -9,7 +9,7 @@ protected:
     void SetUp() override {
         LoggerConfig log_cfg = LoggerConfig{};
         log_cfg.write_std_out = true;
-        log_cfg.mem_block_size_mb = of::MB * 1;
+        log_cfg.mem_block_size_mb = 1;
         log_cfg.number_blocks = 5;
 
         Logger::get_instance(log_cfg);
