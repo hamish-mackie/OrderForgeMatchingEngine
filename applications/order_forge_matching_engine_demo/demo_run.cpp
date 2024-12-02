@@ -22,6 +22,9 @@ void last_trade_handler(const LastTradeUpdate& update) {
 }
 
 int main() {
+    Logger::get_instance();
+    Logger::register_common_types();
+
     std::string_view symbol = "TESTUSD";
     OrderBookConfig config{symbol.data(), TickSize(0.01)};
     auto ob = OrderBook(config);

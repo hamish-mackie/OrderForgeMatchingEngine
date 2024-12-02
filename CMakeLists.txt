@@ -3,8 +3,6 @@ project(OrderForge)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(demo_run demo_run.cpp)
-
 include(FetchContent)
 FetchContent_Declare(
         googletest
@@ -64,9 +62,6 @@ target_precompile_headers(precompiled_lib INTERFACE
 add_subdirectory(config)
 add_subdirectory(logger)
 add_subdirectory(event_loop)
-
 add_subdirectory(order_forge)
 add_subdirectory(message_protocols)
-target_link_libraries(demo_run PUBLIC order_forge)
-add_subdirectory(benchmarking)
-add_subdirectory(order_forge_app)
+add_subdirectory(applications)

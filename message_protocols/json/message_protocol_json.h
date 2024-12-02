@@ -11,7 +11,6 @@ using namespace of;
 static constexpr auto SYMBOL_KEY = "symbol";
 static constexpr auto PRICE_KEY = "price";
 static constexpr auto QTY_KEY = "qty";
-static constexpr auto REMAINING_QTY_KEY = "remaining_qty";
 static constexpr auto ORDER_SIDE_KEY = "order_side";
 static constexpr auto ORDER_TYPE_KEY = "order_type";
 static constexpr auto ORDER_STATUS_KEY = "order_status";
@@ -155,7 +154,6 @@ static Result<Order> parse_order(std::string_view message) {
 
     Price price = Price(j.at(PRICE_KEY).get<double>());
     Quantity qty = Quantity(j.at(QTY_KEY).get<double>());
-    Quantity remaining_qty = Quantity(j.at(REMAINING_QTY_KEY).get<double>());
 
     Side side;
     if (const auto res = parse_enum<Side>(j, ORDER_SIDE_KEY); res.is_valid()) {
@@ -183,8 +181,6 @@ static Result<Order> parse_order(std::string_view message) {
     OrderId order_id = j.at(ORDER_ID_KEY).get<OrderId>();
 
     of::Order order(symbol, price, qty, side, status, type, acc_id, client_order_id, order_id);
-
-    order.remaining_qty_ref() = remaining_qty;
 
     return Result<Order>(order);
 }

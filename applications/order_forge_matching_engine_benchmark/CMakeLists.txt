@@ -1,0 +1,6 @@
+add_executable(app_benchmark benchmark.cpp)
+
+#target_compile_definitions(benchmark PUBLIC DISABLE_LOGGING)
+target_compile_definitions(app_benchmark PUBLIC RELEASE_LOGGING)
+
+target_link_libraries(app_benchmark PUBLIC order_forge TracyClient)
