@@ -13,7 +13,7 @@ void TestInvalidField(const json& default_json, const std::string& field_name, c
     j[field_name] = invalid_value;
     std::string json_data = j.dump();
 
-    auto res = parse_order(json_data.data(), 0);
+    auto res = parse_order(json_data);
 
     EXPECT_FALSE(res.is_valid()) << "Expected parsing to fail when '" << field_name << "' is invalid";
     if (!res.is_valid()) {
@@ -36,7 +36,7 @@ TEST(OrderTest, ParseJsonToOrder) {
 
     std::string json_data = j.dump();
 
-    auto res = parse_order(json_data.data(), 0);
+    auto res = parse_order(json_data);
 
     if (!res.is_valid()) {
         std::cout << res.get_error() << std::endl;
@@ -79,7 +79,7 @@ TEST(OrderTest, ParseJsonToOrder_InvalidFields) {
     json missing_symbol = default_json;
     missing_symbol.erase("symbol");
     std::string json_data = missing_symbol.dump();
-    auto res = parse_order(json_data.data(), 0);
+    auto res = parse_order(json_data);
     EXPECT_FALSE(res.is_valid()) << "Expected parsing to fail when 'symbol' is missing";
     if (!res.is_valid()) {
         std::cout << "Error: " << res.get_error() << std::endl;

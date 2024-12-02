@@ -30,11 +30,18 @@ void OrderForgeApp::handle_event(const char* buffer, const size_t size) {
     auto message = std::string_view(buffer, size);
     std::cout << message << std::endl;
 
-    msg::ws::Result<Order> res = msg::ws::parse_order(buffer, size);
+    msg::ws::Result<Order> res = msg::ws::parse_order(message);
 
     if (!res.is_valid()) {
         LOG_ERROR("message not valid: {}", message);
     }
 
     LOG_ORDER(res.get_value());
+    Order& order = res.get_value();
+
+    if (auto res = order_books_.find(order.symbol()); res != order_books_.end()) {
+        res->second->add_order(order);
+    } else {
+        LOG_WARN("symbol not found: {}", order.symbol());
+    }
 }
