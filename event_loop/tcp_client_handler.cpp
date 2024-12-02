@@ -12,7 +12,6 @@ inline void TCPClientHandler::handle_event(uint64_t events) {
             delete this;
         } else if (n == 0) {
             LOG_INFO("client disconnected: {}", fd_);
-            close(fd_);
             reactor_.unregister_handler(this);
             delete this;
         } else {

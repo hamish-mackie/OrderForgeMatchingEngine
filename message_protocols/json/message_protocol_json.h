@@ -141,8 +141,8 @@ inline std::optional<std::string_view> validate_required_fields(const json& j) {
     return {};
 }
 
-static Result<Order> parse_order(const char* buffer, size_t size) {
-    json j = json::parse(buffer);
+static Result<Order> parse_order(std::string_view message) {
+    json j = json::parse(message);
 
     if (auto res = validate_required_fields(j); res.has_value()) {
         return Result<Order>(res.value());
