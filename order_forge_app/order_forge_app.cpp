@@ -7,20 +7,26 @@ OrderForgeApp::OrderForgeApp() {
 
     LOG_INFO("app id: {}", config.app_id);
 
-    auto* tcp_reactor = new TCPReactor();
+    tcp_reactor_ = std::make_unique<TCPReactor>();
 
     for (const auto [port]: config.listener_configs) {
-        auto* tcp_handler = new TCPConnectionHandler(port, *tcp_reactor);
+        auto* tcp_handler = new TCPConnectionHandler(port, *tcp_reactor_);
         tcp_handler->add_handler([&](auto buffer, auto size) { handle_event(buffer, size); });
-        tcp_reactor->register_handler(tcp_handler, EPOLLIN | EPOLLOUT | EPOLLET);
+        tcp_reactor_->register_connection_handler(tcp_handler, EPOLLIN | EPOLLOUT | EPOLLET);
     };
 
     for (auto& order_book_config: config.order_book_configs) {
-        order_books_.insert({order_book_config.symbol, std::make_unique<OrderBook>(order_book_config)});
+        auto res = order_books_.insert({order_book_config.symbol, std::make_unique<OrderBook>(order_book_config)});
+        if (!res.second) {
+            LOG_ERROR("Failed to create order book: {}", order_book_config.symbol);
+        }
+
+        res.first->second->public_order_book_update_handler = [&](auto update) { order_book_update_handler(update); };
+        res.first->second->public_last_trade_update_handler = [&](auto update) { last_trade_update_handler(update); };
     }
 
     reactor_ = std::make_unique<Reactor>();
-    reactor_->add_item(tcp_reactor);
+    reactor_->add_item(tcp_reactor_.get());
     reactor_->run();
 }
 
@@ -36,12 +42,23 @@ void OrderForgeApp::handle_event(const char* buffer, const size_t size) {
         LOG_ERROR("message not valid: {}", message);
     }
 
-    LOG_ORDER(res.get_value());
     Order& order = res.get_value();
 
     if (auto res = order_books_.find(order.symbol()); res != order_books_.end()) {
+        order.set_symbol(res->first);
         res->second->add_order(order);
+
     } else {
         LOG_WARN("symbol not found: {}", order.symbol());
     }
+}
+
+void OrderForgeApp::last_trade_update_handler(const LastTradeUpdate& update) {
+    const std::string update_string = msg::ws::to_json_string(update);
+    tcp_reactor_->broadcast_all(update_string);
+}
+
+void OrderForgeApp::order_book_update_handler(const PriceLevelUpdate& update) {
+    const std::string update_string = msg::ws::to_json_string(update);
+    tcp_reactor_->broadcast_all(update_string);
 }

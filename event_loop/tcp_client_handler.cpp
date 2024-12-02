@@ -20,9 +20,20 @@ inline void TCPClientHandler::handle_event(uint64_t events) {
             for (const auto& handler: handlers_) {
                 handler(buffer, n);
             }
-            if (write(fd_, message.c_str(), strlen(message.c_str())) < 0) {
-                perror("write");
-            }
+
+            send(buffer, n);
         }
+    }
+}
+
+void TCPClientHandler::send(const char* buffer, const size_t size) {
+    if (!write(fd_, buffer, size)) {
+        perror("write");
+    }
+}
+
+void TCPClientHandler::send(const std::string_view message) {
+    if (!write(fd_, message.data(), message.size())) {
+        perror("write");
     }
 }

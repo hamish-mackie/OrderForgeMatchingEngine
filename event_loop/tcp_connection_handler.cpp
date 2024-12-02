@@ -39,7 +39,8 @@ inline void TCPConnectionHandler::handle_event(const uint64_t events) {
         } else {
             LOG_INFO("client connected: {}", fd_);
             auto* client_handler = new TCPClientHandler(client_fd, reactor_, handlers_);
-            reactor_.register_handler(reinterpret_cast<EventHandler*>(client_handler), EPOLLIN | EPOLLOUT | EPOLLET);
+            reactor_.register_client_handler(reinterpret_cast<EventHandler*>(client_handler),
+                                             EPOLLIN | EPOLLOUT | EPOLLET);
         }
     }
 }

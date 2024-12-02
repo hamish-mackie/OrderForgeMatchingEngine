@@ -13,6 +13,8 @@ public:
     explicit EventHandler(const FileDescriptor fd) : fd_(fd) {}
 
     virtual void handle_event(uint64_t events) = 0;
+    virtual void send(const char*, size_t) = 0;
+    virtual void send(std::string_view message) = 0;
 
     void* get_handle() { return static_cast<void*>(this); }
     [[nodiscard]] FileDescriptor get_fd() const { return fd_; }

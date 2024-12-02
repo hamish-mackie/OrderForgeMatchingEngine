@@ -10,6 +10,8 @@ public:
                      std::vector<std::function<void(const char*, size_t)>>& handlers) :
         EventHandler(fd), reactor_(reactor), handlers_(handlers){};
     void handle_event(uint64_t events) override;
+    void send(const char*, size_t) override;
+    void send(std::string_view message) override;
     ~TCPClientHandler() override = default;
 
 private:

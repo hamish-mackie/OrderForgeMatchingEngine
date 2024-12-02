@@ -9,6 +9,17 @@ TCPReactor::TCPReactor() {
 
     LOG_INFO("epoll fd: {}", epoll_fd_);
 }
+
+void TCPReactor::register_connection_handler(EventHandler* handler, const uint32_t events) {
+    register_handler(handler, events);
+    connection_handlers_.insert(handler);
+}
+
+void TCPReactor::register_client_handler(EventHandler* handler, const uint32_t events) {
+    register_handler(handler, events);
+    connected_clients_.insert(handler);
+}
+
 void TCPReactor::register_handler(EventHandler* handler, const uint32_t events) {
     LOG_INFO("register fd: {}", handler->get_fd());
     epoll_event ev{};
@@ -25,8 +36,8 @@ void TCPReactor::register_handler(EventHandler* handler, const uint32_t events) 
             exit(EXIT_FAILURE);
         }
     }
-    connected_clients_.insert(handler);
 }
+
 void TCPReactor::unregister_handler(EventHandler* handler) {
     LOG_INFO("unregister fd: {}", handler->get_fd());
     if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, handler->get_fd(), nullptr) < 0) {
@@ -36,7 +47,15 @@ void TCPReactor::unregister_handler(EventHandler* handler) {
 
     close(handler->get_fd());
     connected_clients_.erase(handler);
+    connection_handlers_.erase(handler);
 }
+
+void TCPReactor::broadcast_all(const std::string_view message) {
+    for (const auto r: connected_clients_) {
+        r->send(message);
+    }
+}
+
 void TCPReactor::run() {
     const int n = epoll_wait(epoll_fd_, events_, max_events_, 0);
     if (n == -1) {
@@ -49,6 +68,7 @@ void TCPReactor::run() {
         handler->handle_event(events_[i].events);
     }
 }
+
 TCPReactor::~TCPReactor() {
     LOG_DEBUG("Destructor");
     for (auto& handler: connected_clients_) {
