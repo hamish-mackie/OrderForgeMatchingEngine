@@ -6,31 +6,35 @@ namespace of {
 
 class LastTradeUpdate {
 public:
-    LastTradeUpdate(const Price &price, const Quantity &quantity, Side side) :
-        price_(price), quantity_(quantity), side_(side) {}
+    LastTradeUpdate(const Symbol symbol, const Price &price, const Quantity &quantity, Side side) :
+        symbol_(symbol), price_(price), quantity_(quantity), side_(side) {}
 
+    [[nodiscard]] Symbol symbol() const { return symbol_; }
     [[nodiscard]] const Price &price() const { return price_; }
     [[nodiscard]] const Quantity &quantity() const { return quantity_; }
     [[nodiscard]] Side side() const { return side_; }
 
+    Symbol symbol_;
     Price price_;
     Quantity quantity_;
     Side side_;
 };
 
 struct LastTradeUpdateLog {
+    Symbol symbol_;
     Price price_;
     Quantity quantity_;
     Side side_;
 
     void write(const LastTradeUpdate &update) {
+        symbol_ = update.symbol_;
         price_ = update.price();
         quantity_ = update.quantity();
         side_ = update.side();
     }
 
     std::string get_str() const {
-        return fmt::format("Price: {}, Quantity: {}, Side: {}", price_.descaled_value(), quantity_.descaled_value(),
+        return fmt::format("Symbol: {}, Price: {}, Quantity: {}, Side: {}", symbol_, price_.descaled_value(), quantity_.descaled_value(),
                            enum_str(side_));
     }
 };
@@ -43,7 +47,7 @@ public:
         passive_account_id_(passive_account_id), crossing_account_id_(crossing_account_id),
         passive_order_id_(passive_order_id), crossing_order_id_(crossing_order_id), trade_id_(get_id<Trade>()) {}
 
-    [[nodiscard]] const Symbol &symbol() const { return symbol_; }
+    [[nodiscard]] Symbol symbol() const { return symbol_; }
     [[nodiscard]] const Price &price() const { return price_; }
     [[nodiscard]] const Quantity &qty() const { return qty_; }
     [[nodiscard]] Side crossing_side() const { return crossing_side_; }

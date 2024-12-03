@@ -11,7 +11,7 @@ public:
     using LevelsCont = OrderBookDataMap<CompFunc>;
     using AllocateSize = uint64_t;
 
-    BookSide(Side side, Price &tick_size) : side_(side), tick_size_(tick_size), levels_(side, tick_size) {}
+    BookSide(Symbol symbol, Side side, Price &tick_size) : side_(side), tick_size_(tick_size), levels_(symbol, side, tick_size) {}
 
     PriceLevelUpdate add_order(Order& order);
     PriceLevelUpdate remove_order(FindOrderHelper& helper);
@@ -22,6 +22,7 @@ public:
     bool empty() { return levels_.empty(); }
 
 private:
+    Symbol symbol_;
     Side side_;
     TickSize tick_size_;
     LevelsCont levels_;

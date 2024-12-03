@@ -35,8 +35,8 @@ class OrderBookDataMap : public OrderBookDataInterface {
 public:
     using OrderBookContainer = std::map<Price, PriceLvlPtr, CompFunc>;
 
-    OrderBookDataMap(const Side side, const TickSize &tick_size) :
-        OrderBookDataInterface(side, tick_size), book_cont_() {}
+    OrderBookDataMap(Symbol symbol, Side side, const TickSize &tick_size) :
+        OrderBookDataInterface(side, tick_size), symbol_(symbol), book_cont_() {}
 
     Price best_price() override { return book_cont_.begin()->first; };
 
@@ -50,7 +50,7 @@ public:
     };
 
     PriceLvlPtr add_book_level(const Price& price) override {
-        auto res = book_cont_.emplace(price, new PriceLevel(price, side_));
+        auto res = book_cont_.emplace(price, new PriceLevel(symbol_, price, side_));
         return res.first->second;
     };
 
@@ -67,6 +67,7 @@ public:
     bool empty() { return book_cont_.empty(); }
 
 private:
+    Symbol symbol_;
     void generate_data_structure() override{};
     OrderBookContainer book_cont_;
 };

@@ -3,7 +3,7 @@
 namespace of {
 
 OrderBook::OrderBook(OrderBookConfig& cfg) :
-    cfg_(cfg), symbol_(cfg.symbol), bids(BookSideBid(BUY, cfg.tick_size)), asks(BookSideAsk(SELL, cfg.tick_size)) {
+    cfg_(cfg), symbol_(cfg.symbol), bids(BookSideBid(symbol_, BUY, cfg.tick_size)), asks(BookSideAsk(symbol_, SELL, cfg.tick_size)) {
 
     LOG_INFO("creating order book {}, tick_size {}", symbol_, cfg.tick_size.descaled_value());
     REGISTER_TYPE(ORDER, Order);
@@ -138,7 +138,7 @@ void OrderBook::match_order(Order& order) {
         }
 
         if (public_last_trade_update_handler) {
-            auto last_trade_update = LastTradeUpdate(trade.price(), trade.qty(), trade.crossing_side());
+            auto last_trade_update = LastTradeUpdate(symbol_, trade.price(), trade.qty(), trade.crossing_side());
             public_last_trade_update_handler(last_trade_update);
         }
     }

@@ -11,12 +11,12 @@ PriceLevelUpdate PriceLevel::add_order(Order& order) {
 
     if (order_cont.contains(order.order_id())) {
         LOG_WARN("Order already present in map: {}", order.order_id());
-        return {price_, total_qty_, side_};
+        return {order.symbol(), price_, total_qty_, side_};
     }
 
     order_cont.push(order.order_id(), order);
     total_qty_ += order.remaining_qty();
-    return {price_, total_qty_, side_};
+    return {symbol(), price_, total_qty_, side_};
 }
 
 PriceLevelUpdate PriceLevel::remove_order(FindOrderHelper& helper) { return remove_order(helper.order_id); }
@@ -30,7 +30,7 @@ PriceLevelUpdate PriceLevel::remove_order(OrderId id) {
     } else {
         LOG_WARN("Order not present in map: {}", id);
     }
-    return {price_, total_qty_, side_};
+    return {symbol(), price_, total_qty_, side_};
 }
 
 void PriceLevel::remove_marked_order_nodes() {
@@ -58,6 +58,6 @@ PriceLevelUpdate PriceLevel::match_order(MatchingEngine& matching_engine) {
         matching_engine.add_level_to_remove_orders(this);
     }
 
-    return {price_, total_qty_, side_};
+    return {symbol(), price_, total_qty_, side_};
 }
 } // namespace of
