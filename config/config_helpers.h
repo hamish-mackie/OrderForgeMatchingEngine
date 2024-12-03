@@ -18,6 +18,18 @@ static T read_config_file(const std::string& config_file = "config.json") {
 }
 
 template<typename T>
+void parse_enum_config(const json& j, const std::string& field_name, T& config_field) {
+    if (j.contains(field_name)) {
+        std::string config_str;
+        j.at(field_name).get_to(config_str);
+        std::optional<T> opt = magic_enum::enum_cast<T>(config_str);
+        if (opt.has_value()) {
+            config_field = opt.value();
+        }
+    }
+}
+
+template<typename T>
 void set_config(const json& j, const std::string& field_name, T& config_field) {
     if (j.contains(field_name)) {
         j.at(field_name).get_to(config_field);

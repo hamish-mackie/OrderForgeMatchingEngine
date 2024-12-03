@@ -5,8 +5,11 @@
   },
 
   "tcp_listeners": [
-    { "port": 7001 },
-    { "port": 7002 }
+    { "port": 7020, "type": "PUBLIC_FEED_ORDER_BOOK" },
+    { "port": 7021, "type": "PUBLIC_FEED_LAST_TRADE" },
+    { "port": 7010, "type": "PRIVATE_FEED_ORDERS" },
+    { "port": 7011, "type": "PRIVATE_FEED_TRADES" },
+    { "port": 7013, "type": "PRIVATE_FEED_ACCOUNT" }
   ],
 
   "order_book_configs": [

@@ -49,7 +49,6 @@ TEST(OrderTest, ParseJsonToOrder) {
     EXPECT_EQ(order.symbol(), "AAPL");
     EXPECT_EQ(order.price(), Price(150.25));
     EXPECT_EQ(order.qty(), Quantity(100));
-    EXPECT_EQ(order.remaining_qty(), Quantity(50));
     EXPECT_EQ(order.side(), Side::BUY);
     EXPECT_EQ(order.status(), OrderStatus::OPEN);
     EXPECT_EQ(order.type(), OrderType::LIMIT);

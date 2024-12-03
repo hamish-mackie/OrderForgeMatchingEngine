@@ -20,20 +20,22 @@ inline void TCPClientHandler::handle_event(uint64_t events) {
             for (const auto& handler: handlers_) {
                 handler(buffer, n);
             }
-
-            send(buffer, n);
         }
     }
 }
 
-void TCPClientHandler::send(const char* buffer, const size_t size) {
-    if (!write(fd_, buffer, size)) {
-        perror("write");
+void TCPClientHandler::send_buffer(const char* buffer, const size_t size) {
+    int flags = 0;
+    flags = flags | MSG_NOSIGNAL;
+    if (send(fd_, buffer, size, flags) == -1) {
+        LOG_ERROR("Send failed: " + std::string(strerror(errno)));
     }
 }
 
-void TCPClientHandler::send(const std::string_view message) {
-    if (!write(fd_, message.data(), message.size())) {
-        perror("write");
+void TCPClientHandler::send_buffer(const std::string_view message) {
+    int flags = 0;
+    flags = flags | MSG_NOSIGNAL;
+    if (send(fd_, message.data(), message.size(), flags) == -1) {
+        LOG_ERROR("Send failed: " + std::string(strerror(errno)));
     }
 }

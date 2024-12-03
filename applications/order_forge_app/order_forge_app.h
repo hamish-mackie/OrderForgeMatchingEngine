@@ -13,8 +13,12 @@ public:
     OrderForgeApp();
 
     void handle_event(const char* buffer, size_t size);
-    void last_trade_update_handler(const LastTradeUpdate& update);
-    void order_book_update_handler(const PriceLevelUpdate& update);
+    void public_last_trade_update_handler(const LastTradeUpdate& update);
+    void public_order_book_update_handler(const PriceLevelUpdate& update);
+
+    void private_order_update_handler(const Order& order);
+    void private_trades_update_handler(const Trade& trade);
+    void private_account_update_handler();
 
 private:
     std::unique_ptr<OrderBookConfig> order_book_config_;

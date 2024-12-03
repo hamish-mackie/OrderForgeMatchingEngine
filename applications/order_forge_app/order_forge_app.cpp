@@ -9,10 +9,10 @@ OrderForgeApp::OrderForgeApp() {
 
     tcp_reactor_ = std::make_unique<TCPReactor>();
 
-    for (const auto [port]: config.listener_configs) {
-        auto* tcp_handler = new TCPConnectionHandler(port, *tcp_reactor_);
+    for (const auto cfg: config.listener_configs) {
+        auto* tcp_handler = new TCPConnectionHandler(cfg.port, cfg.connection_type, *tcp_reactor_);
         tcp_handler->add_handler([&](auto buffer, auto size) { handle_event(buffer, size); });
-        tcp_reactor_->register_connection_handler(tcp_handler, EPOLLIN | EPOLLOUT | EPOLLET);
+        tcp_reactor_->register_handler(tcp_handler, EPOLLIN | EPOLLOUT | EPOLLET);
     };
 
     for (auto& order_book_config: config.order_book_configs) {
@@ -21,8 +21,11 @@ OrderForgeApp::OrderForgeApp() {
             LOG_ERROR("Failed to create order book: {}", order_book_config.symbol);
         }
 
-        res.first->second->public_order_book_update_handler = [&](auto update) { order_book_update_handler(update); };
-        res.first->second->public_last_trade_update_handler = [&](auto update) { last_trade_update_handler(update); };
+        res.first->second->public_order_book_update_handler = [&](auto update) { public_order_book_update_handler(update); };
+        res.first->second->public_last_trade_update_handler = [&](auto update) { public_last_trade_update_handler(update); };
+        res.first->second->private_order_update_handler = [&](auto update) { private_order_update_handler(update); };
+        res.first->second->private_trades_update_handler = [&](auto update) { private_trades_update_handler(update); };
+        res.first->second->private_account_update_handler = [&]() { private_account_update_handler(); };
     }
 
     reactor_ = std::make_unique<Reactor>();
@@ -53,12 +56,24 @@ void OrderForgeApp::handle_event(const char* buffer, const size_t size) {
     }
 }
 
-void OrderForgeApp::last_trade_update_handler(const LastTradeUpdate& update) {
+void OrderForgeApp::public_last_trade_update_handler(const LastTradeUpdate& update) {
     const std::string update_string = msg::ws::to_json_string(update);
-    tcp_reactor_->broadcast_all(update_string);
+    tcp_reactor_->broadcast_all(update_string, ConnectionType::PUBLIC_FEED_LAST_TRADE);
 }
 
-void OrderForgeApp::order_book_update_handler(const PriceLevelUpdate& update) {
+void OrderForgeApp::public_order_book_update_handler(const PriceLevelUpdate& update) {
     const std::string update_string = msg::ws::to_json_string(update);
-    tcp_reactor_->broadcast_all(update_string);
+    tcp_reactor_->broadcast_all(update_string, ConnectionType::PUBLIC_FEED_ORDER_BOOK);
 }
+
+void OrderForgeApp::private_order_update_handler(const Order& order) {
+    const std::string update_string = msg::ws::to_json_string(order);
+    tcp_reactor_->broadcast_all(update_string, ConnectionType::PRIVATE_FEED_ORDERS);
+}
+
+void OrderForgeApp::private_trades_update_handler(const Trade& trade) {
+    const std::string update_string = msg::ws::to_json_string(trade);
+    tcp_reactor_->broadcast_all(update_string, ConnectionType::PRIVATE_FEED_TRADES);
+}
+
+void OrderForgeApp::private_account_update_handler() {}

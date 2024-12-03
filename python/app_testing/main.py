@@ -40,45 +40,55 @@ async def open_connection(host, port):
         print("Connection closed.")
 
 
-async def send_orders(writer):
-    json_data1 = json.dumps(order_data1).encode('utf8')
-    writer.write(json_data1)
-    await writer.drain()
-    print("Order 1 sent!")
+async def send_orders(host, port):
+    try:
+        async with open_connection(host, port) as (reader, writer):
+            print(f"Connected to {host}:{port}")
+            json_data1 = json.dumps(order_data1).encode('utf8')
+            writer.write(json_data1)
+            await writer.drain()
+            print("Order 1 sent!")
 
-    json_data2 = json.dumps(order_data2).encode('utf8')
-    writer.write(json_data2)
-    await writer.drain()
-    print("Order 2 sent!")
-
-
-async def read_messages(reader):
-    while True:
-        message_data = await reader.readline()
-        message = message_data.decode('utf-8').strip()
-        if message:
-            print(f"Message from server: {message}")
-        else:
-            print("Server closed the connection.")
-            break
+            json_data2 = json.dumps(order_data2).encode('utf8')
+            writer.write(json_data2)
+            await writer.drain()
+            print("Order 2 sent!")
+            await asyncio.sleep(5)
+    except Exception as e:
+        print("Error:", e)
 
 
-async def main():
-    host = "localhost"
-    port = 7002
-
+async def read_messages(host, port):
     try:
         async with open_connection(host, port) as (reader, writer):
             print(f"Connected to {host}:{port}")
 
-            send_task = asyncio.create_task(send_orders(writer))
-            read_task = asyncio.create_task(read_messages(reader))
-
-            await send_task
-            await read_task
+            while True:
+                message_data = await reader.readline()
+                message = message_data.decode('utf-8').strip()
+                if message:
+                    print(f"Message from server: [{port}] {message}")
+                else:
+                    print(f"Server closed the connection: {port}")
+                    break
 
     except Exception as e:
         print("Error:", e)
+
+async def main():
+    host = "localhost"
+    send_port = 7020
+
+    ports = [7020, 7021, 7010, 7011, 7012]
+    tasks = []
+
+    for port in ports:
+        tasks.append(asyncio.create_task(read_messages(host, port)))
+
+
+    tasks.append(asyncio.create_task(send_orders(host, send_port)))
+
+    await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
     asyncio.run(main())

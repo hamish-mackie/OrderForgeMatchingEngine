@@ -10,18 +10,8 @@ TCPReactor::TCPReactor() {
     LOG_INFO("epoll fd: {}", epoll_fd_);
 }
 
-void TCPReactor::register_connection_handler(EventHandler* handler, const uint32_t events) {
-    register_handler(handler, events);
-    connection_handlers_.insert(handler);
-}
-
-void TCPReactor::register_client_handler(EventHandler* handler, const uint32_t events) {
-    register_handler(handler, events);
-    connected_clients_.insert(handler);
-}
-
 void TCPReactor::register_handler(EventHandler* handler, const uint32_t events) {
-    LOG_INFO("register fd: {}", handler->get_fd());
+    LOG_INFO("register fd: {}, con_type: {}", handler->get_fd(), magic_enum::enum_name(handler->get_connection_type()));
     epoll_event ev{};
     ev.data.ptr = handler->get_handle();
     ev.events = events;
@@ -36,6 +26,9 @@ void TCPReactor::register_handler(EventHandler* handler, const uint32_t events) 
             exit(EXIT_FAILURE);
         }
     }
+
+    ConnectionType ct = handler->get_connection_type();
+    event_handlers_[static_cast<uint8_t>(ct)].insert(handler);
 }
 
 void TCPReactor::unregister_handler(EventHandler* handler) {
@@ -46,13 +39,36 @@ void TCPReactor::unregister_handler(EventHandler* handler) {
     }
 
     close(handler->get_fd());
-    connected_clients_.erase(handler);
-    connection_handlers_.erase(handler);
+    ConnectionType ct = handler->get_connection_type();
+    event_handlers_[static_cast<uint8_t>(ct)].erase(handler);
+}
+
+void TCPReactor::broadcast_all(const std::string_view message, ConnectionType con_type) {
+
+    auto is_con_type = [con_type](const EventHandler* handler) {
+        return handler->get_connection_type() == con_type;
+    };
+
+    for (const auto& set: event_handlers_) {
+        for(const auto handler: set | std::views::filter(is_con_type)) {
+            handler->send_buffer(message);
+        }
+    }
 }
 
 void TCPReactor::broadcast_all(const std::string_view message) {
-    for (const auto r: connected_clients_) {
-        r->send(message);
+    auto is_connected_client = [](const EventHandler* handler) {
+        if (handler->get_connection_type() == ConnectionType::UNDEFINED ||
+            handler->get_connection_type() == ConnectionType::CONNECTION_HANDLER) {
+            return false;
+        }
+        return true;
+    };
+
+    for (const auto& set: event_handlers_) {
+        for(const auto handler: set | std::views::filter(is_connected_client)) {
+            handler->send_buffer(message);
+        }
     }
 }
 
@@ -71,8 +87,10 @@ void TCPReactor::run() {
 
 TCPReactor::~TCPReactor() {
     LOG_DEBUG("Destructor");
-    for (auto& handler: connected_clients_) {
-        unregister_handler(handler);
+    for (const auto& set: event_handlers_) {
+        for(const auto handler: set) {
+            unregister_handler(handler);
+        }
     }
     if (epoll_fd_ != -1) {
         close(epoll_fd_);

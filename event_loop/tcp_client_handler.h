@@ -6,12 +6,12 @@ class TCPReactor;
 
 class TCPClientHandler : EventHandler {
 public:
-    TCPClientHandler(const FileDescriptor fd, TCPReactor& reactor,
+    TCPClientHandler(const FileDescriptor fd, const ConnectionType con_type, TCPReactor& reactor,
                      std::vector<std::function<void(const char*, size_t)>>& handlers) :
-        EventHandler(fd), reactor_(reactor), handlers_(handlers){};
+        EventHandler(fd, con_type), reactor_(reactor), handlers_(handlers){};
     void handle_event(uint64_t events) override;
-    void send(const char*, size_t) override;
-    void send(std::string_view message) override;
+    void send_buffer(const char*, size_t) override;
+    void send_buffer(std::string_view message) override;
     ~TCPClientHandler() override = default;
 
 private:

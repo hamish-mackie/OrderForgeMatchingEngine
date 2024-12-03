@@ -14,11 +14,10 @@ class TCPReactor final : ReactorItem {
 public:
     TCPReactor();
 
-    void register_connection_handler(EventHandler* handler, uint32_t events);
-    void register_client_handler(EventHandler* handler, uint32_t events);
-
+    void register_handler(EventHandler* handler, uint32_t events);
     void unregister_handler(EventHandler* handler);
 
+    void broadcast_all(std::string_view message, ConnectionType con_type);
     void broadcast_all(std::string_view message);
 
     void run() override;
@@ -26,11 +25,9 @@ public:
     ~TCPReactor() override;
 
 private:
-    void register_handler(EventHandler* handler, uint32_t events);
-
     static constexpr uint64_t max_events_{100};
     epoll_event events_[max_events_]{};
     FileDescriptor epoll_fd_;
-    std::set<EventHandler*> connected_clients_;
-    std::set<EventHandler*> connection_handlers_;
+
+    std::array<std::set<EventHandler*>, UINT8_MAX> event_handlers_;
 };
