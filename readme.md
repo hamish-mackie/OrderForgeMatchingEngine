@@ -51,7 +51,7 @@ The engine can **insert/remove/match** up to:
 
 ## Getting Started
 
-1. [demo_run.cpp](demo_run.cpp), where the demo application provides a clear overview of the interface.
+1. [demo_run.cpp](applications/order_forge_metching_engine_demo/demo_run.cpp), where the demo application provides a clear overview of the interface.
 2. [order_forge/order_book.h](order_forge/order_book.h) for insights into the core functionality.
 3. [order_forge/matching_engine.h](order_forge/matching_engine.h) to understand the order matching logic.
 4. [order_forge/book_level.h](order_forge/price_level.h) to examine the Hashed Linked List, the backbone behind many of
@@ -72,7 +72,7 @@ cd OrderForgeMatchingEngine
 mkdir build-release && cd build-release
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
-./demo_run
+./applications/order_forge_matching_engine_demo/app_demo_run
 ```
 
 ## Cmake

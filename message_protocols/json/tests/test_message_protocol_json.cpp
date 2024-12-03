@@ -45,7 +45,6 @@ TEST(OrderTest, ParseJsonToOrder) {
     ASSERT_TRUE(res.is_valid());
     Order order = res.get_value();
 
-    // Assertions
     EXPECT_EQ(order.symbol(), "AAPL");
     EXPECT_EQ(order.price(), Price(150.25));
     EXPECT_EQ(order.qty(), Quantity(100));
