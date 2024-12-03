@@ -72,8 +72,8 @@ void verify_level_update(PriceLevelUpdate& result, PriceLevelUpdate& received) {
     ASSERT_EQ(result.side(), received.side());
 }
 
-void verify_level_update(PriceLevelUpdate& result, Price price, Quantity total_qty, Side side) {
-    auto received = PriceLevelUpdate(price, total_qty, side);
+void verify_level_update(PriceLevelUpdate& result, Symbol symbol, Price price, Quantity total_qty, Side side) {
+    auto received = PriceLevelUpdate(symbol, price, total_qty, side);
     verify_level_update(result, received);
 }
 
@@ -103,18 +103,18 @@ TEST_F(TestOrderBook, test_send_and_remove_limit_orders) {
                                  Order(symbol, Price(100.6), Quantity(8), SELL, OPEN, LIMIT, 555, 6)};
 
     std::vector<PriceLevelUpdate> expected_level_updates = {
-            PriceLevelUpdate(Price(99.3), Quantity(0.1), BUY),  PriceLevelUpdate(Price(99.5), Quantity(0.2), BUY),
-            PriceLevelUpdate(Price(99.1), Quantity(1), BUY),    PriceLevelUpdate(Price(100), Quantity(1), SELL),
-            PriceLevelUpdate(Price(100.05), Quantity(5), SELL), PriceLevelUpdate(Price(100.6), Quantity(8), SELL),
-            PriceLevelUpdate(Price(99.3), Quantity(0), BUY),    PriceLevelUpdate(Price(99.5), Quantity(0), BUY),
-            PriceLevelUpdate(Price(99.1), Quantity(0), BUY),    PriceLevelUpdate(Price(100), Quantity(0), SELL),
-            PriceLevelUpdate(Price(100.05), Quantity(0), SELL), PriceLevelUpdate(Price(100.6), Quantity(0), SELL)};
+            PriceLevelUpdate(symbol, Price(99.3), Quantity(0.1), BUY),  PriceLevelUpdate(symbol, Price(99.5), Quantity(0.2), BUY),
+            PriceLevelUpdate(symbol, Price(99.1), Quantity(1), BUY),    PriceLevelUpdate(symbol, Price(100), Quantity(1), SELL),
+            PriceLevelUpdate(symbol, Price(100.05), Quantity(5), SELL), PriceLevelUpdate(symbol, Price(100.6), Quantity(8), SELL),
+            PriceLevelUpdate(symbol, Price(99.3), Quantity(0), BUY),    PriceLevelUpdate(symbol, Price(99.5), Quantity(0), BUY),
+            PriceLevelUpdate(symbol, Price(99.1), Quantity(0), BUY),    PriceLevelUpdate(symbol, Price(100), Quantity(0), SELL),
+            PriceLevelUpdate(symbol, Price(100.05), Quantity(0), SELL), PriceLevelUpdate(symbol, Price(100.6), Quantity(0), SELL)};
 
     for (auto i = 0; i < orders.size(); ++i) {
         auto order = orders[i];
         ob.add_order(order);
         verify_order_update(order, order_updates[i]);
-        verify_level_update(level_updates_[i], order.price(), order.qty(), order.side());
+        verify_level_update(level_updates_[i], symbol,  order.price(), order.qty(), order.side());
     }
 
     std::vector<OrderId> update_order_ids;
@@ -147,13 +147,13 @@ TEST_F(TestOrderBook, test_send_market_orders) {
 
     std::vector<LastTradeUpdate> expected_last_trade_updates{
             // Buy Order
-            LastTradeUpdate(Price(100), Quantity(5), BUY),
-            LastTradeUpdate(Price(101), Quantity(5), BUY),
-            LastTradeUpdate(Price(105), Quantity(5), BUY),
+            LastTradeUpdate(symbol, Price(100), Quantity(5), BUY),
+            LastTradeUpdate(symbol, Price(101), Quantity(5), BUY),
+            LastTradeUpdate(symbol, Price(105), Quantity(5), BUY),
             // Sell Order
-            LastTradeUpdate(Price(99), Quantity(5), SELL),
-            LastTradeUpdate(Price(98), Quantity(5), SELL),
-            LastTradeUpdate(Price(97), Quantity(5), SELL),
+            LastTradeUpdate(symbol, Price(99), Quantity(5), SELL),
+            LastTradeUpdate(symbol, Price(98), Quantity(5), SELL),
+            LastTradeUpdate(symbol, Price(97), Quantity(5), SELL),
     };
 
     std::vector<Trade> expected_trade_updates{
@@ -168,25 +168,25 @@ TEST_F(TestOrderBook, test_send_market_orders) {
     };
 
     std::vector<PriceLevelUpdate> expected_level_updates{
-            PriceLevelUpdate(Price(98), Quantity(5), BUY), PriceLevelUpdate(Price(99), Quantity(5), BUY),
-            PriceLevelUpdate(Price(97), Quantity(5), BUY), PriceLevelUpdate(Price(100), Quantity(5), SELL),
-            PriceLevelUpdate(Price(101), Quantity(5), SELL), PriceLevelUpdate(Price(105), Quantity(5), SELL),
+            PriceLevelUpdate(symbol, Price(98), Quantity(5), BUY), PriceLevelUpdate(symbol, Price(99), Quantity(5), BUY),
+            PriceLevelUpdate(symbol, Price(97), Quantity(5), BUY), PriceLevelUpdate(symbol, Price(100), Quantity(5), SELL),
+            PriceLevelUpdate(symbol, Price(101), Quantity(5), SELL), PriceLevelUpdate(symbol, Price(105), Quantity(5), SELL),
 
             // Sell Order
-            PriceLevelUpdate(Price(100), Quantity(0), SELL), PriceLevelUpdate(Price(101), Quantity(0), SELL),
-            PriceLevelUpdate(Price(105), Quantity(0), SELL), PriceLevelUpdate(Price(106), Quantity(5), BUY),
-            PriceLevelUpdate(Price(106), Quantity(0), BUY),
+            PriceLevelUpdate(symbol, Price(100), Quantity(0), SELL), PriceLevelUpdate(symbol, Price(101), Quantity(0), SELL),
+            PriceLevelUpdate(symbol, Price(105), Quantity(0), SELL), PriceLevelUpdate(symbol, Price(106), Quantity(5), BUY),
+            PriceLevelUpdate(symbol, Price(106), Quantity(0), BUY),
 
             // Buy O
-            PriceLevelUpdate(Price(99), Quantity(0), BUY), PriceLevelUpdate(Price(98), Quantity(0), BUY),
-            PriceLevelUpdate(Price(97), Quantity(0), BUY), PriceLevelUpdate(Price(90), Quantity(85), SELL),
-            PriceLevelUpdate(Price(90), Quantity(0), SELL)};
+            PriceLevelUpdate(symbol, Price(99), Quantity(0), BUY), PriceLevelUpdate(symbol, Price(98), Quantity(0), BUY),
+            PriceLevelUpdate(symbol, Price(97), Quantity(0), BUY), PriceLevelUpdate(symbol, Price(90), Quantity(85), SELL),
+            PriceLevelUpdate(symbol, Price(90), Quantity(0), SELL)};
 
     for (auto i = 0; i < orders.size(); ++i) {
         auto order = orders[i];
         ob.add_order(order);
         verify_order_update(order, order_updates[i]);
-        verify_level_update(level_updates_[i], order.price(), order.qty(), order.side());
+        verify_level_update(level_updates_[i], symbol, order.price(), order.qty(), order.side());
     }
 
     auto market_buy = Order(symbol, Price(106), Quantity(20), BUY, OPEN, LIMIT, crossing_acc_id, 100, buy_order_id);

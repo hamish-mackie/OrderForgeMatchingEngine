@@ -21,8 +21,8 @@ protected:
     std::string_view symbol = "TESTUSD";
     Price bid_price_{50};
     Price ask_price_{100};
-    PriceLevel book_level_bid_{bid_price_, BUY};
-    PriceLevel book_level_ask_{ask_price_, SELL};
+    PriceLevel book_level_bid_{symbol, bid_price_, BUY};
+    PriceLevel book_level_ask_{symbol, ask_price_, SELL};
     std::vector<PriceLevelUpdate> level_updates_;
     std::pmr::unsynchronized_pool_resource pool{};
 };
