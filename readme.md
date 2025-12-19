@@ -7,8 +7,8 @@
 
 The engine can **insert/remove/match** up to:
 
-- Logging Enabled:  **2.4 million orders/second**.
-- Logging Disabled:  **2.7 million orders/second**.
+- Logging Enabled: **2.4 million orders/second**.
+- Logging Disabled: **2.7 million orders/second**.
 
 ---
 
@@ -20,8 +20,8 @@ The engine can **insert/remove/match** up to:
 
 - **Hashed linked list** is an efficient data structure for an exchange matching engine.
 - **Operations**:
-    - `push_back(insert order)`: O(1)
-    - `remove(cancel order)`: O(1)
+  - `push_back(insert order)`: O(1)
+  - `remove(cancel order)`: O(1)
 - This structure combines the simplicity of linked list iteration with the efficiency of O(1) lookup, mapped by
   `OrderId`.
 - Hashed Linked List nodes use a custom pool allocator to avoid costly allocations
@@ -37,10 +37,10 @@ The engine can **insert/remove/match** up to:
 - The Matching Engine is integral to the order matching process. It receives a crossing order and matches it against
   passive orders.
 - **Tracked Data**:
-    - Crossing order
-    - Matched passive orders
-    - Trades generated
-    - Quantity filled
+  - Crossing order
+  - Matched passive orders
+  - Trades generated
+  - Quantity filled
 
 ### Scaled Int
 
@@ -65,14 +65,12 @@ Getting the demo app running is straightforward:
 
 ```bash
 // required packages
-apt install cmake git build-essential protobuf-compiler
+apt install cmake git build-essential protobuf-compiler ninja-build
 
 git clone https://github.com/hamish-mackie/OrderForgeMatchingEngine.git
 cd OrderForgeMatchingEngine
-mkdir build-release && cd build-release
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make
-./applications/order_forge_matching_engine_demo/app_demo_run
+./build_debug.sh
+./build_debug/applications/order_forge_matching_engine_demo/app_demo_run
 ```
 
 ## Cmake
@@ -93,3 +91,4 @@ FetchContent_MakeAvailable(order_forge)
 ## License
 
 https://polyformproject.org/licenses/small-business/1.0.0
+

@@ -15,6 +15,7 @@
       "name": "release",
       "inherits": "default",
       "description": "Release configuration",
+      "binaryDir": "${sourceDir}/build-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -23,9 +24,21 @@
       "name": "debug",
       "inherits": "default",
       "description": "Debug configuration",
+      "binaryDir": "${sourceDir}/build-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     }
+  ],
+  "buildPresets": [
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "debug",
+      "configurePreset": "debug"
+    }
   ]
 }
+

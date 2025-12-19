@@ -1,5 +1,7 @@
 #pragma once
 
+#include <variant>
+
 #include "enums.h"
 #include "nlohmann/json.hpp"
 #include "order.h"
