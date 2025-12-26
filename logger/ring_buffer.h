@@ -8,14 +8,14 @@ public:
     explicit RingBuffer(uint64_t mem_block_size = MB * 5, uint32_t no_blocks = 2) :
         mem_block_size_(mem_block_size), no_blocks_(no_blocks) {
         for (int i = 0; i < no_blocks_; ++i) {
-            mem_blocks_.push_back(static_cast<char *>(std::malloc(mem_block_size_)));
+            mem_blocks_.push_back(static_cast<char*>(std::malloc(mem_block_size_)));
             mem_blocks_end_.push_back(0);
         }
     }
 
-    char *get_write_pointer(uint64_t wanted_space) {
+    char* get_write_pointer(uint64_t wanted_space) {
         auto [current_write_offset, current_write_block] = get_current_write();
-        auto *write_block = mem_blocks_[current_write_block];
+        auto* write_block = mem_blocks_[current_write_block];
 
         if (current_write_offset + wanted_space > mem_block_size_) {
             mem_blocks_end_[current_write_block] = current_write_offset;
@@ -46,7 +46,7 @@ public:
             return true;
         }
     }
-    char *get_read_pointer() {
+    char* get_read_pointer() {
         check_wrap_read_pointer();
         return &mem_blocks_[read_block_index_][read_ptr_offset_];
     }
@@ -65,7 +65,7 @@ private:
     uint64_t read_ptr_offset_{0};
     size_t read_block_index_{0};
     uint64_t mem_block_size_;
-    std::vector<char *> mem_blocks_;
+    std::vector<char*> mem_blocks_;
     std::vector<uint64_t> mem_blocks_end_;
     uint64_t no_blocks_;
 

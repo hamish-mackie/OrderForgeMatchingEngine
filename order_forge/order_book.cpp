@@ -3,7 +3,8 @@
 namespace of {
 
 OrderBook::OrderBook(OrderBookConfig& cfg) :
-    cfg_(cfg), symbol_(cfg.symbol), bids(BookSideBid(symbol_, BUY, cfg.tick_size)), asks(BookSideAsk(symbol_, SELL, cfg.tick_size)) {
+    cfg_(cfg), symbol_(cfg.symbol), bids(BookSideBid(symbol_, BUY, cfg.tick_size)),
+    asks(BookSideAsk(symbol_, SELL, cfg.tick_size)) {
 
     LOG_INFO("creating order book {}, tick_size {}", symbol_, cfg.tick_size.descaled_value());
     REGISTER_TYPE(ORDER, Order);

@@ -11,7 +11,8 @@ public:
     using LevelsCont = OrderBookDataMap<CompFunc>;
     using AllocateSize = uint64_t;
 
-    BookSide(Symbol symbol, Side side, Price &tick_size) : side_(side), tick_size_(tick_size), levels_(symbol, side, tick_size) {}
+    BookSide(Symbol symbol, Side side, Price& tick_size) :
+        side_(side), tick_size_(tick_size), levels_(symbol, side, tick_size) {}
 
     PriceLevelUpdate add_order(Order& order);
     PriceLevelUpdate remove_order(FindOrderHelper& helper);
@@ -60,13 +61,13 @@ PriceLevelUpdate BookSide<CompFunc>::remove_orders(Price price, std::vector<Orde
 template<typename CompFunc>
 std::vector<PriceLevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine& matching_engine) {
     std::vector<PriceLevelUpdate> updates;
-    for (auto &level: levels_) {
+    for (auto& level: levels_) {
         if (matching_engine.has_remaining_qty()) {
             updates.push_back(level.second->match_order(matching_engine));
         }
     }
 
-    for (auto &update: updates) {
+    for (auto& update: updates) {
         if (update.total_quantity().value() == 0) {
             levels_.remove_book_level(update.price());
         }

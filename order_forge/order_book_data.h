@@ -17,7 +17,7 @@ public:
     virtual Price best_price() = 0;
     virtual PriceLvlPtr get_book_level(const Price& price) = 0;
     virtual PriceLvlPtr add_book_level(const Price& price) = 0;
-    virtual void remove_book_level(const Price &price) = 0;
+    virtual void remove_book_level(const Price& price) = 0;
 
 protected:
     const Side side_;
@@ -35,7 +35,7 @@ class OrderBookDataMap : public OrderBookDataInterface {
 public:
     using OrderBookContainer = std::map<Price, PriceLvlPtr, CompFunc>;
 
-    OrderBookDataMap(Symbol symbol, Side side, const TickSize &tick_size) :
+    OrderBookDataMap(Symbol symbol, Side side, const TickSize& tick_size) :
         OrderBookDataInterface(side, tick_size), symbol_(symbol), book_cont_() {}
 
     Price best_price() override { return book_cont_.begin()->first; };
@@ -54,7 +54,7 @@ public:
         return res.first->second;
     };
 
-    void remove_book_level(const Price &price) override { auto res = book_cont_.erase(price); }
+    void remove_book_level(const Price& price) override { auto res = book_cont_.erase(price); }
 
     ~OrderBookDataMap() override {
         for (auto r: book_cont_) {
@@ -68,7 +68,7 @@ public:
 
 private:
     Symbol symbol_;
-    void generate_data_structure() override{};
+    void generate_data_structure() override {};
     OrderBookContainer book_cont_;
 };
 } // namespace of

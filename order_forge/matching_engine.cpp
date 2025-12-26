@@ -2,11 +2,11 @@
 
 namespace of {
 
-MatchingEngine::MatchingEngine(Order &order, std::pmr::unsynchronized_pool_resource &vec_resource) :
+MatchingEngine::MatchingEngine(Order& order, std::pmr::unsynchronized_pool_resource& vec_resource) :
     original_order_(order), order_price_(order.price()), remaining_qty_(order.remaining_qty_ref()),
     vec_resource_(vec_resource) {}
 
-Quantity MatchingEngine::match_order(Order &order) {
+Quantity MatchingEngine::match_order(Order& order) {
     if (original_order_.side() == order.side()) {
         LOG_WARN("orders have the same side");
     }

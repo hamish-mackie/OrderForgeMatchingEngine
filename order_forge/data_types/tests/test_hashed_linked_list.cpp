@@ -6,7 +6,7 @@
 using namespace of;
 
 struct Person {
-    Person(int street_number, const std::string &street) : street_number(street_number), street(street) {}
+    Person(int street_number, const std::string& street) : street_number(street_number), street(street) {}
 
     int street_number;
     std::string street;
@@ -103,11 +103,11 @@ TEST_F(TestHashedLinkedList, size) {
 
 TEST_F(TestHashedLinkedList, iterate) {
     std::vector<std::pair<Name, Person>> person_vec{{Brian, BrianData}, {Geoff, GeoffData}, {Rodney, RodneyData}};
-    for (auto &[name, person]: person_vec) {
+    for (auto& [name, person]: person_vec) {
         ds.push(name, person);
     }
 
-    for (auto &r: ds) {
+    for (auto& r: ds) {
         ASSERT_EQ(r.item.street, ds.front().street);
         ds.pop();
     }

@@ -45,12 +45,10 @@ void TCPReactor::unregister_handler(EventHandler* handler) {
 
 void TCPReactor::broadcast_all(const std::string_view message, ConnectionType con_type) {
 
-    auto is_con_type = [con_type](const EventHandler* handler) {
-        return handler->get_connection_type() == con_type;
-    };
+    auto is_con_type = [con_type](const EventHandler* handler) { return handler->get_connection_type() == con_type; };
 
     for (const auto& set: event_handlers_) {
-        for(const auto handler: set | std::views::filter(is_con_type)) {
+        for (const auto handler: set | std::views::filter(is_con_type)) {
             handler->send_buffer(message);
         }
     }
@@ -66,7 +64,7 @@ void TCPReactor::broadcast_all(const std::string_view message) {
     };
 
     for (const auto& set: event_handlers_) {
-        for(const auto handler: set | std::views::filter(is_connected_client)) {
+        for (const auto handler: set | std::views::filter(is_connected_client)) {
             handler->send_buffer(message);
         }
     }
@@ -88,7 +86,7 @@ void TCPReactor::run() {
 TCPReactor::~TCPReactor() {
     LOG_DEBUG("Destructor");
     for (const auto& set: event_handlers_) {
-        for(const auto handler: set) {
+        for (const auto handler: set) {
             unregister_handler(handler);
         }
     }

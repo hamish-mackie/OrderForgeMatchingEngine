@@ -2,8 +2,9 @@
 
 #include "tcp_reactor.h"
 
-TCPConnectionHandler::TCPConnectionHandler(const uint32_t port, const ConnectionType next_con_type, TCPReactor& reactor)
-    : EventHandler(0, ConnectionType::CONNECTION_HANDLER), next_connection_type_(next_con_type), reactor_(reactor) {
+TCPConnectionHandler::TCPConnectionHandler(const uint32_t port, const ConnectionType next_con_type,
+                                           TCPReactor& reactor) :
+    EventHandler(0, ConnectionType::CONNECTION_HANDLER), next_connection_type_(next_con_type), reactor_(reactor) {
     fd_ = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in tcp_address{};
     tcp_address.sin_family = AF_INET;
@@ -29,7 +30,8 @@ TCPConnectionHandler::TCPConnectionHandler(const uint32_t port, const Connection
         exit(EXIT_FAILURE);
     }
 
-    LOG_INFO("CONNECTION_HANDLER fd({}) port({}) con_type({})", fd_, port, magic_enum::enum_name(next_connection_type_));
+    LOG_INFO("CONNECTION_HANDLER fd({}) port({}) con_type({})", fd_, port,
+             magic_enum::enum_name(next_connection_type_));
 }
 
 inline void TCPConnectionHandler::handle_event(const uint64_t events) {
@@ -40,8 +42,7 @@ inline void TCPConnectionHandler::handle_event(const uint64_t events) {
         } else {
             LOG_INFO("client connected: {}", fd_);
             auto* client_handler = new TCPClientHandler(client_fd, next_connection_type_, reactor_, handlers_);
-            reactor_.register_handler(reinterpret_cast<EventHandler*>(client_handler),
-                                             EPOLLIN | EPOLLOUT | EPOLLET);
+            reactor_.register_handler(reinterpret_cast<EventHandler*>(client_handler), EPOLLIN | EPOLLOUT | EPOLLET);
         }
     }
 }

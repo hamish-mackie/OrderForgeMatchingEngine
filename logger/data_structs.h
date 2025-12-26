@@ -27,7 +27,7 @@ struct TestStructOriginal {
 };
 
 struct TestStructLog {
-    void write(const TestStructOriginal &tso) {
+    void write(const TestStructOriginal& tso) {
         item1 = tso.item1;
         item2 = tso.item2;
         item3 = tso.item3;

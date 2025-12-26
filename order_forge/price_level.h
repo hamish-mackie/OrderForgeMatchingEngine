@@ -46,7 +46,8 @@ class PriceLevel {
 public:
     using OrdersCont = HashLinkedList<OrderId, Order>;
 
-    explicit PriceLevel(Symbol symbol, const Price& price, Side side) : symbol_(symbol), price_(price), total_qty_(0), side_(side) {}
+    explicit PriceLevel(Symbol symbol, const Price& price, Side side) :
+        symbol_(symbol), price_(price), total_qty_(0), side_(side) {}
 
     PriceLevelUpdate add_order(Order& order);
     PriceLevelUpdate remove_order(FindOrderHelper& helper);

@@ -13,8 +13,8 @@ enum LogType : uint8_t {
 };
 
 #define REGISTER_TYPE(enum, type)                                                                                      \
-    Logger::get_instance().register_type(LogType::enum, [](std::string_view prepend, char *pointer) -> auto {          \
-        Logger::get_instance().write<type##Log>(prepend, reinterpret_cast<type##Log *>(pointer));                      \
+    Logger::get_instance().register_type(LogType::enum, [](std::string_view prepend, char* pointer) -> auto {          \
+        Logger::get_instance().write<type##Log>(prepend, reinterpret_cast<type##Log*>(pointer));                       \
         return sizeof(type##Log);                                                                                      \
     })
 
@@ -57,7 +57,7 @@ struct type_name_holder {
 
 template<typename T>
 constexpr auto type_name() -> std::string_view {
-    constexpr auto &value = type_name_holder<T>::value;
+    constexpr auto& value = type_name_holder<T>::value;
     return std::string_view{value.data(), value.size()};
 }
 
@@ -97,7 +97,7 @@ constexpr auto generate_str(std::string_view str, std::string_view str2, std::st
 // using the n template is a bit of a hack to get the compiler making different functions and therefore different static
 // strings, probably can be done better
 template<std::size_t N1, std::size_t N2, std::size_t N3, std::size_t n>
-const char *get_str(std::string_view str, std::string_view str2, std::string_view str3) {
+const char* get_str(std::string_view str, std::string_view str2, std::string_view str3) {
     static const auto result = generate_str<N1, N2, N3>(str, str2, str3);
     return result.data();
 }
@@ -141,8 +141,8 @@ const char *get_str(std::string_view str, std::string_view str2, std::string_vie
 #define LOG_TRADE(trade)                                                                                               \
     Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), trade)
 #define LOG_UPDATE_LEVEL(level_update)                                                                                 \
-    Logger::get_instance().write_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(LogType::LEVEL_UPDATE,                            \
-                                                                     LOG_PREPEND("LEVEL UPDATE", 3), level_update)
+    Logger::get_instance().write_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(                                        \
+            LogType::LEVEL_UPDATE, LOG_PREPEND("LEVEL UPDATE", 3), level_update)
 #define LOG_UPDATE_LAST_TRADE(last_trade_update)                                                                       \
     Logger::get_instance().write_buffer<LastTradeUpdate, LastTradeUpdateLog>(                                          \
             LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4), last_trade_update)

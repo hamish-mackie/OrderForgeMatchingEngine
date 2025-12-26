@@ -45,7 +45,7 @@ PriceLevelUpdate PriceLevel::match_order(MatchingEngine& matching_engine) {
     LOG_DEBUG("{}", matching_engine.log_matching_engine());
     const auto prev_total_qty = total_qty_;
 
-    for (auto &order: order_cont) {
+    for (auto& order: order_cont) {
         if (matching_engine.has_remaining_qty()) {
             total_qty_ -= matching_engine.match_order(order.item);
             if (order.item.status() == FILLED) {

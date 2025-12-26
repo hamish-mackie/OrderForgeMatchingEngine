@@ -102,19 +102,24 @@ TEST_F(TestOrderBook, test_send_and_remove_limit_orders) {
                                  Order(symbol, Price(100.05), Quantity(5), SELL, OPEN, LIMIT, 555, 5),
                                  Order(symbol, Price(100.6), Quantity(8), SELL, OPEN, LIMIT, 555, 6)};
 
-    std::vector<PriceLevelUpdate> expected_level_updates = {
-            PriceLevelUpdate(symbol, Price(99.3), Quantity(0.1), BUY),  PriceLevelUpdate(symbol, Price(99.5), Quantity(0.2), BUY),
-            PriceLevelUpdate(symbol, Price(99.1), Quantity(1), BUY),    PriceLevelUpdate(symbol, Price(100), Quantity(1), SELL),
-            PriceLevelUpdate(symbol, Price(100.05), Quantity(5), SELL), PriceLevelUpdate(symbol, Price(100.6), Quantity(8), SELL),
-            PriceLevelUpdate(symbol, Price(99.3), Quantity(0), BUY),    PriceLevelUpdate(symbol, Price(99.5), Quantity(0), BUY),
-            PriceLevelUpdate(symbol, Price(99.1), Quantity(0), BUY),    PriceLevelUpdate(symbol, Price(100), Quantity(0), SELL),
-            PriceLevelUpdate(symbol, Price(100.05), Quantity(0), SELL), PriceLevelUpdate(symbol, Price(100.6), Quantity(0), SELL)};
+    std::vector<PriceLevelUpdate> expected_level_updates = {PriceLevelUpdate(symbol, Price(99.3), Quantity(0.1), BUY),
+                                                            PriceLevelUpdate(symbol, Price(99.5), Quantity(0.2), BUY),
+                                                            PriceLevelUpdate(symbol, Price(99.1), Quantity(1), BUY),
+                                                            PriceLevelUpdate(symbol, Price(100), Quantity(1), SELL),
+                                                            PriceLevelUpdate(symbol, Price(100.05), Quantity(5), SELL),
+                                                            PriceLevelUpdate(symbol, Price(100.6), Quantity(8), SELL),
+                                                            PriceLevelUpdate(symbol, Price(99.3), Quantity(0), BUY),
+                                                            PriceLevelUpdate(symbol, Price(99.5), Quantity(0), BUY),
+                                                            PriceLevelUpdate(symbol, Price(99.1), Quantity(0), BUY),
+                                                            PriceLevelUpdate(symbol, Price(100), Quantity(0), SELL),
+                                                            PriceLevelUpdate(symbol, Price(100.05), Quantity(0), SELL),
+                                                            PriceLevelUpdate(symbol, Price(100.6), Quantity(0), SELL)};
 
     for (auto i = 0; i < orders.size(); ++i) {
         auto order = orders[i];
         ob.add_order(order);
         verify_order_update(order, order_updates[i]);
-        verify_level_update(level_updates_[i], symbol,  order.price(), order.qty(), order.side());
+        verify_level_update(level_updates_[i], symbol, order.price(), order.qty(), order.side());
     }
 
     std::vector<OrderId> update_order_ids;
@@ -167,20 +172,26 @@ TEST_F(TestOrderBook, test_send_market_orders) {
             Trade(symbol, Price(97), Quantity(5), SELL, passive_acc_id, crossing_acc_id, 3, sell_order_id),
     };
 
-    std::vector<PriceLevelUpdate> expected_level_updates{
-            PriceLevelUpdate(symbol, Price(98), Quantity(5), BUY), PriceLevelUpdate(symbol, Price(99), Quantity(5), BUY),
-            PriceLevelUpdate(symbol, Price(97), Quantity(5), BUY), PriceLevelUpdate(symbol, Price(100), Quantity(5), SELL),
-            PriceLevelUpdate(symbol, Price(101), Quantity(5), SELL), PriceLevelUpdate(symbol, Price(105), Quantity(5), SELL),
+    std::vector<PriceLevelUpdate> expected_level_updates{PriceLevelUpdate(symbol, Price(98), Quantity(5), BUY),
+                                                         PriceLevelUpdate(symbol, Price(99), Quantity(5), BUY),
+                                                         PriceLevelUpdate(symbol, Price(97), Quantity(5), BUY),
+                                                         PriceLevelUpdate(symbol, Price(100), Quantity(5), SELL),
+                                                         PriceLevelUpdate(symbol, Price(101), Quantity(5), SELL),
+                                                         PriceLevelUpdate(symbol, Price(105), Quantity(5), SELL),
 
-            // Sell Order
-            PriceLevelUpdate(symbol, Price(100), Quantity(0), SELL), PriceLevelUpdate(symbol, Price(101), Quantity(0), SELL),
-            PriceLevelUpdate(symbol, Price(105), Quantity(0), SELL), PriceLevelUpdate(symbol, Price(106), Quantity(5), BUY),
-            PriceLevelUpdate(symbol, Price(106), Quantity(0), BUY),
+                                                         // Sell Order
+                                                         PriceLevelUpdate(symbol, Price(100), Quantity(0), SELL),
+                                                         PriceLevelUpdate(symbol, Price(101), Quantity(0), SELL),
+                                                         PriceLevelUpdate(symbol, Price(105), Quantity(0), SELL),
+                                                         PriceLevelUpdate(symbol, Price(106), Quantity(5), BUY),
+                                                         PriceLevelUpdate(symbol, Price(106), Quantity(0), BUY),
 
-            // Buy O
-            PriceLevelUpdate(symbol, Price(99), Quantity(0), BUY), PriceLevelUpdate(symbol, Price(98), Quantity(0), BUY),
-            PriceLevelUpdate(symbol, Price(97), Quantity(0), BUY), PriceLevelUpdate(symbol, Price(90), Quantity(85), SELL),
-            PriceLevelUpdate(symbol, Price(90), Quantity(0), SELL)};
+                                                         // Buy O
+                                                         PriceLevelUpdate(symbol, Price(99), Quantity(0), BUY),
+                                                         PriceLevelUpdate(symbol, Price(98), Quantity(0), BUY),
+                                                         PriceLevelUpdate(symbol, Price(97), Quantity(0), BUY),
+                                                         PriceLevelUpdate(symbol, Price(90), Quantity(85), SELL),
+                                                         PriceLevelUpdate(symbol, Price(90), Quantity(0), SELL)};
 
     for (auto i = 0; i < orders.size(); ++i) {
         auto order = orders[i];

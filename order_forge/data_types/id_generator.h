@@ -12,7 +12,7 @@ constexpr uint64_t COUNTER_SPACE = 1000000000ULL;
 template<typename T>
 class IdGenerator {
 public:
-    static IdGenerator &instance() {
+    static IdGenerator& instance() {
         static IdGenerator instance;
         return instance;
     }

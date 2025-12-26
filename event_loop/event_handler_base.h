@@ -7,7 +7,7 @@
 
 using FileDescriptor = int32_t;
 
-enum class ConnectionType: uint8_t {
+enum class ConnectionType : uint8_t {
     UNDEFINED = 0,
     CONNECTION_HANDLER = 1,
 
@@ -22,7 +22,8 @@ enum class ConnectionType: uint8_t {
 class EventHandler {
 public:
     EventHandler() : fd_(0), connection_type_(ConnectionType::UNDEFINED) {}
-    explicit EventHandler(const FileDescriptor fd, const ConnectionType con_type) : fd_(fd), connection_type_(con_type) {}
+    explicit EventHandler(const FileDescriptor fd, const ConnectionType con_type) :
+        fd_(fd), connection_type_(con_type) {}
 
     virtual void handle_event(uint64_t events) = 0;
     virtual void send_buffer(const char*, size_t) = 0;

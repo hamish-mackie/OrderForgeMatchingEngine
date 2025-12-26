@@ -23,9 +23,9 @@ public:
     [[nodiscard]] clock_t timestamp() const { return timestamp_; }
     [[nodiscard]] AccountId acc_id() const { return acc_id_; }
 
-    [[nodiscard]] Quantity &remaining_qty_ref() { return remaining_qty_; }
-    [[nodiscard]] OrderId &client_order_id() { return client_order_id_; }
-    [[nodiscard]] OrderId &order_id() { return order_id_; }
+    [[nodiscard]] Quantity& remaining_qty_ref() { return remaining_qty_; }
+    [[nodiscard]] OrderId& client_order_id() { return client_order_id_; }
+    [[nodiscard]] OrderId& order_id() { return order_id_; }
 
     void set_order_id() { order_id_ = get_id<Order>(); }
 
@@ -33,7 +33,7 @@ public:
 
     void set_status(const OrderStatus status) { status_ = status; }
 
-    Quantity reduce_qty(Quantity &qty);
+    Quantity reduce_qty(Quantity& qty);
 
     [[nodiscard]] bool is_buy() const { return side_ == Side::BUY; }
     [[nodiscard]] bool is_same_symbol(const Symbol& symbol) const { return symbol == symbol_; }
@@ -57,7 +57,7 @@ inline Order::Order(Symbol symbol, Price price, Quantity qty, Side side, OrderSt
     symbol_(symbol), price_(price), qty_(qty), remaining_qty_(qty), side_(side), status_(status), type_(type),
     client_order_id_(client_order_id), order_id_(order_id), timestamp_(get_nano_ts()), acc_id_(acc_id) {}
 
-inline Quantity Order::reduce_qty(Quantity &qty) {
+inline Quantity Order::reduce_qty(Quantity& qty) {
     if (qty > remaining_qty_) {
         LOG_ERROR("trying to reduce quantity to below 0", nullptr);
     } else {
@@ -79,7 +79,7 @@ struct OrderLog {
     clock_t timestamp_;
     AccountId acc_id_;
 
-    void write(Order &order) {
+    void write(Order& order) {
         symbol_ = order.symbol();
         price_ = order.price();
         qty_ = order.qty();
@@ -103,7 +103,7 @@ struct OrderLog {
 };
 
 struct FindOrderHelper {
-    FindOrderHelper(OrderId order_id, Side side, const Price &price) : order_id(order_id), price(price), side(side) {}
+    FindOrderHelper(OrderId order_id, Side side, const Price& price) : order_id(order_id), price(price), side(side) {}
 
     OrderId order_id;
     Price price;
