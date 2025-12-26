@@ -21,8 +21,12 @@ OrderForgeApp::OrderForgeApp() {
             LOG_ERROR("Failed to create order book: {}", order_book_config.symbol);
         }
 
-        res.first->second->public_order_book_update_handler = [&](auto update) { public_order_book_update_handler(update); };
-        res.first->second->public_last_trade_update_handler = [&](auto update) { public_last_trade_update_handler(update); };
+        res.first->second->public_order_book_update_handler = [&](auto update) {
+            public_order_book_update_handler(update);
+        };
+        res.first->second->public_last_trade_update_handler = [&](auto update) {
+            public_last_trade_update_handler(update);
+        };
         res.first->second->private_order_update_handler = [&](auto update) { private_order_update_handler(update); };
         res.first->second->private_trades_update_handler = [&](auto update) { private_trades_update_handler(update); };
         res.first->second->private_account_update_handler = [&]() { private_account_update_handler(); };
