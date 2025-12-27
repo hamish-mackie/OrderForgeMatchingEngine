@@ -95,7 +95,7 @@ using namespace of;
 
 
 int main() {
-    TracyAppInfo("Benchmark", 0);
+    //    TracyAppInfo("Benchmark", 0);
 
     auto log_cfg = LoggerConfig{};
     log_cfg.write_std_out = false;

@@ -61,9 +61,9 @@ PriceLevelUpdate BookSide<CompFunc>::remove_orders(Price price, std::vector<Orde
 template<typename CompFunc>
 std::vector<PriceLevelUpdate> BookSide<CompFunc>::match_order(MatchingEngine& matching_engine) {
     std::vector<PriceLevelUpdate> updates;
-    for (auto& level: levels_) {
+    for (auto&& [price, price_level]: levels_) {
         if (matching_engine.has_remaining_qty()) {
-            updates.push_back(level.second->match_order(matching_engine));
+            updates.push_back(price_level->match_order(matching_engine));
         }
     }
 

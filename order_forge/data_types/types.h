@@ -7,11 +7,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include <magic_enum.hpp>
+#include "magic_enum.hpp"
 
 #include "id_generator.h"
 #include "logger.h"
 #include "scaled_int.h"
+
 namespace of {
 
 using Symbol = std::string_view;

@@ -2,6 +2,7 @@
 
 #include "matching_engine.h"
 #include "order_forge_types.h"
+
 namespace of {
 
 class PriceLevelUpdate {

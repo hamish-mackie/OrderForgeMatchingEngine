@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(OrderForge)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
@@ -29,7 +29,7 @@ FetchContent_MakeAvailable(magic_enum)
 FetchContent_Declare(
         tracy
         GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-        GIT_TAG v0.11.0
+        GIT_TAG v0.13.1
 )
 FetchContent_MakeAvailable(tracy)
 

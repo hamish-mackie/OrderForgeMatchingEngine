@@ -1,5 +1,6 @@
 #pragma once
 
+#include <flat_map>
 #include <map>
 
 #include "price_level.h"
@@ -33,7 +34,7 @@ inline OrderBookDataInterface::~OrderBookDataInterface() {}
 template<typename CompFunc>
 class OrderBookDataMap : public OrderBookDataInterface {
 public:
-    using OrderBookContainer = std::map<Price, PriceLvlPtr, CompFunc>;
+    using OrderBookContainer = std::flat_map<Price, PriceLvlPtr, CompFunc>;
 
     OrderBookDataMap(Symbol symbol, Side side, const TickSize& tick_size) :
         OrderBookDataInterface(side, tick_size), symbol_(symbol), book_cont_() {}
