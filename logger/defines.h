@@ -123,53 +123,30 @@ const char* get_str(std::string_view str, std::string_view str2, std::string_vie
 #define LOG_PREPEND(str, n)                                                                                            \
     get_str<TYPENAME.size(), FUNCTION.size(), STR_VIEW(str).size(), n>(TYPENAME, FUNCTION, STR_VIEW(str))
 
-#ifdef DISABLE_LOGGING
+enum class LogMode { Disabled, Release, Debug };
 
-#define LOG_TRADE(trade)
-#define LOG_ORDER(order)
-#define LOG_UPDATE_LEVEL(level_update)
-#define LOG_UPDATE_LAST_TRADE(last_trade_update)
-#define LOG_DEBUG(format_str, ...)
-#define LOG_INFO(format_str, ...)
-#define LOG_WARN(format_str, ...)
-#define LOG_ERROR(format_str, ...)
-
-#elif RELEASE_LOGGING
-
-#define LOG_ORDER(order)                                                                                               \
-    Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), order)
-#define LOG_TRADE(trade)                                                                                               \
-    Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), trade)
-#define LOG_UPDATE_LEVEL(level_update)                                                                                 \
-    Logger::get_instance().write_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(                                        \
-            LogType::LEVEL_UPDATE, LOG_PREPEND("LEVEL UPDATE", 3), level_update)
-#define LOG_UPDATE_LAST_TRADE(last_trade_update)                                                                       \
-    Logger::get_instance().write_buffer<LastTradeUpdate, LastTradeUpdateLog>(                                          \
-            LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4), last_trade_update)
-#define LOG_DEBUG(format_str, ...)
-#define LOG_INFO(format_str, ...)
-#define LOG_WARN(format_str, ...)
-#define LOG_ERROR(format_str, ...)
-
-#else
-
-#define LOG_ORDER(order)                                                                                               \
-    Logger::get_instance().write_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), order)
-#define LOG_TRADE(trade)                                                                                               \
-    Logger::get_instance().write_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), trade)
-#define LOG_UPDATE_LEVEL(level_update)                                                                                 \
-    Logger::get_instance().write_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(                                        \
-            LogType::LEVEL_UPDATE, LOG_PREPEND("LEVEL UPDATE", 3), level_update)
-#define LOG_UPDATE_LAST_TRADE(last_trade_update)                                                                       \
-    Logger::get_instance().write_buffer<LastTradeUpdate, LastTradeUpdateLog>(                                          \
-            LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4), last_trade_update)
-
-#define LOG_DEBUG(format_str, ...)                                                                                     \
-    Logger::get_instance().log(LogType::FORMAT_STRING, LOG_PREPEND("DEBUG", 5), format_str, ##__VA_ARGS__)
-#define LOG_INFO(format_str, ...)                                                                                      \
-    Logger::get_instance().log(LogType::FORMAT_STRING, LOG_PREPEND("INFO", 6), format_str, ##__VA_ARGS__)
-#define LOG_WARN(format_str, ...)                                                                                      \
-    Logger::get_instance().log(LogType::FORMAT_STRING, LOG_PREPEND("WARN", 7), format_str, ##__VA_ARGS__)
-#define LOG_ERROR(format_str, ...)                                                                                     \
-    Logger::get_instance().log(LogType::FORMAT_STRING, LOG_PREPEND("ERROR", 8), format_str, ##__VA_ARGS__)
+#ifndef LOG_MODE
+#define LOG_MODE 2 // 0=Disabled, 1=Release, 2=Debug (set via build system)
 #endif
+
+constexpr LogMode kLogMode = (LOG_MODE == 0) ? LogMode::Disabled : (LOG_MODE == 1) ? LogMode::Release : LogMode::Debug;
+
+constexpr bool kLogOrdersTrades = (kLogMode != LogMode::Disabled);
+constexpr bool kLogFormatStrings = (kLogMode == LogMode::Debug);
+
+
+#define LOG_ORDER(order) log_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), (order))
+
+#define LOG_TRADE(trade) log_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), (trade))
+
+#define LOG_UPDATE_LEVEL(u)                                                                                            \
+    log_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(LogType::LEVEL_UPDATE, LOG_PREPEND("LEVEL UPDATE", 3), (u))
+
+#define LOG_UPDATE_LAST_TRADE(u)                                                                                       \
+    log_buffer<LastTradeUpdate, LastTradeUpdateLog>(LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4),   \
+                                                    (u))
+
+#define LOG_DEBUG(fmt, ...) log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("DEBUG", 5), (fmt), ##__VA_ARGS__)
+#define LOG_INFO(fmt, ...) log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("INFO", 6), (fmt), ##__VA_ARGS__)
+#define LOG_WARN(fmt, ...) log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("WARN", 7), (fmt), ##__VA_ARGS__)
+#define LOG_ERROR(fmt, ...) log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("ERROR", 8), (fmt), ##__VA_ARGS__)

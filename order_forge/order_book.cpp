@@ -60,7 +60,7 @@ void OrderBook::remove_order(OrderId id) {
         }
         orders_id_map_.erase(id);
     } else {
-        LOG_WARN(fmt::format("Could not find order id {}", id));
+        LOG_WARN("Could not find order id {}", id);
     }
 
     for (auto& update: updates) {

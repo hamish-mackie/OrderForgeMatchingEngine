@@ -70,7 +70,7 @@ private:
 };
 
 struct TradeLog {
-    void write(Trade& trade) {
+    void write(const Trade& trade) {
         symbol_ = trade.symbol();
         price_ = trade.price();
         qty_ = trade.qty();

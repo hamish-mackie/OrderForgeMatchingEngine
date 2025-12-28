@@ -79,7 +79,7 @@ struct OrderLog {
     clock_t timestamp_;
     AccountId acc_id_;
 
-    void write(Order& order) {
+    void write(const Order& order) {
         symbol_ = order.symbol();
         price_ = order.price();
         qty_ = order.qty();

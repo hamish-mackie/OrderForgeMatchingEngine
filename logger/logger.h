@@ -35,7 +35,7 @@ public:
     static void register_common_types() { REGISTER_TYPE(FORMAT_STRING, FormatString); }
 
     template<typename T>
-    void write(std::string_view prepend, T* t) {
+    void write(std::string_view prepend, const T* t) {
         auto str = t->get_str();
         log_file_ << fmt::format("{} {}", prepend, str) << "\n";
         if (write_std_out_) {
@@ -44,7 +44,7 @@ public:
     }
 
     template<typename T, typename BufferStruct>
-    void write_buffer(LogType type, std::string_view prepend, T& item) {
+    void write_buffer(LogType type, std::string_view prepend, const T& item) {
         uint64_t needed_space = sizeof(LogInfo) + sizeof(BufferStruct);
         auto* pointer = ring_buffer_.get_write_pointer(needed_space);
 
@@ -127,3 +127,26 @@ private:
 
     ~Logger() { stop(); }
 };
+
+template<class T, class LogT>
+inline void log_buffer(LogType type, const char* tag, const T& v) {
+    if constexpr (kLogOrdersTrades) {
+        Logger::get_instance().write_buffer<T, LogT>(type, tag, v);
+    } else {
+        (void) type;
+        (void) tag;
+        (void) v;
+    }
+}
+
+template<class... Args>
+inline void log_fmt(LogType type, const char* tag, const char* fmt, Args&&... args) {
+    if constexpr (kLogFormatStrings) {
+        Logger::get_instance().log(type, tag, fmt, std::forward<Args>(args)...);
+    } else {
+        (void) type;
+        (void) tag;
+        (void) fmt;
+        (void) sizeof...(args);
+    }
+}
