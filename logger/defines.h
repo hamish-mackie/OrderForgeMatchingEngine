@@ -123,30 +123,52 @@ const char* get_str(std::string_view str, std::string_view str2, std::string_vie
 #define LOG_PREPEND(str, n)                                                                                            \
     get_str<TYPENAME.size(), FUNCTION.size(), STR_VIEW(str).size(), n>(TYPENAME, FUNCTION, STR_VIEW(str))
 
-enum class LogMode { Disabled, Release, Debug };
+enum class LogMode { Disabled, Enabled };
 
 #ifndef LOG_MODE
-#define LOG_MODE 2 // 0=Disabled, 1=Release, 2=Debug (set via build system)
+#define LOG_MODE 1 // 0=Disabled, 1=Enabled (set via build system)
 #endif
 
-constexpr LogMode kLogMode = (LOG_MODE == 0) ? LogMode::Disabled : (LOG_MODE == 1) ? LogMode::Release : LogMode::Debug;
+inline constexpr LogMode kLogMode = static_cast<LogMode>(LOG_MODE);
+inline constexpr bool kLogEnabled = (kLogMode == LogMode::Enabled);
 
-constexpr bool kLogOrdersTrades = (kLogMode != LogMode::Disabled);
-constexpr bool kLogFormatStrings = (kLogMode == LogMode::Debug);
+enum class LogLevel : uint8_t { Debug = 0, Info = 1, Warn = 2, Error = 3 };
 
+inline LogLevel g_log_level = LogLevel::Info;
 
-#define LOG_ORDER(order) log_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), (order))
+inline void set_log_level(LogLevel lvl) noexcept { g_log_level = lvl; }
 
-#define LOG_TRADE(trade) log_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), (trade))
+inline LogLevel get_log_level() noexcept { return g_log_level; }
+
+inline bool level_enabled(LogLevel lvl) noexcept {
+    return static_cast<uint8_t>(lvl) >= static_cast<uint8_t>(g_log_level);
+}
+
+#define LOG_ORDER(order)                                                                                               \
+    log_if(LogLevel::Info, [&] { log_buffer<Order, OrderLog>(LogType::ORDER, LOG_PREPEND("ORDER", 1), (order)); })
+
+#define LOG_TRADE(trade)                                                                                               \
+    log_if(LogLevel::Info, [&] { log_buffer<Trade, TradeLog>(LogType::TRADE, LOG_PREPEND("TRADE", 2), (trade)); })
 
 #define LOG_UPDATE_LEVEL(u)                                                                                            \
-    log_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(LogType::LEVEL_UPDATE, LOG_PREPEND("LEVEL UPDATE", 3), (u))
+    log_if(LogLevel::Info, [&] {                                                                                       \
+        log_buffer<PriceLevelUpdate, PriceLevelUpdateLog>(LogType::LEVEL_UPDATE, LOG_PREPEND("LEVEL UPDATE", 3), (u)); \
+    })
 
 #define LOG_UPDATE_LAST_TRADE(u)                                                                                       \
-    log_buffer<LastTradeUpdate, LastTradeUpdateLog>(LogType::LAST_TRADE_UPDATE, LOG_PREPEND("LAST TRADE UPDATE", 4),   \
-                                                    (u))
+    log_if(LogLevel::Info, [&] {                                                                                       \
+        log_buffer<LastTradeUpdate, LastTradeUpdateLog>(LogType::LAST_TRADE_UPDATE,                                    \
+                                                        LOG_PREPEND("LAST TRADE UPDATE", 4), (u));                     \
+    })
 
-#define LOG_DEBUG(fmt, ...) log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("DEBUG", 5), (fmt), ##__VA_ARGS__)
-#define LOG_INFO(fmt, ...) log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("INFO", 6), (fmt), ##__VA_ARGS__)
-#define LOG_WARN(fmt, ...) log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("WARN", 7), (fmt), ##__VA_ARGS__)
-#define LOG_ERROR(fmt, ...) log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("ERROR", 8), (fmt), ##__VA_ARGS__)
+#define LOG_DEBUG(fmt, ...)                                                                                            \
+    log_if(LogLevel::Debug, [&] { log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("DEBUG", 5), (fmt), ##__VA_ARGS__); })
+
+#define LOG_INFO(fmt, ...)                                                                                             \
+    log_if(LogLevel::Info, [&] { log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("INFO", 6), (fmt), ##__VA_ARGS__); })
+
+#define LOG_WARN(fmt, ...)                                                                                             \
+    log_if(LogLevel::Warn, [&] { log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("WARN", 7), (fmt), ##__VA_ARGS__); })
+
+#define LOG_ERROR(fmt, ...)                                                                                            \
+    log_if(LogLevel::Error, [&] { log_fmt(LogType::FORMAT_STRING, LOG_PREPEND("ERROR", 8), (fmt), ##__VA_ARGS__); })

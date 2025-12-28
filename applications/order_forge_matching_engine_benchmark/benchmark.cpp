@@ -3,6 +3,7 @@
 #include <random>
 
 #include <tracy/Tracy.hpp>
+#include "defines.h"
 #include "order_book.h"
 namespace of {
 
@@ -103,6 +104,8 @@ int main() {
     log_cfg.number_blocks = 2;
     // Call order allocator, so it allocates up front.
     Logger::get_instance(log_cfg);
+    Logger::register_common_types();
+    set_log_level(LogLevel::Error);
     SingleTonWrapper<PoolAllocator<Node<OrderId, Order>>>::get_instance().expand_pool(of::MB * 50);
     std::vector<u_int64_t> num_orders = {50000, 100000, 500000};
     for (auto& n: num_orders) {

@@ -122,31 +122,31 @@ private:
         if (!log_file_.is_open()) {
             fmt::println("could not open log file");
         }
-        log_thread_ = std::make_unique<std::thread>([&]() { read_buffer(); });
+        log_thread_ = std::make_unique<std::thread>([this]() { read_buffer(); });
     }
 
     ~Logger() { stop(); }
 };
 
+template<class F>
+inline void log_if(LogLevel lvl, F&& f) {
+    if constexpr (kLogEnabled) { // keep compile-time on/off if you want
+        if (level_enabled(lvl)) {
+            std::forward<F>(f)(); // args evaluated inside lambda only when enabled
+        }
+    }
+}
+
 template<class T, class LogT>
 inline void log_buffer(LogType type, const char* tag, const T& v) {
-    if constexpr (kLogOrdersTrades) {
+    if constexpr (kLogEnabled) {
         Logger::get_instance().write_buffer<T, LogT>(type, tag, v);
-    } else {
-        (void) type;
-        (void) tag;
-        (void) v;
     }
 }
 
 template<class... Args>
 inline void log_fmt(LogType type, const char* tag, const char* fmt, Args&&... args) {
-    if constexpr (kLogFormatStrings) {
+    if constexpr (kLogEnabled) {
         Logger::get_instance().log(type, tag, fmt, std::forward<Args>(args)...);
-    } else {
-        (void) type;
-        (void) tag;
-        (void) fmt;
-        (void) sizeof...(args);
     }
 }
