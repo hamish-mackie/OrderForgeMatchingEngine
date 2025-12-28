@@ -36,7 +36,7 @@ public:
     using NodeType = Node<Id, T>;
     using NodeTypePtr = NodeType*;
     using NodeTypeRef = NodeType&;
-    using NodeMap = std::unordered_map<Id, NodeTypePtr>;
+    using NodeMap = tsl::robin_map<Id, NodeTypePtr>;
 
     void pop() { pop_front(); }
     size_t size() const { return node_map_.size(); }

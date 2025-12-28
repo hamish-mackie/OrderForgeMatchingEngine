@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "magic_enum.hpp"
+#include "tsl/robin_map.h"
 
 #include "id_generator.h"
 #include "logger.h"

@@ -39,6 +39,13 @@ FetchContent_Declare(json
 )
 FetchContent_MakeAvailable(json)
 
+FetchContent_Declare(
+        robin_map
+        GIT_REPOSITORY https://github.com/Tessil/robin-map.git
+        GIT_TAG v1.3.0
+)
+FetchContent_MakeAvailable(robin_map)
+
 enable_testing()
 
 add_library(precompiled_lib INTERFACE)
@@ -48,6 +55,7 @@ target_link_libraries(precompiled_lib INTERFACE
         nlohmann_json
         fmt::fmt
         magic_enum
+        tsl::robin_map
 )
 
 target_precompile_headers(precompiled_lib INTERFACE
@@ -59,6 +67,7 @@ target_precompile_headers(precompiled_lib INTERFACE
         <fmt/format.h>
         <magic_enum.hpp>
         <nlohmann/json.hpp>
+        <tsl/robin_map.h>
 )
 
 add_subdirectory(config)
